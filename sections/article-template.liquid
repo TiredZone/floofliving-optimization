@@ -1,0 +1,208 @@
+{% comment %}
+  When a comment is submitted, the browser is redirected to a page that includes
+  the new comment id in its URL.
+  #comments is a required ID and is used as an anchor link by Shopify.
+{% endcomment %}
+
+{%- assign number_of_comments = article.comments_count -%}
+
+{% comment %}
+  If a comment was just submitted but requires moderation, we have an extra comment to count.
+{% endcomment %}
+{% if comment and comment.status != 'published' %}
+  {% assign number_of_comments = article.comments_count | plus: 1 %}
+{% endif %}
+
+<article role="article" itemscope itemtype="http://schema.org/Article">
+
+  {% if article.metafields.article.main_image != blank %}
+    <img class="viewport-section article-image" src="{{ article.metafields.article.main_image }}" alt="{{ article.title }}"/>
+    {% elsif article.image != blank  %}
+    <img class="viewport-section article-image" src="{{ article.image | img_url: 'x1500' , crop: 'center' }}" alt="{{ article.title }}"/>
+  {% endif %}
+
+  <div class="d-flex {% if article.metafields.accentuate.variant  != blank %} with-variant {% endif %}">
+    <div
+      class="page-width article-container {% if article.metafields.accentuate.variant  != blank %} article-container--small {% endif %} "
+    >
+      <header class="viewport-section" role="banner">
+        <h1 class="h2">{{ article.title }}</h1>
+          {% if article.tags.size > 0 %}
+            <ul class="viewport-section__list">
+              {% for tag in article.tags %}
+                {% if tag contains "category:" %}
+                  <li class="viewport-section__item">
+                    <a class="viewport-section__element" href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag | remove: "category:" }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+        {% capture date %}{{ article.published_at | date: "%d.%m.%Y" }}{% endcapture %}
+        <div class="article-container__date">
+          {% if article.metafields.article.author_name != blank %}
+            <p class="article-container__date--author">{{ article.metafields.article.author_name }}</p>
+          {% endif %}
+          <p class="article-container__date--text">{{ date }}</p>
+        </div>
+
+      </header>
+
+      <div class="rte viewport-section" itemprop="articleBody">
+        {{ article.content }}
+      </div>
+
+      {% if settings.social_sharing_blog %}
+        <div class="d-flex">
+          <p class="article__share-text">{{ 'blogs.article.share_on_social' | t }}</p>
+          {% include 'social-sharing',
+            share_title: article.title,
+            share_permalink: article.url,
+            share_image: article.image
+          %}
+        </div>
+      {% endif %}
+
+      {% if blog.comments_enabled? %}
+        <h3>{{ 'blogs.comments.with_count' | t: count: number_of_comments }}</h3>
+
+        {% paginate article.comments by 5 %}
+
+        <div id="comments">
+          {% if comment and comment.status and paginate.current_page == 1 %}
+            <p class="form-success">
+              {% if blog.moderated? and comment.status != 'published' %}
+                {{ 'blogs.comments.success_moderated' | t }}
+              {% else %}
+                {{ 'blogs.comments.success' | t }}
+              {% endif %}
+            </p>
+          {% endif %}
+
+          {% if number_of_comments > 0 %}
+            <ul>
+              {% comment %}
+                Display comment from URL parameters if it is waiting moderation
+              {% endcomment %}
+              {% if comment and comment.status != 'published' %}
+                <li id="{{ comment.id }}">
+                  <div class="rte">
+                    {{ comment.content }}
+                  </div>
+                  {% capture date %}{{ comment.created_at | time_tag: format: 'month_day_year' }}{% endcapture %}
+                  <p>{{ 'blogs.article.comment_meta_html' | t: author: comment.author, date: date }}</p>
+                </li>
+              {% endif %}
+
+              {% for comment in article.comments %}
+                <li id="{{ comment.id }}">
+                  <div class="rte">
+                    {{ comment.content }}
+                  </div>
+                  {% capture date %}{{ comment.created_at | time_tag: format: 'month_day_year' }}{% endcapture %}
+                  <p>{{ 'blogs.article.comment_meta_html' | t: author: comment.author, date: date }}</p>
+                </li>
+
+              {% endfor %}
+            </ul>
+
+            {% if paginate.pages > 1 %}
+              {% render 'pagination' paginate: paginate  %}
+            {% endif %}
+          {% endif %}
+        </div>
+
+        {% endpaginate %}
+
+        {% form 'new_comment', article %}
+          <h3>{{ 'blogs.comments.title' | t }}</h3>
+
+          {{ form.errors | default_errors }}
+
+          <label for="CommentAuthor" class="label-hidden">
+            {{ 'blogs.comments.name' | t }}
+          </label>
+          <input type="text"
+                name="comment[author]"
+                id="CommentAuthor"
+                class="{% if form.errors contains 'author' %}input-error{% endif %}"
+                placeholder="{{ 'blogs.comments.name' | t }}"
+                value="{{ form.author }}"
+                autocapitalize="words">
+
+          <label for="CommentEmail" class="label-hidden">
+            {{ 'blogs.comments.email' | t }}
+          </label>
+          <input type="email"
+                name="comment[email]"
+                id="CommentEmail"
+                class="{% if form.errors contains 'email' %}input-error{% endif %}"
+                placeholder="{{ 'blogs.comments.email' | t }}"
+                value="{{ form.email }}"
+                spellcheck="false"
+                autocomplete="off"
+                autocapitalize="off">
+
+          <label for="CommentBody" class="label-hidden">
+            {{ 'blogs.comments.message' | t }}
+          </label>
+          <textarea
+            name="comment[body]"
+            id="CommentBody"
+            class="{% if form.errors contains 'body' %}input-error{% endif %}"
+            placeholder="{{ 'blogs.comments.message' | t }}">
+            {{ form.body }}
+          </textarea>
+
+          {% if blog.moderated? %}
+            <p>{{ 'blogs.comments.moderated' | t }}</p>
+          {% endif %}
+
+          <input type="submit" class="btn" value="{{ 'blogs.comments.post' | t }}">
+        {% endform %}
+
+      {% endif %}
+    </div>
+
+
+
+
+    {% if article.metafields.accentuate.variant  != blank %}
+
+    {% assign variants = article.metafields.accentuate.variant | split: '|' %}
+
+      <div class="variant-block">
+        <div class="variant-block__wrapper">
+          {% for select_variant in variants %}
+              {% render 'variant-product-article', select_variant: select_variant %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+
+  <!--PERZONALIZATION-START Do not modify or delete this comment-->
+  <div id="perzonalization-custom" class="perzonalization"></div>
+  <script type='text/javascript'>var productDetailsForPrz = {{ product | json }};var basketDetailsForPrz = {{ cart | json }};var filterDetailsForPrz = {{ collection | json }};var detailsForPrz = { userId: '{{ customer.id }}', language: '{{ shop.locale }}', currency:'{{ shop.currency }}' };var searchDetailsForPrz = {{ search.results | json }};if(productDetailsForPrz) { productDetailsForPrz.collections = []; }{% for collection in product.collections %}   if(productDetailsForPrz) { productDetailsForPrz.collections.push("{{ collection.title }}") }{% endfor %}if (filterDetailsForPrz) { filterDetailsForPrz.products = []; }{% for product in collection.products %}   if(filterDetailsForPrz) { filterDetailsForPrz.products.push({ id:"{{ product.id }}", handle:"{{ product.handle }}" }) }{% endfor %}</script>
+  <!-- Do not modify or delete this comment PERZONALIZATION-END -->
+
+  {% if article.metafields.accentuate.related_stories != blank %}
+    {% render 'related-article-selected' %}
+  {% else %}
+    {% render 'related-article-unselected' %}
+  {% endif %}
+</article>
+
+
+
+{% schema %}
+{
+  "name": "Article",
+  "settings": [
+  ]
+}
+
+
+{% endschema %}

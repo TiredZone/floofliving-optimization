@@ -1,0 +1,544 @@
+{%- comment -%} VERSION: 0.0.3 Please do not delete this line. {%- endcomment -%}
+{%- comment -%} Variables from sections/collection-template-boost-pfs-filter {%- endcomment -%}
+  {%- if product_item_type == nil -%}
+{%- assign product_item_type = 'grid' -%}
+{%- endif -%}
+
+{%- comment -%} Product data {%- endcomment -%}
+{%- assign product_url = product.url | within: collection -%}
+
+{%- comment -%} Grid Width Class Desktop {%- endcomment -%}
+{%- assign grid_width_class_desktop = ' boost-pfs-filter-grid-width-4' -%}
+  {%- case products_per_row -%}
+  {%- when 2 -%}
+  {%- assign grid_width_class_desktop = ' boost-pfs-filter-grid-width-2' -%}
+  {%- when 3 -%}
+  {%- assign grid_width_class_desktop = ' boost-pfs-filter-grid-width-3' -%}
+  {%- when 4 -%}
+  {%- assign grid_width_class_desktop = ' boost-pfs-filter-grid-width-4' -%}
+  {%- when 5 -%}
+  {%- assign grid_width_class_desktop = ' boost-pfs-filter-grid-width-5' -%}
+  {%- when 6 -%}
+{%- assign grid_width_class_desktop = ' boost-pfs-filter-grid-width-6' -%}
+{%- endcase -%}
+
+{%- comment -%} Grid Width Class Mobile {%- endcomment -%}
+{%- assign grid_width_class_mobile = ' boost-pfs-filter-grid-width-mb-2' -%}
+  {%- case products_per_row_mobile -%}
+  {%- when 1 -%}
+  {%- assign grid_width_class_mobile = ' boost-pfs-filter-grid-width-mb-1' -%}
+  {%- when 2 -%}
+  {%- assign grid_width_class_mobile = ' boost-pfs-filter-grid-width-mb-2' -%}
+  {%- when 3 -%}
+{%- assign grid_width_class_mobile = ' boost-pfs-filter-grid-width-mb-3' -%}
+{%- endcase -%}
+
+{%- comment -%} Show label {%- endcomment -%}
+{%- assign show_label = false -%}
+  {%- if show_sale_label or show_sold_out_label or show_label_by_tag -%}
+{%- assign show_label = true -%}
+{%- endif -%}
+{%- assign show_all_label_by_tag = false -%}
+
+
+{%- comment -%} Soldout {%- endcomment -%}
+{%- assign sold_out = false -%}
+{%- assign sold_out_class = '' -%}
+  {%- unless product.available -%}
+  {%- assign sold_out = true -%}
+{%- assign sold_out_class = ' sold-out' -%}
+{%- endunless -%}
+
+  {%- capture sold_out_label -%}
+  {% assign show_product_label_image = section.settings.show_product_label_image %}
+  {% assign product_label_image_sold_out = section.settings.product_label_image_sold_out %}
+    {%- if sold_out == true and show_sold_out_label == true -%}
+      <span class="soldout boost-pfs-filter-label"> {% if show_product_label_image %}<img src="{{ product_label_image_sold_out | img_url: 'small' }}" alt="{{ product_label_image_sold_out.alt }}" />
+      {% else %}
+        {{ label_soldout | default: 'Sold Out' }}{% endif %}
+    </span>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- comment -%} On Sale {%- endcomment -%}
+{%- assign on_sale = false -%}
+{%- assign sale_class = '' -%}
+{%- if product.compare_at_price > product.price -%}
+  {%- assign on_sale = true -%}
+  {%- assign sale_class = ' on-sale' -%}
+{%- endif -%}
+
+{%- capture sale_label -%}
+  {%- if on_sale == true and show_sale_label == true -%}
+    {%- if show_sale_percent == true -%}
+      {%- assign salePercent = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
+    {%- endif -%}
+    {% assign show_product_label_image = section.settings.show_product_label_image %}
+    {% assign product_label_image_sale = section.settings.product_label_image_sale %}
+    <span class="sale boost-pfs-filter-label">
+      {% if show_product_label_image %}<img src="{{ product_label_image_sale | img_url: 'small' }}" alt="{{ product_label_image_sale.alt }}" />
+      {% else %}
+        {% if show_sale_percent %}
+          {{ salePercent }}%
+        {% else %}
+          {{ label_sale | default: 'Sale' }}{% endif %}
+      {% endif %}
+    </span>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- comment -%} LABEL EXTEND BY TAG: New, Best, Featured {%- endcomment -%}
+{%- capture label_by_tag -%}
+  {%- if show_label_by_tag -%}
+    {%- if show_all_label_by_tag == true -%}
+      {%- for tag in product.tags -%}
+        {%- if tag contains 'pfs:label-' -%}
+          {%- assign t = tag | split: 'pfs:label-' -%}
+          <span class="boost-pfs-filter-label tag {{ t | handleize }}">{{- t -}}</span>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- else -%}
+      {%- assign product_tags = product.tags | reverse -%}
+      {%- for tag in product_tags -%}
+        {%- if tag contains 'pfs:label-' -%}
+          {%- assign t = tag | split: 'pfs:label-' -%}
+          <span class="boost-pfs-filter-label tag {{ t | handleize }}">{{- t -}}</span>
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endcapture -%}
+
+
+{%- comment -%} Swap Image {%- endcomment -%}
+{%- assign active_image_swap_class = ' ' -%}
+{%- if active_image_swap and product.images[1] -%}
+  {%- assign active_image_swap = true -%}
+  {%- assign active_image_swap_class = ' has-bc-swap-image' -%}
+{%- endif -%}
+
+{%- comment -%} Product Image {%- endcomment -%}
+{%- assign img_default_src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' -%}
+{%- assign preview_image = product.featured_media.preview_image -%}
+{%- assign data_widths_range = '180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048' -%}
+{%- assign data_widths = data_widths_range | split: ', ' -%}
+{%- assign image_size = data_widths[2] | append: 'x' -%}
+{%- assign data_src_set = '' -%}
+{%- assign data_src_set_flip_img = '' -%}
+{%- assign data_img_flip = '' -%}
+
+{%- for widths in data_widths -%}
+  {%- assign tempx = widths | append: 'x' -%}
+  {%- assign tempw = widths | append: 'w' -%}
+  {%- assign temp_src_set = preview_image | img_url: tempx | append: ' ' | append: tempw -%}
+
+  {%- if active_image_swap == true -%}
+    {%- assign temp_src_set_flip_img = product.images[1] | img_url: tempx | append: ' ' | append: tempw -%}
+  {%- endif -%}
+
+  {%- if forloop.last != true %}
+    {%- assign temp_src_set = temp_src_set | append: ', ' -%}
+
+    {%- if active_image_swap == true -%}
+      {%- assign temp_src_set_flip_img = temp_src_set_flip_img | append: ', ' -%}
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- assign data_src_set = data_src_set | append: temp_src_set -%}
+  {%- assign data_src_set_flip_img = data_src_set_flip_img | append: temp_src_set_flip_img -%}
+{%- endfor -%}
+
+
+{%- capture data_img_flip -%}
+  {%- if active_image_swap == true -%}
+    data-img-flip-src="{{- product.images[1] | img_url: image_size -}}"
+    data-img-flip-srcset="{{- data_src_set_flip_img -}}"
+  {%- endif -%}
+{%- endcapture -%}
+
+
+{%- capture data_image_width_height -%}
+  {%- if equal_height != 'false' -%}
+    data-image-width="{{- product.featured_image.width -}}"
+    data-image-height="{{- product.featured_image.height -}}"
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- assign padding_top = 100 -%}
+{%- unless preview_image == blank -%}
+  {%- assign padding_top = 1 | divided_by: preview_image.aspect_ratio | times: 100 -%}
+{%- endunless -%}
+
+{%- comment -%} Vendor {%- endcomment -%}
+{%- capture product_vendor -%}
+  {%- if show_vendor -%}
+    <p class="boost-pfs-filter-product-item-vendor">{{- product.vendor -}}</p>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- comment -%} Review {%- endcomment -%}
+{%- capture product_review -%}
+  {%- if show_product_review -%}
+    <span class="shopify-product-reviews-badge" data-id="{{- product.id -}}"></span>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- comment -%} Price {%- endcomment -%}
+{%- capture product_price -%}
+  {%- if show_price -%}
+    <p class="boost-pfs-filter-product-item-price">
+      {%- if on_sale -%}
+        <span class="boost-pfs-filter-product-item-sale-price">{{- product.price | money -}}</span>
+        <s>{{- product.compare_at_price | money -}}</s>
+      {%- else -%}
+        {%- if product.price_varies -%}
+          <span class="boost-pfs-filter-product-item-price-from-text">{{- label_from | default: 'From' -}}</span>
+        {%- endif -%}
+        <span class="boost-pfs-filter-product-item-regular-price">{{- product.price | money -}}</span>
+      {%- endif -%}
+    </p>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- comment -%} Swatch feature {%- endcomment -%}
+{%- capture boostProductOptionSwatch -%}
+  swatchName: Color;
+  optionName: color;
+  	swatchDisplay: {{ display_item_swatch }};
+  swatchType: {{ swatch_color_display_type }};
+  ,
+  	swatchName: Size;
+  	optionName: size;
+  	swatchDisplay: {{ display_item_swatch_size }};
+  swatchType: '';
+{%- endcapture -%}
+{%- assign boostProductOptions = boostProductOptionSwatch | split: ',' -%}
+
+{%- capture product_swatch -%}
+  {%- for boostProductOptionsItem in boostProductOptions -%}
+    {%- assign items = boostProductOptionsItem | split: ';' -%}
+
+    {%- assign swatchName = items[0] | split: ':' -%}
+    {%- assign swatchName = swatchName[1] | strip -%}
+
+    {%- assign optionName = items[1] | split: ':' -%}
+    {%- assign optionName = optionName[1] | strip -%}
+
+    {%- assign swatchDisplay = items[2] | split: ':' -%}
+    {%- assign swatchDisplay = swatchDisplay[1] | strip -%}
+
+    {%- assign swatchType = items[3] | split: ':' -%}
+    {%- assign swatchType = swatchType[1] | strip -%}
+
+    {%- if swatchDisplay == 'true' -%}
+
+      {%- assign swatch_option_name = swatchName -%}
+      {%- assign filter_swatch_option_title = swatchName | handleize | replace: '-', '_' -%}
+      {%- assign swatch_values_size = product.options_by_name[swatch_option_name].values.size -%}
+      {%- assign bg_size = '50x' -%}
+      {%- assign swath_limit = 4 -%}
+      {%- assign file_extension = 'png' -%}
+      {%- assign swatch_data_img = preview_image | img_url: image_size -%}
+
+      {%- if swatch_values_size < swath_limit -%}
+        {%- assign swath_limit = swatch_values_size -%}
+      {%- endif -%}
+      {%- if swatch_values_size > 0 -%}
+        <ul class="boost-pfs-filter-item-swatch boost-pfs-filter-item-swatch-{{ filter_swatch_option_title }}">
+          {%- for option in product.options -%}
+            {%- if option == swatch_option_name -%}
+
+              {%- assign swatch_index = forloop.index0 -%}
+              {%- assign swatch_list = '' -%}
+              {%- assign swatch_name = '' -%}
+              {%- assign count_swatch = 0 -%}
+
+              {%- for variant in product.variants -%}
+                {% if count_swatch < swath_limit %}
+
+                  {%- capture swatch_name -%}
+                    {{- variant.options[swatch_index] -}}
+                  {%- endcapture -%}
+
+                  {%- unless swatch_list contains swatch_name -%}
+                    {%- assign swatch_list = swatch_list | append: swatch_name | append: ';' -%}
+                    {%- assign count_swatch = count_swatch | plus: 1 -%}
+                    {%- assign file_name = '' -%}
+
+                    {%- case swatchType -%}
+                      {%- when 'swatch_color_display_type_image_color' -%}
+                      {%- assign file_name = swatch_name | handleize | append: '.' | append: file_extension -%}
+                      {%- assign swatch_img_url = filter_swatch_option_title | append: '-' | append: file_name | file_url -%}
+                      {%- when 'swatch_color_display_type_image_product' -%}
+                      {%- assign swatch_img_url = preview_image | img_url: bg_size -%}
+                      {%- if variant.image != null -%}
+                        {%- assign swatch_img_url = variant.image.src | img_url: bg_size -%}
+                      {%- endif -%}
+                    {%- else -%}
+                      {%- assign swatch_img_url = '' -%}
+                    {%- endcase -%}
+
+                    {%- capture swatch_bg_img -%}
+                      {%- if swatch_img_url != '' -%}
+                        background-image: url({{- swatch_img_url -}});
+                      {%- endif -%}
+                    {%- endcapture -%}
+
+                    {%- capture swatch_bg_color -%}
+                      background-color: {{- swatch_name -}};
+                    {%- endcapture -%}
+
+                    {%- if variant.image != null -%}
+                      {%- assign swatch_data_img = variant.image.src | img_url: image_size | append: ' ' | append: data_widths[2] | append: 'w' -%}
+                    {%- endif -%}
+
+                    <li>
+                      {%- if optionName == 'color' or optionName == 'colour' -%}
+                        <div class="boost-pfs-product-item-tooltip">{{- swatch_name -}}</div>
+                        <span
+                          tabindex="0"
+                          aria-label="{{- swatch_name -}}"
+                          data-value="{{- swatch_name | handleize -}}"
+                          style="{{- swatch_bg_img -}} {{- swatch_bg_color -}}"
+                          data-img="{{- swatch_data_img -}}"></span>
+                      {%- else -%}
+                        <a title="{{- swatch_name -}}" href="{{ product.url}}?variant={{ variant.id }}">{{- swatch_name -}}</a>
+                      {%- endif -%}
+                    </li>
+                  {%- endunless -%}
+
+                {% endif %}
+              {%- endfor -%}
+
+            {%- endif -%}
+          {%- endfor -%}
+
+          {%- if swatch_values_size > 4 -%}
+            <li class="boost-pfs-filter-item-swatch-more">
+              <a href="{{- product_url -}}#" title="More {{- swatch_option_name -}}">
+                + {{- swatch_values_size | minus: swath_limit -}}
+              </a>
+            </li>
+          {%- endif -%}
+        </ul>
+      {%- endif -%}
+    {%- endif -%}
+
+  {% endfor %}
+{%- endcapture -%}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{% assign sku_parts = current_variant.sku | split: ' ' %}
+{% assign variant_colors = '' %}
+{% assign is_variant_image = false %}
+{% assign values = '' %}
+{%- assign count = collectionid -%}
+{%- if product.type == "Set" -%}
+  {% assign gridWidthSet = ' boost-pfs-filter-grid-width-set-2' %}
+{%- else -%}
+  {% assign gridWidthSet = '' %}
+{%- endif -%}
+
+{% unless product.tags contains 'floofism' %}
+  <div class="js-boost-pfs-filter viewport-section boost-pfs-filter-product-item boost-pfs-filter-product-item-{{- product_item_type -}}
+    		  {{ gridWidthSet }}
+              {{- active_image_swap_class -}}
+              {{- grid_width_class_desktop -}}
+              {{- grid_width_class_mobile -}}
+              {{- sold_out_class -}}
+              {{- sale_class -}}" {{- data_image_width_height -}}>
+    <div class="boost-pfs-filter-product-item-inner">
+      <div class="featured-product">
+        <div class="boost-pfs-filter-product-item-image" data-boost-image-loading-animation>
+          <div class="featured-product__gallery">
+            <div class="featured-product__gallery-wrap">
+              {% assign option_index = 0 %}
+              {%- for variant in product.variants -%}
+
+                {%- for option in product.options -%}
+                  {%- if option == 'color' or option == 'Color' -%}
+                    {% assign option_index = forloop.index0 %}
+
+                  {%- endif -%}
+                {%- endfor -%}
+
+                {% assign value = variant.options[option_index] %}
+
+                {% if value != blank %}
+
+                  {% unless values contains value %}
+
+                    {% assign values = values | join: ',' | append: ',' | append: value | split: ',' %}
+
+                    {% if variant.image.src != blank %}
+                      <div
+                        data-value="{{ variant.id | escape }}"
+                        data-href="{{ product.url | within: collection }}"
+                        class="featured-product__image {% unless forloop.first %} hide{% endunless %}">
+                        {% assign is_variant_image = true %}
+                        <a href="{{ product.url | within: collection }}" class="js-featured-product__link">
+                          {% render 'image-small', image: variant.image, width: 370, classes: "featured-product__img" %}
+                        </a>
+                      </div>
+                    {% else %}
+                      <div
+                        data-value="{{ variant.id | escape }}"
+                        data-href="{{ product.url | within: collection }}"
+                        class="featured-product__image {% unless forloop.first %} hide{% endunless %}">
+                        {% assign is_variant_image = true %}
+                        <a href="{{ product.url | within: collection }}" class="js-featured-product__link">
+                          {% render 'image-small', image: product.images[0], width: 370, classes: "featured-product__img" %}
+                        </a>
+                      </div>
+                    {% endif %}
+
+                  {% endunless %}
+                {% endif %}
+              {%- endfor -%}
+
+              {% if is_variant_image == false %}
+                <div class="featured-product__image">
+                  <a href="{{ product.url | within: collection }}">
+                    {% render 'image', image: product.featured_image, width: 370 %}
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+          {%- if show_label == true -%}
+            <div class="boost-pfs-filter-product-item-label">
+              {{- sold_out_label -}}
+              {{- sale_label -}}
+              {{- label_by_tag -}}
+            </div>
+          {%- endif -%}
+        </div>
+        <div class="boost-pfs-filter-product-bottom">
+          <div class="boost-pfs-filter-product-bottom-inner">
+            <div class="featured-product__wrap">
+              {% assign is_color = false %}
+              {% for option in product.options %}
+                {% if option contains 'color' or option contains 'colour' or option contains 'Color' %}
+                  {% assign is_color = true %}
+                {% endif %}
+              {% endfor %}
+              <h4 class="featured-product__title">
+                <a href="{{- product_url -}}#" class="js-featured-product__link">
+                  {%- render 'product-title', product: product -%}
+                </a>
+                {% render 'product-color', product: product, current_variant: current_variant, title_swatch: title_swatch, swatch_limit: true, collectionid: count, is_color: is_color %}
+                <p class="boost-pfs-filter-des">{{- product.content | strip_html | truncate: 110 -}}</p>
+              </h4>
+              <div class="featured-product__price-box">
+                {% assign price_values = '' %}
+                {% for variant in product.variants %}
+                  {% for option in product.options %}
+                    {% if option == 'color' or option == 'Color' %}
+                      {% assign option_index = forloop.index0 %}
+                    {% endif %}
+                  {% endfor %}
+
+                  {% assign value = variant.options[option_index] %}
+
+                  {% unless price_values contains value %}
+                    {% assign price_values = price_values | join: ',' | append: ',' | append: value | split: ',' %}
+                    <div
+                      data-variant-quantity="{{ variant.id }}"
+                      class="product-price featured-product__price js-featured-product__price {% unless forloop.first %} hide{% endunless %}"
+                      data-price-wrapper>
+
+                      <p class="boost-pfs-filter-product-item-price">
+                        {%- if variant.compare_at_price > variant.price -%}
+                          <s>{{ variant.compare_at_price | money }}</s>
+                          <span class="boost-pfs-filter-product-item-sale-price">{{ variant.price | money }}</span>
+
+                        {% else %}
+                          <span class="boost-pfs-filter-product-item-regular-price">{{- variant.price | money -}}</span>
+                        {%- endif -%}
+                      </p>
+                    </div>
+                  {% endunless %}
+                {% endfor %}
+                {% render 'product-sizes-count', product: product, current_variant: current_variant, title_swatch: title_swatch, swatch_limit: true, collectionid: count, is_color: is_color %}
+                {% for tag in product.tags %}
+                  {% if tag contains 'count:' %}
+                    <p class="boost-pfs-filter-product-item-set">
+                      {%- assign count = tag | remove: "count:" | append: " pillows" -%}
+                    </p>
+                  {% endif %}
+                {% endfor %}
+                {{ count }}
+
+                <div class="featured-product__reviews">
+                  {% render 'yotpo-reviews-product-rating-summary', product: product %}
+                </div>
+              </div>
+            </div>
+            {{- product_vendor -}}
+
+
+            {% if product.variants.size > 0 and is_color == true %}
+              {% unless product.has_only_default_variant %}
+                <div class="swatch-wrapper featured-product__wrapper">
+                  {% render 'product-cart-swatch', swatch: 'Color', product: product, current_variant: current_variant, title_swatch: title_swatch, swatch_limit: true, collectionid: count %}
+                </div>
+              {% endunless %}
+            {% endif %}
+
+            {%- if product_item_type == 'list' -%}
+              <p class="boost-pfs-filter-des">{{- product.content | strip_html | truncatewords: 40 -}}</p>
+            {%- endif -%}
+
+          </div>
+        </div>
+        <a href="{{- product_url -}}" class="set-carousel__btn">{{ 'products.product.shop_set' | t }}</a>
+      </div>
+    </div>
+  </div>
+{% else %}
+  {% assign floofism_bg = product.featured_image | img_url: 'master' %}
+  {% assign width_of_content = product.metafields.floofism.width %}
+  {% assign show_on_desktop = product.metafields.floofism.show_on_desktop %}
+  {% assign show_on_tablet = product.metafields.floofism.show_on_tablet %}
+  {% assign show_on_mobile = product.metafields.floofism.show_on_phone %}
+  {% assign show_border = product.metafields.floofism.show_border %}
+  <div data-id="floofism-{{- forloop.index -}}" class="count{{forloop.index0}} floofism column-{{- width_of_content }} boost-pfs-filter-product-item viewport-section {% if show_border %}show-border {% endif %}
+      		{% if show_on_desktop %} show-on-desktop{% endif %} 
+      		{% if show_on_tablet %} show-on-tablet{% endif %} 
+      		{% if show_on_mobile %} show-on-mobile{% endif %}">
+    <div style="{% if product.featured_image %} background-image: url({{ floofism_bg }})!important;{% endif %}" class="floofism__bg">
+      <div class="floofism__box">
+        <div class="floofism__indent">
+          {% assign product_description = product.description | strip_html | split: '--' %}
+          {% if product_description.size > 1 %}
+            <div class="floofism__sub-title">{{ product_description[0] }}</div>
+            <div class="floofism__title">{{ product_description[1] }}</div>
+          {% else %}
+            <div class="floofism__title">{{ product_description[0] }}</div>
+          {% endif %}
+          {% unless product.featured_image %}
+            <div class="floofism__svg">
+              <svg
+                width="80"
+                height="80"
+                viewBox="0 0 80 80"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M73.83 23.8937L73.9226 23.8079C76.2203 21.6729 77.5381 18.6526 77.5381 15.5219C77.5381 9.28581 72.465 4.21238 66.2287 4.21238C64.0174 4.21238 61.8734 4.85317 60.0287 6.06502L59.9095 6.14344L59.8324 6.02317C57.74 2.74607 54.175 0.78949 50.296 0.78949C44.0603 0.78949 38.9868 5.86291 38.9868 12.099C38.9868 13.0358 39.1029 13.9705 39.3316 14.8769L39.3555 14.9708L39.2763 15.0266C36.2621 17.1461 34.4626 20.6061 34.4626 24.2819C34.4626 27.1711 35.5545 29.9224 37.5371 32.029L37.7608 32.2666H14.8863L14.9039 32.1098C14.9326 31.8537 14.9468 31.6208 14.9468 31.3974C14.9468 27.9295 12.1253 25.1082 8.65762 25.1082C5.18972 25.1082 2.36841 27.9295 2.36841 31.3974C2.36841 34.8653 5.18972 37.6869 8.65762 37.6869C8.67788 37.6869 8.69815 37.6853 8.71788 37.6837C8.74051 37.6821 8.76314 37.6808 8.78604 37.6803L8.92972 37.6774V64.6166L8.87341 64.659C7.2842 65.8476 6.37315 67.6608 6.37315 69.6332C6.37315 72.2776 8.05499 74.6363 10.5584 75.5024L10.8518 75.604L10.5824 75.7579C9.43525 76.4145 8.70841 77.6442 8.66051 78.9921H16.0905C16.0458 77.6982 15.3874 76.53 14.3097 75.8469L14.0471 75.6805L14.3453 75.5927C16.9705 74.8198 18.8037 72.3692 18.8037 69.6332C18.8037 67.6603 17.8926 65.8476 16.3034 64.659L16.2471 64.6166V58.7237L16.4663 58.8703C18.3263 60.1121 20.4953 60.7687 22.7381 60.7687C23.2087 60.7687 23.7018 60.7358 24.2037 60.6708L24.3629 60.6505V64.6166L24.3063 64.659C22.7174 65.8476 21.806 67.6608 21.806 69.6332C21.806 72.3447 23.5408 74.7227 26.1229 75.5505L26.4176 75.6453L26.1529 75.8055C25.0521 76.4716 24.3537 77.6832 24.3068 78.9921H31.7366C31.6895 77.6832 30.991 76.4716 29.8903 75.8055L29.6252 75.6453L29.9203 75.5505C32.5024 74.7227 34.2371 72.3447 34.2371 69.6332C34.2371 67.6608 33.3258 65.8476 31.7368 64.659L31.6803 64.6166V59.2632L31.8892 59.3776C33.546 60.2876 35.4258 60.7687 37.325 60.7687C38.0979 60.7687 38.8724 60.6898 39.6266 60.5337L39.796 60.4987V64.6166L39.7397 64.659C38.1508 65.8476 37.2395 67.6603 37.2395 69.6332C37.2395 72.3447 38.9742 74.7227 41.5563 75.5505L41.851 75.6453L41.5863 75.8055C40.4853 76.4716 39.7868 77.6832 39.7397 78.9921H47.1695C47.1226 77.6829 46.4242 76.4713 45.3234 75.8055L45.0584 75.6453L45.3534 75.5505C47.9355 74.7227 49.6702 72.3447 49.6702 69.6332C49.6702 67.6608 48.7589 65.8476 47.1697 64.659L47.1134 64.6166V59.7019L47.3118 59.7903C48.7674 60.4398 50.3153 60.7687 51.9118 60.7687C52.9703 60.7687 54.0258 60.6192 55.0492 60.3242L55.2292 60.2724V64.6166L55.1729 64.659C53.5837 65.8476 52.6726 67.6608 52.6726 69.6332C52.6726 72.3447 54.4071 74.7227 56.9892 75.5505L57.2842 75.6453L57.0195 75.8055C55.9184 76.4713 55.2203 77.6829 55.1731 78.9921H62.6029C62.5558 77.6832 61.8574 76.4716 60.7563 75.8055L60.4913 75.6453L60.7866 75.5505C63.3687 74.7227 65.1031 72.3447 65.1031 69.6332C65.1031 67.6603 64.1918 65.8476 62.6029 64.659L62.5466 64.6166V56.7895L62.6192 56.7495C66.8166 54.4308 69.4239 50.0166 69.4239 45.2284C69.4239 43.9376 69.2353 42.6571 68.8629 41.4232L68.8252 41.2987L68.9463 41.2511C73.3071 39.5387 76.1247 35.4063 76.1247 30.7234C76.1247 28.2803 75.3574 25.9534 73.9053 23.995L73.83 23.8937Z"
+                  fill="#F6F4EE" />
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M57.2897 26.4774C58.9879 26.2714 60.4444 25.2896 61.2976 23.8951H60.7147H52.5392H51.9563C52.8271 25.318 54.3273 26.3072 56.07 26.4846C56.0729 26.6188 56.0752 26.718 56.0755 26.7348C56.0802 27.3935 56.0126 28.0601 55.5421 28.5627C54.9223 29.2248 53.9631 29.2467 53.1197 29.2451V30.4317C53.1197 30.4317 55.6039 30.7259 56.6452 28.943H56.6579C57.6523 30.6998 60.0892 30.5075 60.0892 30.5075L60.1344 29.3219C59.291 29.2919 58.3339 29.2338 57.7395 28.5488C57.2884 28.029 57.2463 27.3603 57.2763 26.7022C57.2768 26.6867 57.2826 26.5982 57.2897 26.4774Z"
+                  fill="black" />
+              </svg>
+            </div>
+          {%- endunless -%}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endunless %}

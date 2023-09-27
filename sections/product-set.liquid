@@ -1,0 +1,318 @@
+<div data-section-id="{{ section.id }}" data-section-type="product" data-enable-history-state="true" itemscope itemtype="http://schema.org/Product">
+
+  {%- assign current_variant = product.selected_or_first_available_variant -%}
+  {%- assign featured_image = current_variant.featured_image | default: product.featured_image -%}
+
+  {%- assign add_class = product.metafields.accentuate.select_content_type | handleize | remove: '1-' | remove: '2-' -%}
+
+  <meta itemprop="name" content="{{ product.title }}{% unless product.has_only_default_variant %} - {{ current_variant.title }}{% endunless %}">
+  <meta itemprop="url" content="{{ shop.url }}{{ current_variant.url }}">
+  <meta itemprop="brand" content="{{ product.vendor }}">
+  <meta itemprop="image" content="{{ featured_image | img_url: '600x600' }}">
+  <meta itemprop="description" content="{{ product.description | strip_html | escape }}">
+
+  <span class="js-current-variant-id hide"
+        data-current-variant-id="{{ current_variant.id }}"
+        data-current-variant-option1='{{ current_variant.option1 }}'
+        data-current-variant-option2='{{ current_variant.option2 }}'
+        data-current-variant-option3='{{ current_variant.option3 }}'
+  ></span>
+
+
+  <div class="product__holder viewport-section product__holder--set">
+    <div class="product__images--holder">
+      <div class="product__images">
+        {% include 'breadcrumbs' %}
+
+        {% if product.images.size == 0 %}
+          <div class="product-gallery__svg">
+            {{ 'product-1' | placeholder_svg_tag }}
+          </div>
+        {% endif %}
+
+        {% if product.images.size == 1 and featured_image != blank %}
+          <div class="product-gallery__image" style="background-image:url({{ featured_image | img_url: 'master' }})" data-product-featured-image>
+            {%- assign featured_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media -%}
+            <img src="{{ featured_media | img_url: product_image_size, scale: product_image_scale }}" alt="{{ featured_media.alt }}" id="FeaturedMedia-{{ section.id }}" class="product-featured-media visually-hidden">
+          </div>
+        {% endif %}
+
+        {% if product.media.size > 1 %}
+          <ul class="product__gallery js-product__gallery" data-product-slider>
+            {% for media in product.media %}
+              <div>{% render 'gallery-item', media: media, thumbnailAlt: media.preview_image.alt %}</div>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <div class="product__add-images medium-hide {{ add_class }}">
+        {% render 'additional_images-pdp' %}
+      </div>
+    </div>
+
+    <div class="product__info--holder">
+      <div class="product__info-wrapper">
+        <div class="product__info">
+          <div class="product__head">
+            <h1 class="product__title">{{ product.title }}</h1>
+
+            <div class="product__price" data-price-wrapper>
+              {%- if current_variant.compare_at_price > current_variant.price -%}
+                <span data-full-price="{{ current_variant.compare_at_price }}" data-sale-price="{{ current_variant.price }}" class="product__price-discount hide"></span>
+              {%- endif -%}
+
+              {%- if product.compare_at_price_max > product.price -%}
+                <span class="visually-hidden" data-compare-text>{{ 'products.product.regular_price' | t }}</span>
+                <s data-compare-price  {% if current_variant.compare_at_price == blank %} class="hide"{% endif %}>
+                  {%- if current_variant.compare_at_price > current_variant.price -%}
+                    {{ current_variant.compare_at_price | money }}
+                  {%- endif -%}
+                </s>
+              {%- endif -%}
+              <span data-product-price>{{ current_variant.price | money }}</span>
+            </div>
+          </div>
+
+          {%- assign count = 'Several pillows'  -%}
+          {%- assign has_notify = false  -%}
+          {% for tag in product.tags %}
+            {% if tag contains 'count:' %}
+              {%- assign count = tag | remove: "count:" | append: " pillows"  -%}
+            {% endif %}
+            {% if tag contains 'notify' %}
+              {%- assign has_notify = true  -%}
+            {% endif %}
+          {% endfor %}
+
+          {% if count %}
+            <span class="product__count">{{ count }}</span>
+          {% endif %}
+
+          {% for col in product.collections %}
+            {% assign collection_title = col.title | downcase %}
+            {% if collection_title contains '[variants]' %}
+              {% assign variant_group_handle = col.handle | remove:'variants-'%}
+            {% endif %}
+          {% endfor %}
+
+          {% assign swatches_col_handle = 'swatches-' | append:variant_group_handle %}
+          {% assign swatches_list = collections[swatches_col_handle] %}
+          {% if swatches_list.products.size > 0 and settings.enable_swatches_sample %}
+            <button type="button" class="swatch-opener swatch-opener--set js-swatch-opener" data-product="{{ product.id }}" >{{ 'products.product.request_swatch' | t }}</button>
+          {% endif %}
+
+          {% render 'yotpo-reviews-product-rating-summary', product: product %}
+
+          <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" style="clear:both;">
+            <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+            <meta itemprop="price" content="{{ current_variant.price | divided_by: 100.00 }}">
+            <link itemprop="availability" href="http://schema.org/{% if current_variant.available %}InStock{% else %}OutOfStock{% endif %}">
+
+            <form action="/cart/add" method="post" enctype="multipart/form-data" data-cart-submit="data-cart-submit">
+              {% unless product.has_only_default_variant %}
+
+                <div class="swatch-wrap">
+                  {% render 'swatch' for product.options as swatch %}
+                </div>
+
+                {% for option in product.options_with_values %}
+                  <div class="selector-wrapper js">
+                    <label for="SingleOptionSelector-{{ forloop.index0 }}">
+                      {{ option.name }}
+                    </label>
+
+                    <select
+                      id="SingleOptionSelector-{{ forloop.index0 }}"
+                      data-single-option-selector
+                      data-index="option{{ option.position }}">
+                      {% for value in option.values %}
+                        <option
+                          value="{{ value | escape }}"
+                          {% if option.selected_value == value %}selected="selected"{% endif %}>
+                          {{ value }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                {% endfor %}
+              {% endunless %}
+
+              <select name="id" class="no-js" data-product-select>
+                {% for variant in product.variants %}
+                  <option
+                    {% if variant == current_variant %}selected="selected"{% endif %}
+                    {% unless variant.available %}disabled="disabled"{% endunless %}
+                    value="{{ variant.id }}">
+                    {{ variant.title }}
+                  </option>
+                {% endfor %}
+              </select>
+
+              <div class="quantity-holder {% if has_notify %}has-tag-notify{% endif %}">
+                <div class="quantity-wrap" data-product-btn-wrap >
+                  <label class="visually-hidden" for="Quantity">{{ 'products.product.quantity' | t }}</label>
+                  <input type="number" id="Quantity" name="quantity" value="1" min="1"
+                    {% unless current_variant.inventory_management == null or current_variant.inventory_policy == 'continue' %}
+                      max="{{ current_variant.inventory_quantity }}"
+                    {% endunless %} class="product-qty-input">
+
+                  <button
+                    type="submit"
+                    name="add"
+                    class="product__btn"
+                    data-add-to-cart
+                    {% unless current_variant.available %}disabled="disabled"{% endunless %}>
+
+                    <em class="product__btn-price" data-price-wrapper>
+                      <span data-product-price>{{ current_variant.price | money }}</span> -
+                    </em>
+
+                    <span data-add-to-cart-text>
+                    {% if current_variant.available %}
+                      {{ 'products.product.add_to_cart' | t }}
+                    {% else %}
+                      {{ 'products.product.sold_out' | t }}
+                    {% endif %}
+                  </span>
+                  </button>
+
+
+                  <a class="btn klaviyo-bis-trigger hide" href="#" style="text-align: center; margin: 0px; width: auto;">Notify Me When Available</a>
+                </div>
+
+                <span class="product__shipping-info">{{ 'cart.minicart.shipping_at_checkout' | t }}</span>
+              </div>
+
+              <p class="hide">
+                <label for="your-name-count">{{ 'products.product.count_pillows' | t }}</label>
+                <input id="your-name-count" type="text" value="{{ count }}" name="properties[{{ 'products.product.count_pillows' | t }}]">
+              </p>
+
+              {% for variant in product.variants %}
+                <div class="property-set-product-list hide" {% if variant.id != current_variant.id %}style="display: none;" {% endif %} data-variant-id="{{ variant.id }}">
+                  {%- assign limit = variant.metafields.set.variant.size | minus: 1 -%}
+                  {%- assign forloop_count = 1 -%}
+                  {% for i in (0..limit) %}
+
+                    {%- assign product_handle = variant.metafields.set.variant[i] | split: ":" | first | remove: '["' | downcase -%}
+                    {%- assign variant_id = variant.metafields.set.variant[i] | split: ":" | last | remove: '"]' | downcase | plus: 0 -%}
+                    
+                    {% assign subproduct = all_products[product_handle] %}
+                    {% if subproduct %}
+                      {%- assign variant_coiunt = variant.metafields.set.quantity[i] | plus: 0 -%}
+
+                      {% for subvariant in subproduct.variants %}
+                        {%- if subvariant.id == variant_id -%}
+                          <p class="line-item-property__field">
+                            <label for="your-name-{{ variant_id }}">Product</label>
+                            <input id="your-name-{{ variant_id }}"
+                                  type="text"
+                                  value="{{ subproduct.title }} / {{ subvariant.title }} x {{ variant_coiunt }}"
+                                  name="properties[Item {{ forloop_count }}]" {% if variant.id != current_variant.id %} disabled {% endif %}>
+                          </p>
+                          {%- assign forloop_count = forloop_count | plus: 1 -%}
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                    
+                  {% endfor %}
+                </div>
+              {% endfor %}
+
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="product__add-images hide medium-visible {{ add_class }}">
+        {% render 'additional_images-pdp' %}
+      </div>
+
+      {% if product.description != blank  %}
+        <div class="product__description">
+          <div class="product__description-rte-wrapper">
+            {% if product.description != blank %}
+              <div class="rte viewport-section">
+                <h3>Why it works</h3>
+                {{ product.description }}
+              </div>
+            {% endif %}
+          </div>
+
+
+          {% for variant in product.variants %}
+            {%- assign limit = variant.metafields.set.variant.size | minus: 1 -%}
+            {%- assign flag_all_available = true -%}
+            {% if limit > -1 %}
+              <div class="set-product-list viewport-section {% if variant.id != current_variant.id %}hide{% endif %}" data-variant-id="{{ variant.id }}">
+                <h3 class="h5 set-product-list__heading">Meet the pillows</h3>
+                {% for i in (0..limit) %}
+                  {%- assign product_handle = variant.metafields.set.variant[i] | split: ":" | first | remove: '["' | downcase -%}
+                  {%- assign variant_id = variant.metafields.set.variant[i] | split: ":" | last | remove: '"]' | downcase | plus: 0 -%}
+
+                  {%- assign subproduct = all_products[product_handle] -%}
+
+                  <a href="{{ subproduct.url }}?variant={{ variant_id }}" class="set-product-list__item">
+
+                    {% for subvariant in subproduct.variants %}
+
+                      {%- if subvariant.id == variant_id -%}
+
+                        {% if subvariant.image != blank %}
+                          {%- assign img_url = subvariant.image | img_url: '128x128' , crop: 'center' -%}
+                        {% else %}
+                          {%- assign img_url = subproduct.featured_image | img_url: '128x128' , crop: 'center' -%}
+                        {% endif %}
+
+
+                        <img class="set-product-list__image" src="{{ img_url }}" alt="{{ subproduct.title }}">
+                        {%- assign variant_count = variant.metafields.set.quantity[i] | plus: 0 -%}
+
+                        <h4 class="set-product-list__title">{{ subproduct.title }} {% if variant_count > 1 %}<em>× {{ variant.metafields.set.quantity[i] }}</em>{% endif %}</h4>
+
+
+                        {%- assign last_item = subvariant.title | split: "/" | last -%}
+                        <span class="set-product-list__text"><em>{{ subvariant.title  | remove: last_item }}</em></span>
+
+                        {%- assign variant_limit = variant.metafields.set.quantity[i] | plus: 0 -%}
+
+                        {% if subvariant.available %}
+                          {% if subvariant.inventory_policy == 'deny' and subvariant.inventory_quantity <= variant_limit %}
+                            {%- assign flag_all_available = false -%}
+                          {% endif %}
+                        {% else %}
+                          {%- assign flag_all_available = false -%}
+                        {% endif %}
+
+                      {% endif %}
+                    {% endfor %}
+                  </a>
+
+                {% endfor %}
+
+                <span class="set-product-list__flag hide" data-set-available="{{ flag_all_available }}">{{ flag_all_available }}</span>
+              </div>
+            {% endif %}
+
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+
+  {% unless product == empty %}
+    <script type="application/json" data-product-json>{{ product | json }}</script>
+  {% endunless %}
+</div>
+
+{% schema %}
+{
+  "name": "Product pages",
+  "settings": [
+
+  ]
+}
+{% endschema %}

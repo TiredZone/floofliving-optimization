@@ -1,0 +1,19 @@
+{% if section.settings.form_id != blank %}
+  <div class="trade-form" id="trade-form">
+    <div style="margin:0 auto;" class="pxFormGenerator" id="{{ section.settings.form_id }}"></div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Trade page form",
+  "class": "viewport-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "form_id",
+      "label": "Form id"
+    }
+  ]
+}
+{% endschema %}

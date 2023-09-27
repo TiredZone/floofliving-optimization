@@ -1,0 +1,59 @@
+{% if section.blocks.size > 0 %}
+  <div class="brand-values">
+    <div class="page-width">
+      {% if section.settings.title != blank %}
+        <h2 class="brand-values__title h4 text-center viewport-section">{{ section.settings.title }}</h2>
+      {% endif %}
+
+      <div class="brand-values__blocks">
+        {% for block in section.blocks %}
+          <div class="brand-values__block viewport-section">
+            {{ block.settings.svg }}
+            {% if block.settings.title != blank %}
+              <h3 class="brand-values__heading">{{- block.settings.title -}}</h3>
+            {% endif %}
+            {{ block.settings.content }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+
+{% schema %}
+{
+  "name": "Brand Values",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content"
+        },
+        {
+          "type": "textarea",
+          "id": "svg",
+          "label": "Svg"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+

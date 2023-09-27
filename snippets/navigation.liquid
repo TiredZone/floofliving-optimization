@@ -1,0 +1,9 @@
+<nav class="navigation__holder" role="navigation">
+  <ul class="navigation">
+    {% for link in linklists[section.settings.main_linklist].links %}
+      <li class="navigation__item {% if menu_item == link.title %}js-has-drop{% endif %} {% if link.active %} navigation__item--active{% endif %}">
+        <a class="navigation__link" href="{{ link.url }}">{{ link.title | escape }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>

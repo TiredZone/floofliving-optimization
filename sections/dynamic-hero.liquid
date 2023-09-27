@@ -1,0 +1,130 @@
+<div {% if section.settings.image_animate or section.settings.image_animate_mobile %}class="first-visit-animate"{% endif %}>
+  <div class="hero">
+    {%- assign img_url = section.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+    {%- assign img_url_mobile = section.settings.image_mobile | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+
+
+    <div class="page-width">
+      <div class="hero__image-wrap-absolute" style="background-image: url('{{ section.settings.image_animate | img_url: 'master' }}')"></div>
+
+      <div class="hero__image-wrap-box">
+        <div  class="hero__image-wrap-static {% if section.settings.image_mobile != blank %}hero__image--has-mobile-image{% endif %}">
+
+          {%- assign mask_class = 'cloud-image-svg-mask' -%}
+
+          {% comment %}
+          <img class="hero__image hero__image--full lazyload {{ mask_class }}"
+              src="{{ section.settings.image | img_url: '50x50' }}"
+              data-src="{{ img_url }}"
+              data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+              data-aspectratio="{{ section.settings.image.aspect_ratio }}"
+              data-sizes="auto"
+              alt="{{ section.settings.title }}">
+          {% endcomment %}
+
+          <img class="hero__image hero__image--full lazyload {{ mask_class }}"
+              src="{{ section.settings.image }}"
+              srcset="
+                {{ section.settings.image | img_url: '360x' }} 180w, 
+                {{ section.settings.image | img_url: '720x' }} 360w, 
+                {{ section.settings.image | img_url: '1080x' }} 540w,
+                {{ section.settings.image | img_url: '1440x' }} 720w,
+                {{ section.settings.image | img_url: '1800x' }} 900w,
+                {{ section.settings.image | img_url: '2160x' }} 1080w,
+                {{ section.settings.image | img_url: '2592x' }} 1296w,
+                {{ section.settings.image | img_url: '3044x' }} 1512w,
+                {{ section.settings.image | img_url: '3456x' }} 1728w" 
+              alt="{{ section.settings.title }}">
+
+          {% if section.settings.image_mobile != blank %}
+            <img class="hero__image hero__image--mobile lazyload {{ mask_class }}"
+                src="{{ section.settings.image_mobile | img_url: '50x50' }}"
+                data-src="{{ img_url_mobile }}"
+                data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                data-aspectratio="{{ section.settings.image_mobile.aspect_ratio }}"
+                data-sizes="auto"
+                alt="{{ section.settings.title }}">
+          {% endif %}
+        </div>
+
+        <div class="hero__text">
+          {% if section.settings.title != blank %}
+            <h2 class="h1 hero__title">{{ section.settings.title }}</h2>
+          {% endif %}
+          <div class="hero__content">
+            {{ section.settings.text }}
+            {%- if section.settings.button_link != blank and section.settings.button_label != blank -%}
+              <a href="{{ section.settings.button_link }}" class="btn btn--arrow hero__btn">{{ section.settings.button_label }}</a>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if section.settings.image_animate_mobile != blank %}
+  <style>
+    @media only screen and (max-width: 767px) {
+      .hero__image-wrap-absolute {
+        background-image: url({{ section.settings.image_animate_mobile | img_url: 'master' }}) !important;
+      }
+    }
+  </style>
+{% endif %}
+
+
+{% schema %}
+{
+  "name": "Hero",
+  "class": "viewport-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Image for mobile"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_animate",
+      "label": "Image for animation"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_animate_mobile",
+      "label": "Image mobile for animation"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,206 @@
+<div class="custom-section">
+  <div class="container">
+    <div class="column smaller">
+      <span class="heading2"><div class="box smaller">{{ section.settings.section_title }}</span></div>
+    </div>
+    <div class="column">
+      <div class="box">
+        <span class="giant">&#8220;</span>
+        <p class="pr-quote">{{ section.settings.text-1 }}</p>
+        <span class="giant">&#8221;</span>
+        <a href="{{ section.settings.link-1 }}"><img class="pr-logo frst" src="{{ section.settings.svg-1 }}" /></a>
+      </div>
+    </div>
+    <div class="column">
+      <div class="box">
+        <span class="giant">&#8220;</span>
+        <p class="pr-quote">{{ section.settings.text-2 }}</p>
+        <span class="giant">&#8221;</span>
+        <a href="{{ section.settings.link-2 }}"><img class="pr-logo scnd" src="{{ section.settings.svg-2 }}" /></a>
+      </div>
+    </div>
+    <div class="column larger">
+      <div class="box">
+        <span class="giant">&#8220;</span>
+        <p class="pr-quote">{{ section.settings.text-3 }}</p>
+        <span class="giant">&#8221;</span>
+        <a href="{{ section.settings.link-3 }}"><img class="pr-logo thrd" src="{{ section.settings.svg-3 }}" /></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.custom-section {
+  margin: 15px;
+  background-color: #000;
+  padding: 20px;
+  margin: 0px;
+  width: 100%;
+}
+  
+span.heading2 {
+  font-family: Wulkan Display;
+  font-size: 32px!important;
+  line-height: 30px!important;
+  padding: 0px!important;
+  margin: 0px;
+  text-align:right;
+ }
+  
+.giant {
+  font-size: 40px;
+  font-family: Wulkan Display;
+  display: block;
+  height: 30px;
+  line-height: 30px;
+}
+
+.container {
+  background-color: black;
+  color: #f6f4ee;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap; /* Allow columns to wrap on smaller screens */
+}
+  
+@media (min-width: 1500px) {
+  .container {
+        min-width: 1440px!important;
+        width: 1440px!important;
+  }
+}
+  
+.column {
+  flex: 1;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25%!important;
+
+}
+
+.smaller {
+  flex: .8;
+}
+
+.larger {
+  flex: 1.2!important;
+}
+
+.box {
+  max-width: 100%;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  /* Apply styles for screens with a maximum width of 768px (adjust as needed) */
+  .column {
+    flex: 1 100%!important; /* Make columns take up full width on small screens */
+  }
+
+  .giant {
+  font-size: 20px;
+  font-family: Wulkan Display;
+  display: inline;
+  height: 30px;
+  line-height: 21px;
+}
+
+  p.pr-quote {
+    display: inline!important;
+  }
+}
+
+.pr-quote {
+  font-family: Haas Grot Text Web;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 21px;
+  margin-bottom: 20px;
+}
+
+.pr-logo {
+  height: 30px;
+  display: block;
+  margin: 20px auto;
+}
+  
+</style>
+
+
+{% schema %}
+{
+  "name": "Press section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Title",
+      "default": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "text-1",
+      "label": "First Column",
+      "default": "Body Copy"
+    },
+    {
+      "type": "text",
+      "id": "link-1",
+      "label": "First Article",
+      "default": "link to article"
+    },
+    {
+      "type": "text",
+      "id": "svg-1",
+      "label": "First logo",
+      "default": "link to svg"
+    },
+    {
+      "type": "textarea",
+      "id": "text-2",
+      "label": "Second Column",
+      "default": "Body Copy"
+    },
+    {
+      "type": "text",
+      "id": "link-2",
+      "label": "Second Article",
+      "default": "link to article"
+    },
+    {
+      "type": "text",
+      "id": "svg-2",
+      "label": "Second logo",
+      "default": "link to svg"
+    },
+    {
+      "type": "textarea",
+      "id": "text-3",
+      "label": "Third Column",
+      "default": "Body Copy"
+    },
+    {
+      "type": "text",
+      "id": "link-3",
+      "label": "Third Article",
+      "default": "link to article"
+    },
+    {
+      "type": "text",
+      "id": "svg-3",
+      "label": "Third logo",
+      "default": "link to svg"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Press section",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}

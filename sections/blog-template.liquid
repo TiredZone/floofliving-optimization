@@ -1,0 +1,136 @@
+{% paginate blog.articles by 9 %}
+
+{%- assign blog_title = blog.title -%}
+
+{% if current_tags %}
+  {% capture blog_title %}{{ blog.title | link_to: blog.url }}{% endcapture %}
+{% endif %}
+<div class="container">
+  <div class="container__wrapper viewport-section">
+    <h1 onclick="javascript:alert(document.querySelector('.article-item__image-wrap').offsetHeight);">{{ blog_title }}</h1>
+  </div>
+</div>
+  {% render 'dynamic-blog-hero' %}
+
+{% if blog.all_tags.size > 0 %}
+  <div class="page-width big-page">
+    <div class="blog__top">
+      <div class="blog-category__list-holder">
+        <ul class="blog-category__list js-blog-category">
+          <li class="blog-category__item {% if current_tags == blank %}active{% endif %}"><a href="{{ blog.url }}">All Articles</a></li>
+          {% for tag in blog.all_tags %}
+            {% if tag contains "category:" %}
+              {% if current_tags contains tag %}
+                <li class="blog-category__item  active"><span>{{ tag | remove: "category:" }}</span></li>
+              {% else %}
+                <li class="blog-category__item">{{ tag | remove: "category:" | link_to_tag: tag }}</li>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="blog-search">
+        <form action="/search">
+          <input class="blog-searchinput-js" type="text"
+            placeholder="Search Articles"
+            name="q"
+            value="{{ search.terms | escape }}"
+          />
+          <label for="">
+            <button class="blog-search__btn" type="submit">
+              <span class="visually-hidden">Submit</span>
+              {% render 'icon-search-blog' %}
+            </button>
+            <input type="submit" value />
+          </label>
+          <input type="hidden" name="type" value="article" />
+        </form>
+      </div>
+    </div>
+  </div>
+
+{% endif %}
+
+
+{% comment %}
+
+Article Previews
+====================
+{% endcomment %}
+
+
+
+{%- comment -%}
+Start experemental
+{%- endcomment -%}
+<div class="page-width with-pagination">
+  <div class="article-list blog-main {% if paginate.pages > 1 %}blog-main__pagination  {% else %} blog-main__no-pagination  {% endif %}">
+    {% for article in blog.articles %}
+      {% assign loop = forloop.index0 %}
+
+      {% render 'blog-main' article: article, loop: loop %}
+    {% endfor %}
+  </div>
+</div>
+
+{%- comment -%}
+End expeeremental
+{%- endcomment -%}
+{% if paginate.pages > 1 %}
+    {% render 'pagination' paginate: paginate %}
+{% endif %}
+{% endpaginate %}
+
+
+{% schema %}
+{
+  "name": "Blog",
+  "settings": [
+    {
+      "type": "article",
+      "id": "featured_article",
+      "label": "Featured article"
+    },
+    {
+      "type": "radio",
+      "id": "image_mask",
+      "label": "Image mask",
+      "options": [
+      {
+        "value": "none",
+        "label": "None"
+      },
+      {
+        "value": "rounded_square",
+        "label": "Rounded square"
+      },
+      {
+        "value": "flower",
+        "label": "Flower"
+      },
+      {
+        "value": "clover",
+        "label": "Clover"
+      },
+      {
+        "value": "cloud",
+        "label": "Cloud"
+      },
+      {
+        "value": "circle",
+        "label": "Circle"
+      },
+      {
+        "value": "vase",
+        "label": "Vase"
+      },
+      {
+        "value": "arc",
+        "label": "Arc"
+      }
+    ],
+    "default": "rounded_square"
+    }
+  ]
+}
+{% endschema %}

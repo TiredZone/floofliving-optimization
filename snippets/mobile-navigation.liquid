@@ -1,0 +1,163 @@
+<style>
+  @media(min-width: 768px){
+  .mobile_menu {
+  display: none!important;
+  }
+  }
+</style>
+<ul class="mobile_menu">
+  {% for link in linklists[section.settings.drop_linklist].links %}
+    <li class="mobile_menu__item">
+      {% if link.links != blank %}
+        <a class="mobile_menu__link" href="{{ link.url }}">{{ link.title | escape }}</a>
+        <ul class="submenu">
+          {% for childlink in link.links %}
+            <li class="inner-drop__item inner-drop__li-item">
+              {% if childlink.title contains 'view all' %}
+                <a class="btn btn--arrow" href="{{ childlink.url }}">{{ childlink.title }}</a>
+              {% else %}
+                {% if childlink.type contains 'product_link' %}
+                  {% if childlink.object.type == 'Set' %}
+                    {%- assign current_variant = childlink.object.selected_or_first_available_variant -%}
+                    {%- assign featured_image = childlink.object.featured_image -%}
+                    {%- assign has_new_tag = false -%}
+                    {% for tag in childlink.object.tags %}
+                      {% if tag == 'pfs:label-new' %}
+                        {%- assign has_new_tag = true -%}
+                      {% endif %}
+                    {% endfor %}
+                    {% include 'product-drop__item--set' %}
+                  {% else %}
+                    {%- assign current_variant = childlink.object.selected_or_first_available_variant -%}
+                    {%- assign has_new_tag = false -%}
+                    {% for variant in childlink.object.variants %}
+                      {% if variant.metafields.product.best_seller == 'true' %}
+                        {%- assign current_variant = variant -%}
+                      {% endif %}
+                    {% endfor %}
+                    {% for tag in childlink.object.tags %}
+                      {% if tag == 'pfs:label-new' %}
+                        {%- assign has_new_tag = true -%}
+                      {% endif %}
+                    {% endfor %}
+                    {% include 'product-drop__item' %}
+                  {% endif %}
+                {% elsif childlink.type contains 'collection_link' %}
+                  {% include 'collection-drop__item' %}
+                {% endif %}
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <a class="mobile_menu__link" href="{{ link.url }}">{{ link.title | escape }}</a>
+      {% endif %}
+    </li>
+  {% endfor %}
+
+  {% if section.settings.submenu_title != blank %}
+    <li class="mobile_menu__item">
+      <strong class="drop-navigation__title">{{ section.settings.submenu_title }}</strong>
+    </li>
+  {% endif %}
+
+  {% if shop.metafields.globals.pattern_name.size > 0 %}
+    <li class="mobile_menu__item">
+      <a class="mobile_menu__link" href="#">{{ 'general.menu.pattern' | t }}</a>
+      <ul class="submenu submenu--material">
+        {%- assign limit_pattern = shop.metafields.globals.pattern_name.size | minus: 1 -%}
+        {% for i in (0..limit_pattern) %}
+          <li class="inner-drop__item">
+            {%- assign metafields_pattern_name = shop.metafields.globals.pattern_name[i] | handleize -%}
+            {%- assign pattern_img = shop.metafields.globals.pattern_image[i] -%}
+            <a class="example-material__item" href="/collections/all/pattern:{{ metafields_pattern_name }}">
+              <img class="example-material__image" src="{{ pattern_img }}" alt="{{ metafields_pattern_name }}">
+              <strong class="example-material__title"
+                ><span>{{ metafields_pattern_name | replace: '-', ' ' }}</span></strong
+              >
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endif %}
+
+  {% if shop.metafields.globals.material_name.size > 0 %}
+    <li class="mobile_menu__item">
+      <a class="mobile_menu__link" href="#">{{ 'general.menu.material' | t }}</a>
+      <ul class="submenu submenu--material">
+        {%- assign limit_material = shop.metafields.globals.material_name.size | minus: 1 -%}
+        {% for i in (0..limit_material) %}
+          <li class="inner-drop__item">
+            {%- assign metafields_material_name = shop.metafields.globals.material_name[i] | handleize -%}
+            {%- assign material_img = shop.metafields.globals.material_image[i] -%}
+            <a class="example-material__item" href="/collections/all/material:{{ metafields_material_name }}">
+              <img class="example-material__image" src="{{ material_img }}" alt="{{ metafields_material_name }}">
+              <strong class="example-material__title"
+                ><span>{{ metafields_material_name | replace: '-', ' ' }}</span></strong
+              >
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endif %}
+
+  {% if shop.metafields.globals.color_name.size > 0 %}
+    <li class="mobile_menu__item">
+      <a class="mobile_menu__link" href="#">{{ 'general.menu.color' | t }}</a>
+      <ul class="submenu submenu--color">
+        {%- assign limit_color = shop.metafields.globals.color_name.size | minus: 1 -%}
+        {% for i in (0..limit_color) %}
+          <li class="inner-drop__item">
+            {%- assign metafields_color_name = shop.metafields.globals.color_name[i] | handleize -%}
+            {%- assign selected_color = shop.metafields.globals.color_hex[i] -%}
+            {%- assign metafields_color_image = shop.metafields.globals.color_image[i] -%}
+
+            <a class="example-material__item" href="/collections/all/color:{{ metafields_color_name }}">
+              {% if metafields_color_image != blank %}
+                <img class="example-color__image" src="{{ metafields_color_image }}" alt="{{ metafields_color_name }}">
+              {% else %}
+                <span
+                  class="color-example"
+                  data-color="{{ metafields_color_name }}"
+                  style="background-color:{{ selected_color }}"
+                ></span>
+              {% endif %}
+
+              <strong class="example-material__title"
+                ><span>{{ metafields_color_name | replace: '-', ' ' }}</span></strong
+              >
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endif %}
+
+  {% for link in linklists[section.settings.subdrop_linklist].links %}
+    <li class="mobile_menu__item">
+      {% if link.links != blank %}
+        <a class="mobile_menu__link" href="{{ link.url }}">{{ link.title | escape }}</a>
+        <ul class="submenu {% if link.title == 'Color' %}submenu--color{% else %}submenu--material{% endif %}">
+          {% for childlink in link.links %}
+            <li class="inner-drop__item">
+              {% include 'example-material__item' %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <a class="mobile_menu__link" href="{{ link.url }}">{{ link.title | escape }}</a>
+      {% endif %}
+    </li>
+  {% endfor %}
+
+  <li class="mobile_menu__item mobile_menu__item--empty">&nbsp;</li>
+  {% for link in linklists[section.settings.main_linklist].links %}
+    {% if link.title != section.settings.menu_item %}
+      <li class="mobile_menu__item">
+        <a class="mobile_menu__link" href="{{ link.url }}">{{ link.title | escape }}</a>
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>

@@ -1,0 +1,5 @@
+{%- if product.title contains settings.variant_separator -%}
+    {{- product.title | split:settings.variant_separator | first | strip  -}}
+{%- else -%}
+    {{- product.title -}}
+{%- endif -%}

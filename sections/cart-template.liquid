@@ -1,0 +1,81 @@
+<div class="page-width page-width--cart">
+  <h1 class="cart__title text-center">{{ 'cart.general.title' | t }}</h1>
+
+  <div {% if cart.item_count == 0 %}class="hide"{% endif %} data-full-cart-content>
+    <form action="{{ routes.cart_url }}" method="post" novalidate>
+      <table class="cart-table">
+        <thead class="hidden-phone">
+          <tr>
+            <th class="cart-table__th product--th" colspan="2">{{ 'cart.label.product' | t }}</th>
+            <th class="cart-table__th price--th">{{ 'cart.label.price' | t }}</th>
+            <th class="cart-table__th quantity--th text-center">{{ 'cart.label.quantity' | t }}</th>
+            <th class="cart-table__th text-right total--th">{{ 'cart.label.total' | t }}</th>
+          </tr>
+        </thead>
+        <tbody data-cart-view>
+          {% render 'cart-item-ajax', item: item %}
+        </tbody>
+      </table>
+
+      <div class="cart__footer">
+        {%- if section.settings.cart_notes_enable -%}
+          <div class="cart__footer-textarea">
+            <label class="cart__note-label"
+                   for="CartSpecialInstructions">{{ 'cart.general.note' | t }}</label>
+            <textarea
+              name="note"
+              id="CartSpecialInstructions"
+              class="textarea"
+            >{{ cart.note }}</textarea>
+          </div>
+        {%- endif -%}
+
+        <div class="cart__info">
+            <div class="cart__info-row">
+              <span class="cart__subtotal-title">{{ 'cart.general.subtotal' | t }}</span>
+              <span class="cart__subtotal-price"
+                    data-cart-total>{{ cart.total_price | money }}</span>
+            </div>
+
+
+            <div class="cart__info-row">
+              <span class="cart__shipping-title">{{ 'cart.general.shipping_at_checkout' | t }}</span>
+            </div>
+            
+        <a href="/checkout" class="btn mini-cart__footer-button checkout-btn">{{ 'cart.minicart.checkout_link' | t }}</a>
+          </div>
+      </div>
+    </form>
+  </div>
+  <div  {% if cart.item_count > 0 %}class="hide"{% endif %} data-empty-cart-content>
+    {% comment %}
+      Cart empty state
+    {% endcomment %}
+    <div class="cart__empty text-center">
+      <p>{{ 'cart.general.empty' | t }}</p>
+      <a class="btn cart__empty-btn"
+         href="{{ routes.collections_url }}"><span>{{ 'cart.general.continue' | t }}</span></a>
+    </div>
+  </div>
+
+
+  <!--PERZONALIZATION-START Do not modify or delete this comment--><div id="perzonalization" class="perzonalization"></div><script type='text/javascript'>var productDetailsForPrz = {{ product | json }};var basketDetailsForPrz = {{ cart | json }};var filterDetailsForPrz = {{ collection | json }};var detailsForPrz = { userId: '{{ customer.id }}', language: '{{ shop.locale }}', currency:'{{ shop.currency }}' };var searchDetailsForPrz = {{ search.results | json }};if(productDetailsForPrz) { productDetailsForPrz.collections = []; }{% for collection in product.collections %}   if(productDetailsForPrz) { productDetailsForPrz.collections.push("{{ collection.title }}") }{% endfor %}if (filterDetailsForPrz) { filterDetailsForPrz.products = []; }{% for product in collection.products %}   if(filterDetailsForPrz) { filterDetailsForPrz.products.push({ id:"{{ product.id }}", handle:"{{ product.handle }}" }) }{% endfor %}</script><!--Do not modify or delete this comment PERZONALIZATION-END-->
+</div>
+
+
+{% schema %}
+{
+  "name":
+  "Cart page",
+  "settings":
+  [
+    {
+      "type": "checkbox",
+      "id": "cart_notes_enable",
+      "label": "Enable cart notes",
+      "default": false
+    }
+  ]
+}
+
+{% endschema %}

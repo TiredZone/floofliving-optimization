@@ -1,0 +1,106 @@
+{% case section.settings.text_mask %}
+  {% when 'rounded_square' %}
+    {%- assign text_mask_class = 'square-text-svg-mask' -%}
+  {% when 'vase' %}
+    {%- assign text_mask_class = 'vase-text-svg-mask-big' -%}
+  {% when 'arc' %}
+    {%- assign text_mask_class = 'arc-text-svg-mask-big' -%}
+  {% when 'circle' %}
+    {%- assign text_mask_class = 'circle-text-svg-mask-big' -%}
+  {% when 'cloud' %}
+    {%- assign text_mask_class = 'cloud-text-svg-mask-big-long' -%}
+  {% when 'clover' %}
+    {%- assign text_mask_class = 'clover-text-svg-mask' -%}
+  {% when 'flower' %}
+    {%- assign text_mask_class = 'flower-text-svg-mask-big' -%}
+{% endcase %}
+
+<div class="careers-info">
+  <div class="page-width">
+    <div class="careers-info__images">
+      {% if section.settings.image != blank %}
+        <div class="careers-info__image lazyload"
+             data-bgset="{{ section.settings.image | img_url: 'master' }}" data-sizes="auto" ></div>
+      {% endif %}
+      {% if section.settings.image_second != blank %}
+        <div class="careers-info__image lazyload"
+             data-bgset="{{ section.settings.image_second | img_url: 'master' }}" data-sizes="auto" ></div>
+      {% endif %}
+    </div>
+    <div class="careers-info__text">
+      {% if section.settings.text != blank %}
+        <div class="careers-info__text-wrap {{ text_mask_class }}">
+          <div class="careers-info__text-holder">
+            {% if section.settings.title != blank %}
+              <h2 class="careers-info__title">{{ section.settings.title }}</h2>
+            {% endif %}
+            {{ section.settings.text }}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+{% schema %}
+{
+  "name": "Careers page information",
+  "class": "viewport-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_second",
+      "label": "Image"
+    },
+    {
+      "type": "radio",
+      "id": "text_mask",
+      "label": "Text mask",
+      "options": [
+        {
+          "value": "rounded_square",
+          "label": "Rounded square"
+        },
+        {
+          "value": "flower",
+          "label": "Flower"
+        },
+        {
+          "value": "cloud",
+          "label": "Cloud"
+        },
+        {
+          "value": "circle",
+          "label": "Circle"
+        },
+        {
+          "value": "vase",
+          "label": "Vase"
+        },
+        {
+          "value": "arc",
+          "label": "Arc"
+        }
+      ],
+      "default": "rounded_square"
+    }
+  ]
+}
+{% endschema %}
+

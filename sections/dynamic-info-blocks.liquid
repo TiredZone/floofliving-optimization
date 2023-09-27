@@ -1,0 +1,275 @@
+<div class="info-blocks__section page-width">
+  {% if section.settings.title != blank %}
+    <h2 class="h1 info-blocks__title viewport-section">{{ section.settings.title }}</h2>
+  {% endif %}
+
+  {% if section.blocks.size > 0 %}
+    <div class="info-blocks info-blocks__wrapper">
+      {% for block in section.blocks %}
+        {%- assign img_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+        {%- assign mask_class = 'none-image-svg-mask' -%}
+
+        {% case block.settings.image_mask %}
+          {% when 'rounded_square' %}
+            {%- assign mask_class = 'square-image-svg-mask' -%}
+          {% when 'vase' %}
+            {%- assign mask_class = 'vase-image-svg-mask' -%}
+          {% when 'arc' %}
+            {%- assign mask_class = 'arc-image-svg-mask' -%}
+          {% when 'circle' %}
+            {%- assign mask_class = 'circle-image-svg-mask' -%}
+          {% when 'cloud' %}
+            {%- assign mask_class = 'cloud-image-svg-mask' -%}
+          {% when 'clover' %}
+            {%- assign mask_class = 'clover-image-svg-mask' -%}
+          {% when 'flower' %}
+            {%- assign mask_class = 'flower-image-svg-mask' -%}
+        {% endcase %}
+
+        {% case block.settings.text_mask %}
+          {% when 'rounded_square' %}
+            {%- assign text_mask_class = 'square-text-svg-mask' -%}
+          {% when 'vase' %}
+            {%- assign text_mask_class = 'vase-text-svg-mask' -%}
+          {% when 'arc' %}
+            {%- assign text_mask_class = 'arc-text-svg-mask' -%}
+          {% when 'circle' %}
+            {%- assign text_mask_class = 'circle-text-svg-mask' -%}
+          {% when 'cloud' %}
+            {%- assign text_mask_class = 'cloud-text-svg-mask' -%}
+          {% when 'clover' %}
+            {%- assign text_mask_class = 'clover-text-svg-mask' -%}
+          {% when 'flower' %}
+            {%- assign text_mask_class = 'flower-text-svg-mask' -%}
+        {% endcase %}
+
+        {%- assign mask_class_add = '' -%}
+        {% if block.settings.text_color == 'white' %}
+          {%- assign mask_class_add = '--black' -%}
+        {% endif %}
+
+        {% if block.settings.video_id != blank or block.settings.image != blank %}
+          <div class="info-block viewport-section info-block-{{ block.settings.image_mask }}">
+            <div class="info-block__holder">
+              {% if block.settings.video_id != blank %}
+                <div class="{{ mask_class }}" data-video='{"type": "html5", "video": "{{ block.settings.video_id }}", "autoplay": true}'></div>
+              {% else %}
+                <img class="info-block__image lazyload {{ mask_class }}"
+                   src="{{ block.settings.image | img_url: '50x50' }}"
+                   data-src="{{ img_url }}"
+                   data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                   data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                   data-sizes="auto"
+                   alt="{{ block.settings.image.alt | escape }}">
+              {% endif %}
+              {% if block.settings.text != blank %}
+                <div class="info-block__text {{ text_mask_class }} {{ text_mask_class }}{{ mask_class_add }} {{ block.settings.text_position }} {{ block.settings.text_color }}">
+                  <span>{{ block.settings.text }}</span>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="rellax feather desktop-only feather-decor" data-rellax-speed="3" data-rellax-percentage="0.5">
+    <img class="lazyload"
+         src="{{ 'feather-mini.png' | asset_url }}"
+         data-src="{{ 'feather.png' | asset_url }}"
+         data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+         data-aspectratio="{{ article.image.aspect_ratio }}"
+         data-sizes="auto"
+         alt="feather">
+  </div>
+  <div class="rellax feather-2 feather-decor" data-rellax-speed="5" data-rellax-percentage="0.4">
+    <img class="lazyload"
+         src="{{ 'feather-mini.png' | asset_url }}"
+         data-src="{{ 'feather-2.png' | asset_url }}"
+         data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+         data-aspectratio="{{ article.image.aspect_ratio }}"
+         data-sizes="auto"
+         alt="feather">
+  </div>
+  <div class="rellax feather-3 desktop-only feather-decor" data-rellax-speed="2" data-rellax-percentage="0.6">
+    <img class="lazyload"
+         src="{{ 'feather-mini.png' | asset_url }}"
+         data-src="{{ 'feather-3.png' | asset_url }}"
+         data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+         data-aspectratio="{{ article.image.aspect_ratio }}"
+         data-sizes="auto"
+         alt="feather">
+  </div>
+  <div class="rellax feather-4 mobile-only feather-decor" data-rellax-speed="2" data-rellax-percentage="0.6">
+    <img class="lazyload"
+         src="{{ 'feather-mini.png' | asset_url }}"
+         data-src="{{ 'feather-4.png' | asset_url }}"
+         data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+         data-aspectratio="{{ article.image.aspect_ratio }}"
+         data-sizes="auto"
+         alt="feather">
+  </div>
+  <div class="rellax feather-5 mobile-only feather-decor" data-rellax-speed="3" data-rellax-percentage="0.4">
+    <img class="lazyload"
+         src="{{ 'feather-mini.png' | asset_url }}"
+         data-src="{{ 'feather-5.png' | asset_url }}"
+         data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+         data-aspectratio="{{ article.image.aspect_ratio }}"
+         data-sizes="auto"
+         alt="feather">
+  </div>
+</div>
+
+
+{% schema %}
+{
+  "name": "Text blocks",
+  "class": "info-blocks__section-wrap",
+  "max_blocks": 5,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "block",
+      "name": "Block",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "radio",
+          "id": "image_mask",
+          "label": "Image mask",
+          "options": [
+            {
+              "value": "rounded_square",
+              "label": "Rounded square"
+            },
+            {
+              "value": "flower",
+              "label": "Flower"
+            },
+            {
+              "value": "clover",
+              "label": "Clover"
+            },
+            {
+              "value": "cloud",
+              "label": "Cloud"
+            },
+            {
+              "value": "circle",
+              "label": "Circle"
+            },
+            {
+              "value": "vase",
+              "label": "Vase"
+            },
+            {
+              "value": "arc",
+              "label": "Arc"
+            }
+          ],
+          "default": "rounded_square"
+        },
+        {
+          "id": "text",
+          "label": "Text",
+          "type": "text"
+        },
+        {
+          "type": "radio",
+          "id": "text_mask",
+          "label": "Text mask",
+          "options": [
+            {
+              "value": "rounded_square",
+              "label": "Rounded square"
+            },
+            {
+              "value": "flower",
+              "label": "Flower"
+            },
+            {
+              "value": "cloud",
+              "label": "Cloud"
+            },
+            {
+              "value": "circle",
+              "label": "Circle"
+            },
+            {
+              "value": "vase",
+              "label": "Vase"
+            },
+            {
+              "value": "arc",
+              "label": "Arc"
+            }
+          ],
+          "default": "rounded_square"
+        },
+        {
+          "type": "radio",
+          "id": "text_position",
+          "label": "Text position",
+          "options": [
+            {
+              "value": "top_left",
+              "label": "Top Left"
+            },
+            {
+              "value": "top_right",
+              "label": "Top Right"
+            },
+            {
+              "value": "bottom_left",
+              "label": "Bottom Left"
+            },
+            {
+              "value": "bottom_right",
+              "label": "Bottom Right"
+            }
+          ],
+          "default": "top_right"
+        },
+        {
+        "type": "radio",
+        "id": "text_color",
+        "label": "Text color",
+          "options": [
+            {
+            "value": "white",
+            "label": "White"
+            },
+            {
+            "value": "black",
+            "label": "Black"
+            }
+          ],
+          "default": "black"
+        },
+        {
+          "id": "video_id",
+          "label": "Video url",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Text blocks",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}

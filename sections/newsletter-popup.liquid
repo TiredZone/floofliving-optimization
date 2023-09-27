@@ -1,0 +1,187 @@
+{% if section.settings.enable %}
+
+  {% assign form_has_erros = false %}
+  {% form 'customer', novalidate: 'novalidate', class: 'hide' %}
+    {%- if form.errors -%}
+      {% assign form_has_erros = true %}
+    {%- endif -%}
+  {% endform %}
+
+  {% if section.settings.homepage_only == false or section.settings.homepage_only == true and template contains 'index' %}
+    <div class="newsletter-popup js-newsletter_popup" data-delay="{% if form_has_erros %}10{% else %}{{ section.settings.delay | times: 1000 }}{% endif %}">
+      <div class="newsletter-popup-inner">
+        <button class="js-newsletter_close newsletter-popup__close-btn">
+          <span class="visually-hidden">{{ 'general.accessibility.close' | t }}</span>
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 24.9706L24.9706 8.00002" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8 8L24.9706 24.9706" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+
+        <div class="newsletter-popup__image" style="background-image: url({{ section.settings.picture | img_url: 'master' }})"></div>
+
+        <div class="newsletter-popup-content">
+          <div class="newsletter-popup__wrap cloud-text-svg-mask-big-long">
+            <div class="newsletter-popup__frame">
+              {% form 'customer', id: 'newsletter-popup_control', novalidate: 'novalidate', class: 'js-newsletter-popup__form form-validation general-form js-validation'  %}
+                <input type="hidden" name="contact[tags]" value="newsletter">
+
+                <p class="newsletter-popup--success {%- if form.posted_successfully? -%}newsletter-popup--success--active{%- endif -%}" tabindex="-1" data-form-status>
+                  {{ 'general.newsletter_form.confirmation' | t }}
+                </p>
+
+                {% if section.settings.title != blank %}
+                  <h3 class="newsletter-popup__title">{{ section.settings.title }}</h3>
+                {% endif %}
+
+                <div class="newsletter-popup__row">
+                  <label for="newsletter-popup__email" class="visually-hidden newsletter-popup__label">{{ 'general.newsletter_form.newsletter_email' | t }}</label>
+                  <input type="email" name="contact[email]"
+                         id="newsletter-popup__email"
+                         class="newsletter-popup__input{% if form.errors %} input--error{% endif %}"
+                         placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}"
+                         value = "{{ form.email }}"
+                         aria-label="{{ 'general.newsletter_form.email_placeholder' | t }}"
+                         aria-required="true"
+                         required
+                         data-required="true"
+                         data-interactive="true"
+                         autocapitalize="off">
+                  <p class="error-message">{{ 'general.newsletter_form.newsletter_email_error' | t }}</p>
+                  <button type="submit" class="btn newsletter-popup__btn">
+                    <span class="visually-hidden">{{ section.settings.submit_btn_text }}</span>
+
+                    <svg width="38" height="20" viewBox="0 0 38 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <g filter="url(#filter0_d)">
+                        <path d="M28.3765 1.5L33.0005 6.124L28.3765 10.747" stroke="black" stroke-width="1.2" stroke-linecap="round"/>
+                        <path d="M33 6.12354H5" stroke="black" stroke-width="1.2" stroke-linecap="round"/>
+                      </g>
+                      <defs>
+                        <filter id="filter0_d" x="-1" y="0" width="40" height="20" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                          <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                          <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                          <feOffset dy="4"/>
+                          <feGaussianBlur stdDeviation="2"/>
+                          <feComposite in2="hardAlpha" operator="out"/>
+                          <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+                          <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
+                          <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+                        </filter>
+                      </defs>
+                    </svg>
+                  </button>
+
+                </div>
+              {% endform %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endif %}
+
+{% schema %}
+{
+  "name": "Newsletter Popup",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable",
+      "label": "Enable Popup"
+    },
+    {
+      "type": "range",
+      "id": "delay",
+      "label": "Appearance Delay",
+      "info": "seconds",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "homepage_only",
+      "label": "Show only on the homepage"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Newsletter Title"
+    },
+    {
+      "type": "image_picker",
+      "id": "picture",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "submit_btn_text",
+      "label": "Submit Button Text",
+      "default": "Submit"
+    }
+  ]
+}
+{% endschema %}
+
+
+{% javascript %}
+;(function() {
+  const popup = jQuery('.js-newsletter_popup');
+  const openedClass = 'opened';
+  const bodyOpenedClass = 'newsletter-popup-opened';
+  const control = jQuery('.js-newsletter-popup__form');
+  const closeBtn = popup.find('.js-newsletter_close');
+  const body = jQuery('body');
+
+  closeBtn.on('click touchend', function(e) {
+  e.preventDefault();
+  if (jQuery(this).hasClass('newsletter-popup__close')) {
+  jQuery.cookie('newsletter_popup_disabled', '1');
+  }
+  hidePopup();
+  });
+
+  if (jQuery.cookie('newsletter_popup_disabled') !== '1') {
+  setTimeout(function() {
+  if (popup.length) {
+  showPopup();
+
+  controlCookie();
+
+  jQuery(document).on('click',function (e) {
+  if(popup.hasClass(openedClass)) {
+  if (!jQuery(e.target).closest(popup).length) {
+  hidePopup();
+  }
+  }
+  });
+  }
+  }, popup.data('delay'));
+  }
+
+  function showPopup() {
+  popup.addClass(openedClass);
+  body.addClass(bodyOpenedClass);
+  }
+
+  function hidePopup() {
+  popup.removeClass(openedClass);
+  body.removeClass(bodyOpenedClass);
+  }
+
+  function controlCookie() {
+  control.on('submit', function() {
+  jQuery.cookie('newsletter_popup_disabled', '1');
+  });
+  }
+
+
+  jQuery('.js-validation').formValidation({
+  errorClass: 'newsletter-popup__error',
+  addClassToParent: '.newsletter-popup__row'
+  });
+}());
+{% endjavascript %}

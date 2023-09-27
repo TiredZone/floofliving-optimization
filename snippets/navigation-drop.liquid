@@ -1,0 +1,186 @@
+<div class="drop-navigation-wrap">
+    <div class="drop-navigation-wrap__content">
+  <button class="drop-navigation__close js-has-drop">
+    <span class="visually-hidden">{{ 'general.accessibility.close_menu' | t }}</span>
+    <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M1 17.9707L17.9706 1.00014" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M1 1L17.9706 17.9706" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  {% if section.settings.drop_linklist != blank %}
+    <ul class="drop-navigation">
+      {% for link in linklists[section.settings.drop_linklist].links %}
+        <li class="drop-navigation__item">
+          {% if link.links != blank %}
+            <a class="drop-navigation__link js-drop-navigation__link" href="{{ link.url }}">{{ link.title | escape }}</a>
+            <div class="navigation__inner-frame">
+              <ul class="navigation__inner-drop">
+                <li><button class="drop-navigation__close js-has-drop">
+                    <span class="visually-hidden">{{ 'general.accessibility.close_menu' | t }}</span>
+                    <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 17.9707L17.9706 1.00014" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+                      <path d="M1 1L17.9706 17.9706" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                  </button></li>
+
+                {% for childlink in link.links %}
+                  <li class="inner-drop__item">
+                    {% if childlink.title contains 'view all' %}
+                      <a class="btn btn--arrow" href="{{ childlink.url }}">{{ childlink.title }}</a>
+                    {% else %}
+                      {% if childlink.type contains 'product_link' %}
+                        {% if childlink.object.type == 'Set' %}
+                          {%- assign current_variant = childlink.object.selected_or_first_available_variant -%}
+                          {%- assign featured_image = childlink.object.featured_image -%}
+                          {%- assign has_new_tag = false -%}
+                          {% for tag in childlink.object.tags %}
+                            {% if tag == 'pfs:label-new' %}
+                              {%- assign has_new_tag = true -%}
+                            {% endif %}
+                          {% endfor %}
+                          {% include 'product-drop__item--set',featured_image:featured_image %}
+                        {% else %}
+                          {%- assign current_variant = childlink.object.selected_or_first_available_variant -%}
+                          {%- assign has_new_tag = false -%}
+                          {% for variant in childlink.object.variants %}
+                            {% if variant.metafields.product.best_seller == 'true' %}
+                              {%- assign current_variant = variant -%}
+                            {% endif %}
+                          {% endfor %}
+                          {% for tag in childlink.object.tags %}
+                            {% if tag == 'pfs:label-new' %}
+                              {%- assign has_new_tag = true -%}
+                            {% endif %}
+                          {% endfor %}
+                          {% include 'product-drop__item' %}
+                        {% endif %}
+                      {% elsif childlink.type contains 'collection_link' %}
+                        {% include 'collection-drop__item' %}
+                      {% endif %}
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+           {% else %}
+            <a class="drop-navigation__link" href="{{ link.url }}">{{ link.title | escape }}</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if section.settings.submenu_title != blank %}
+    <strong class="drop-navigation__title">{{ section.settings.submenu_title }}</strong>
+  {% endif %}
+
+  {% if shop.metafields.globals.pattern_name.size > 0 or  shop.metafields.globals.material_name.size > 0 or shop.metafields.globals.color_name.size > 0 %}
+    <ul class="drop-navigation subdrop-navigation">
+
+      {% if shop.metafields.globals.pattern_name.size > 0 %}
+        <li class="drop-navigation__item">
+          <a class="drop-navigation__link  js-drop-navigation__link" href="#">{{ 'general.menu.pattern' | t }}</a>
+          <div class="navigation__inner-frame">
+            <ul class="navigation__inner-drop navigation--material">
+              <li><button class="drop-navigation__close js-has-drop">
+                  <span class="visually-hidden">{{ 'general.accessibility.close_menu' | t }}</span>
+                  <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 17.9707L17.9706 1.00014" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M1 1L17.9706 17.9706" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </button></li>
+              {%- assign limit_pattern = shop.metafields.globals.pattern_name.size | minus: 1 -%}
+              {% for i in (0..limit_pattern) %}
+                <li class="inner-drop__item">
+                  {%- assign metafields_pattern_name = shop.metafields.globals.pattern_name[i] | handleize -%}
+                  {%- assign pattern_img = shop.metafields.globals.pattern_image[i] -%}
+                  <a class="example-material__item" href="/collections/all/pattern:{{ metafields_pattern_name }}">
+                    <img class="example-material__image" src="{{ pattern_img }}" alt="{{ metafields_pattern_name }}">
+                    <strong class="example-material__title"><span>{{ metafields_pattern_name | replace: '-', ' '  }}</span></strong>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </li>
+      {% endif %}
+
+      {% if shop.metafields.globals.material_name.size > 0 %}
+        <li class="drop-navigation__item">
+          <a class="drop-navigation__link  js-drop-navigation__link" href="#">{{ 'general.menu.material' | t }}</a>
+          <div class="navigation__inner-frame">
+            <ul class="navigation__inner-drop navigation--material">
+              <li><button class="drop-navigation__close js-has-drop">
+                  <span class="visually-hidden">{{ 'general.accessibility.close_menu' | t }}</span>
+                  <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 17.9707L17.9706 1.00014" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M1 1L17.9706 17.9706" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </button></li>
+              {%- assign limit_material = shop.metafields.globals.material_name.size | minus: 1 -%}
+              {% for i in (0..limit_material) %}
+                <li class="inner-drop__item">
+                  {%- assign metafields_material_name = shop.metafields.globals.material_name[i] | handleize -%}
+                  {%- assign material_img = shop.metafields.globals.material_image[i] -%}
+                  <a class="example-material__item" href="/collections/all/material:{{ metafields_material_name }}">
+                    <img class="example-material__image" src="{{ material_img }}" alt="{{ metafields_material_name }}">
+                    <strong class="example-material__title"><span>{{ metafields_material_name | replace: '-', ' '  }}</span></strong>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </li>
+      {% endif %}
+
+      {% if shop.metafields.globals.color_name.size > 0 %}
+        <li class="drop-navigation__item">
+          <a class="drop-navigation__link  js-drop-navigation__link" href="#">{{ 'general.menu.color' | t }}</a>
+          <div class="navigation__inner-frame">
+            <ul class="navigation__inner-drop navigation--color">
+              <li><button class="drop-navigation__close js-has-drop">
+                  <span class="visually-hidden">{{ 'general.accessibility.close_menu' | t }}</span>
+                  <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 17.9707L17.9706 1.00014" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M1 1L17.9706 17.9706" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </button></li>
+              {%- assign limit_color = shop.metafields.globals.color_name.size | minus: 1 -%}
+              {% for i in (0..limit_color) %}
+                <li class="inner-drop__item">
+                  {%- assign metafields_color_name = shop.metafields.globals.color_name[i] | url_escape -%}
+                  {%- assign selected_color = shop.metafields.globals.color_hex[i] -%}
+                  {%- assign metafields_color_image = shop.metafields.globals.color_image[i] -%}
+
+                  <a class="example-material__item abc" href="/collections/all/color:{{ metafields_color_name }}">
+                    {% if metafields_color_image != blank %}
+                      <img class="example-color__image" src="{{ metafields_color_image }}" alt="{{ metafields_color_name }}">
+                    {% else %}
+                      <span class="color-example" data-color="{{ metafields_color_name }}" style="background-color:{{ selected_color }}"></span>
+                    {% endif %}
+                    <strong class="example-material__title"><span>{{ metafields_color_name | replace: '-', ' '  }}</span></strong>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </li>
+      {% endif %}
+    </ul>
+  {% endif %}
+
+
+  {% if section.settings.main_linklist != blank %}
+    <ul class="drop-navigation mobile-only">
+      {% for link in linklists[section.settings.main_linklist].links %}
+        {% if link.title != section.settings.menu_item %}
+          <li class="drop-navigation__item">
+            <a class="drop-navigation__link" href="{{ link.url }}">{{ link.title | escape }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
+</div>

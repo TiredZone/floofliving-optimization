@@ -1,0 +1,139 @@
+{% comment %}
+  Set the extension of your color files below. Use 'png', 'jpeg', 'jpg' or 'gif'.
+{% endcomment %}
+
+{% assign file_extension = 'png' %}
+
+{% for col in product.collections %}
+  {% assign collection_title = col.title | downcase %}
+  {% if collection_title contains '[variants]' %}
+    {% assign variant_group_handle = col.handle | remove:'variants-'%}
+  {% endif %}
+{% endfor %}
+
+{% assign swatches_col_handle = 'swatches-' | append:variant_group_handle %}
+{% assign swatches_list = collections[swatches_col_handle] %}
+
+{% if swatch == blank %}
+  <div class="swatch swatch--product error">
+    <p>You must include the snippet swatch.liquid with the name of a product option.</p>
+    <p>Use: <code>{% raw %}{% include 'swatch' with 'name of your product option here' %}{% endraw %}</code></p>
+    <p>Example: <code>{% raw %}{% include 'swatch' with 'Color' %}{% endraw %}</code></p>
+  </div>
+{% else %}
+
+  {% assign found_option = false %}
+  {% assign is_color = false %}
+  {% assign is_size = false %}
+  {% assign is_fill = false %}
+  {% assign option_index = 0 %}
+
+  {% for option in product.options %}
+
+    {% if option == swatch %}
+      {% assign found_option = true %}
+      {% assign option_index = forloop.index0 %}
+      {% assign downcased_option = swatch | downcase %}
+
+      {% if downcased_option contains 'color' or downcased_option contains 'colour' %}
+        {% assign is_color = true %}
+      {% endif %}
+
+      {% if downcased_option contains 'size'  %}
+        {% assign is_size = true %}
+      {% endif %}
+
+      {% if downcased_option contains 'fill'  %}
+        {% assign is_fill = true %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {% unless found_option %}
+    <div class="swatch swatch--product error">
+      <p>You included the snippet swatch.liquid with the name of a product option — <code>'{{ swatch }}'</code> — that does not belong to your product.</p>
+      <p>Use <code>{% raw %}{% include 'swatch' with 'name of your product option here' %}{% endraw %}</code></p>
+      <p>Example: <code>{% raw %}{% include 'swatch' with 'Color' %}{% endraw %}</code></p>
+      <p><strong>This is case-sensitive!</strong> Do not put in <code>'color'</code> if your product option name is <code>'Color'</code>.</p>
+    </div>
+  {% else %}
+    <div class="swatch swatch--product clearfix {% if is_color and swatches_list.products.size > 0 %}has-request-swatch{% endif %}" data-option-index="{{ option_index }}" data-swatch="{{ swatch }}">
+      <div class="header">
+        <span>{{ swatch }} {% if is_color %} <em>{{ current_variant.options[option_index] }}</em>{% endif %}</span>
+      </div>
+
+      {% if is_color and swatches_list.products.size > 0 and settings.enable_swatches_sample %}
+        <button type="button" class="swatch-opener js-swatch-opener" data-product="{{ product.id }}">{{ 'products.product.request_swatch' | t }}</button>
+      {% endif %}
+
+      {% assign values = '' %}
+
+      {% for variant in product.variants %}
+        {% assign value = variant.options[option_index] %}
+        {% unless values contains value %}
+          {% assign values = values | join: ',' | append: ',' | append: value | split: ',' %}
+
+          <div data-value='{{ value }}' class="swatch-element {% if is_color %}color {% endif %}{{ value | handle }} {% if variant.available or is_color %}available{% else %}soldout{% endif %}">
+            <input id="swatch-{{ option_index }}-{{ value | handle }}-{{ product.id }}"
+                   type="radio"
+                   data-variant-image="{{ variant.id }}"
+                   name="option-{{ option_index }}-{{ product.id }}"
+                   value="{{ value | escape }}"
+                   data-swatch-option="{{ option_index }}" />
+            {% if is_color %}
+              {% assign sku_array = variant.sku | split: ' ' %}
+              {% assign url_handle = value | handle %}
+
+              {% if variant.image != blank %}
+                {% assign image_url = variant.image.src | img_url: '50x' %}
+              {% else %}
+                {% assign image_url = url_handle | replace: "-", "_" | append: '.' | append: file_extension | file_url %}
+              {% endif %}
+
+              <label for="swatch-{{ option_index }}-{{ value | handle }}-{{ product.id }}"
+                     style="background-color: {{ value | split: ' ' | last | handle }};
+                       background-image: url({{ image_url }})">
+              </label>
+            {% else %}
+              <label for="swatch-{{ option_index }}-{{ value | handle }}-{{ product.id }}">
+                {{ value | replace: '"', '' }}
+              </label>
+
+              {% if is_size %}
+                {% assign variant_limit = shop.metafields.globals.variant_title.size | minus: 1 %}
+                {% for i in (0..variant_limit) %}
+                  {% assign variant_title = shop.metafields.globals.variant_title[i]  %}
+                {% endfor %}
+              {% endif %}
+
+              {% if is_fill %}
+                {% if value contains 'Vegan' %}
+                  <span class="swatch-vegan-info">
+                    <div class="swatch-vegan-info__text"><span>{{ 'products.product.swatch_vegan_info' | t }}</span></div>
+                    <svg width="16" height="24" viewBox="0 0 16 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="8" cy="12" r="7.5" stroke="black"/>
+                      <path d="M9.288 8.98C9.744 8.98 10.116 8.608 10.116 8.164C10.116 7.708 9.744 7.336 9.288 7.336C8.844 7.336 8.472 7.708 8.472 8.164C8.472 8.608 8.844 8.98 9.288 8.98ZM6.36 11.812L6.504 11.884C7.092 10.972 7.572 10.468 7.872 10.468C8.148 10.468 7.992 10.888 7.824 11.368L6.744 14.596C6.36 15.736 6.6 16.144 7.248 16.144C7.776 16.144 8.676 15.676 9.516 14.176L9.372 14.104C8.844 14.992 8.328 15.52 8.112 15.52C7.836 15.52 7.908 15.232 8.112 14.632L9.192 11.392C9.42 10.72 9.6 9.844 8.724 9.844C8.136 9.844 7.26 10.3 6.36 11.812Z" fill="black"/>
+                    </svg>
+                  </span>
+                {% endif %}
+
+                {% if value contains 'Ethically Sourced' %}
+                  <span class="swatch-vegan-info">
+                    <div class="swatch-vegan-info__text"><span>{{ 'products.product.swatch_ethically_feather_info' | t }}</span></div>
+                    <svg width="16" height="24" viewBox="0 0 16 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="8" cy="12" r="7.5" stroke="black"/>
+                      <path d="M9.288 8.98C9.744 8.98 10.116 8.608 10.116 8.164C10.116 7.708 9.744 7.336 9.288 7.336C8.844 7.336 8.472 7.708 8.472 8.164C8.472 8.608 8.844 8.98 9.288 8.98ZM6.36 11.812L6.504 11.884C7.092 10.972 7.572 10.468 7.872 10.468C8.148 10.468 7.992 10.888 7.824 11.368L6.744 14.596C6.36 15.736 6.6 16.144 7.248 16.144C7.776 16.144 8.676 15.676 9.516 14.176L9.372 14.104C8.844 14.992 8.328 15.52 8.112 15.52C7.836 15.52 7.908 15.232 8.112 14.632L9.192 11.392C9.42 10.72 9.6 9.844 8.724 9.844C8.136 9.844 7.26 10.3 6.36 11.812Z" fill="black"/>
+                    </svg>
+                  </span>
+                {% endif %}
+              {% endif %}
+
+            {% endif %}
+          </div>
+        {% endunless %}
+      {% endfor %}
+    </div>
+
+  {% endunless %}
+
+{% endif %}

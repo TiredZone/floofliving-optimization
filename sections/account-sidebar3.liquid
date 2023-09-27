@@ -1,0 +1,57 @@
+<h1>
+  {{ 'customer.account.welcome' | t }}{% if customer.first_name != blank %}, {{customer.first_name}}{% endif %}
+</h1>
+<div class="mobile-title">
+  {{ 'customer.account.order' | t }}
+</div>
+<div class="mobile-box">
+  <ul class="mobile-ind">
+    {%comment%}
+    {{ request.page_type }}
+    {%endcomment%}
+    <li><a href="/account/#my-account" class="item">{{ 'customer.account.my_account' | t }}</a></li>
+    <li><a href="/account/#order-history" class="active item">{{ 'customer.account.order' | t }}</a></li>
+    <li><a class="item" href="/account/addresses">{{ 'customer.account.book' | t }}</a></li>
+    <li><a href="/apps/tracktor/track" class="item">{{ 'customer.account.track' | t }}</a></li>
+    <li><a href="{{ routes.account_login_url }}" class="item">{{ 'customer.account.logout' | t }}</a></li>
+  </ul>
+  <h4>{{ 'customer.account.need' | t }}</h4>
+  <p><span class="liveChat">{{ section.settings.help }}</span></p>
+</div>
+<script>
+  setTimeout(function() {
+    let liveChat = document.querySelector('.liveChat');
+    liveChat.onclick = function() {
+      var myIframe = document.getElementById("chat-button");
+      var script = myIframe.contentWindow.document.createElement("script");
+      script.type = "text/javascript";
+      script.text = "document.querySelector('#gorgias-chat-messenger-button').click();";
+      myIframe.contentWindow.document.body.appendChild(script);
+      myIframe.contentWindow.document.body.removeChild(script);
+    }
+  }, 1000);
+  let btnOpenMenu = document.querySelector('.mobile-title');
+  let boxOpenMenu = document.querySelector('.mobile-box');
+  btnOpenMenu.onclick = function() {
+    boxOpenMenu.classList.toggle("open");
+    this.classList.toggle("open");
+  }
+</script>
+{% schema %}
+{
+  "name": "Account Sidebar",
+  "class": "account-sidebar__section-wrap",
+  "settings": [
+    {
+      "type": "text",
+      "id": "help",
+      "label": "Need help?"
+    },
+    {
+      "id": "link",
+      "label": "Link",
+      "type": "url"
+    }
+  ]
+}
+{% endschema %}

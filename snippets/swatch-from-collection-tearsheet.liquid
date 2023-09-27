@@ -1,0 +1,7 @@
+{% assign file_extension = 'png' %}
+{%- assign currentColor = current.title | split: settings.variant_separator | last | strip  -%}
+<div class="swatch swatch--product clearfix" data-swatch="Color">
+    <div class="header">
+        <span>Colors <em>{{ currentColor }}</em></span>
+    </div>
+</div>

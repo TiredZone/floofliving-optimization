@@ -1,0 +1,85 @@
+<div class="designer-services">
+  <h2 class="headline">{{ section.settings.section_title | escape }}</h2>
+{{ section.settings.text }}
+  <div class="gorgias-wrapper">
+    <a onclick="GorgiasChat.open();" class="chat-link"> 
+      <span>{{ section.settings.gorgias_link }}</span> 
+      <svg width="50" height="37" viewbox="0 0 50 37" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_120_17)"> <path d="M44.72 8.5H37.57V5.96C37.57 2.67 34.9 0 31.61 0H5.96C2.68 0 0 2.67 0 5.96V18.48C0 21.77 2.68 24.44 5.96 24.44H9.22L7.68 31.08C7.59 31.43 7.75 31.79 8.06 31.98C8.19 32.05 8.34 32.09 8.48 32.09C8.68 32.09 8.88 32.02 9.03 31.88L17.35 24.44H17.61V24.61C17.61 27.17 19.69 29.24 22.24 29.24H32.04L41.45 35.91C41.6 36.02 41.76 36.07 41.93 36.07C42.11 36.07 42.28 36.01 42.43 35.9C42.72 35.68 42.83 35.3 42.71 34.96L40.68 29.24H44.72C47.28 29.24 49.35 27.17 49.35 24.61V13.13C49.35 10.58 47.28 8.5 44.72 8.5ZM17.61 22.78H17.03C16.83 22.78 16.63 22.86 16.48 22.99L9.88 28.9L11.07 23.8C11.12 23.55 11.06 23.29 10.91 23.1C10.75 22.9 10.51 22.78 10.26 22.78H5.96C3.59 22.78 1.66 20.85 1.66 18.48V5.96C1.66 3.59 3.59 1.66 5.96 1.66H31.61C33.99 1.66 35.91 3.59 35.91 5.96V18.48C35.91 20.85 33.99 22.78 31.61 22.78H17.61ZM47.7 24.61C47.7 26.25 46.36 27.59 44.72 27.59H39.5C39.23 27.59 38.98 27.72 38.83 27.94C38.67 28.16 38.63 28.44 38.72 28.69L40.27 33.05L32.78 27.74C32.64 27.64 32.47 27.59 32.3 27.59H22.24C20.6 27.59 19.27 26.25 19.27 24.61V24.44H31.61C34.9 24.44 37.57 21.77 37.57 18.48V10.16H44.72C46.36 10.16 47.7 11.49 47.7 13.13V24.61Z" fill="#f6f4ee"></path> </g> <defs> <clippath id="clip0_120_17"> <rect width="49.35" height="36.07" fill="white"></rect> </clippath> </defs> </svg> </a>
+  </div>
+</div>
+
+<style>
+  .headline {
+    font-size: 32px;
+    line-height:1.5!impotant;
+    font-family: Haas Grot Text Web;
+    font-weight: 700;
+    padding-bottom: 20px;
+  }
+  .designer-services {
+    font-family: Wulkan Display;
+    font-size: 24px;
+    line-height: 27px;
+    background-color: #000;
+    color: #f6f4ee;
+    margin: 0 auto;
+    display: block;
+    width: 100%;
+    padding: 50px;
+    text-align: center;
+  }
+  .gorgias-wrapper {
+    width: fit-content;
+    display: block;
+    margin: 0 auto;
+    padding-top: 30px;
+  }
+  .chat-link {
+    color: #f6f4ee;
+    text-align: left;
+    padding: 5px 23px 5px 23px;
+    border-radius: 20px;
+    position: relative;
+    height: 40px;
+    border: 1px solid #f6f4ee;
+    text-decoration: none;
+  }
+  svg {
+    text-align: right;
+    margin-left: 80px;
+  }
+
+</style>
+
+
+{% schema %}
+{
+  "name": "Designer Services",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Title",
+      "default": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Body Copy"
+    },
+    {
+      "type": "textarea",
+      "id": "gorgias_link",
+      "label": "Link",
+      "default": "Insert Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Designer Services",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}

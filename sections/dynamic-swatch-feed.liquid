@@ -1,0 +1,117 @@
+<div class="swatch-feed__item viewport-section {% if link.title == 'Color' %}swatch-feed__item--color{% endif %}"></div>
+
+
+{% if section.blocks.size > 0 %}
+  <div class="swatch-feed page-width">
+    {% for block in section.blocks %}
+      <div class="swatch-feed__item viewport-section {% if block.settings.type_drop == 'color' %}swatch-feed__item--color{% endif %}">
+        {% if block.settings.title != blank %}
+          <h2 class="swatch-feed__title">{{ block.settings.title }}</h2>
+        {% endif %}
+
+        {% if block.settings.subtitle != blank %}
+          <h3 class="swatch-feed__subtitle">{{ block.settings.subtitle }}</h3>
+        {% endif %}
+        <div class="swatch-feed__list {% if block.settings.type_drop == 'color' %}navigation--color{% else %}navigation--material{% endif %}">
+
+          {% case block.settings.type_drop %}
+            {% when 'color' %}
+              {%- assign limit_color = shop.metafields.globals.color_name.size | minus: 1 -%}
+              {% for i in (0..limit_color) %}
+                {%- assign metafields_color_name = shop.metafields.globals.color_name[i] | url_escape -%}
+                {%- assign selected_color = shop.metafields.globals.color_hex[i] -%}
+                {%- assign metafields_color_image = shop.metafields.globals.color_image[i] -%}
+
+                <a class="example-material__item" href="/collections/all/color:{{ metafields_color_name }}">
+                  {% if metafields_color_image != blank %}
+                    <img class="example-color__image" src="{{ metafields_color_image }}" alt="{{ metafields_color_name }}">
+                  {% else %}
+                    <span class="color-example" data-color="{{ metafields_color_name }}" style="background-color:{{ selected_color }}"></span>
+                  {% endif %}
+                  <strong class="example-material__title"><span>{{ metafields_color_name | replace: '-', ' '  }}</span></strong>
+                </a>
+              {% endfor %}
+            {% when 'pattern' %}
+              {%- assign limit_pattern = shop.metafields.globals.pattern_name.size | minus: 1 -%}
+              {% for i in (0..limit_pattern) %}
+                  {%- assign metafields_pattern_name = shop.metafields.globals.pattern_name[i] | handleize -%}
+                  {%- assign pattern_img = shop.metafields.globals.pattern_image[i] -%}
+                  <a class="example-material__item" href="/collections/all/pattern:{{ metafields_pattern_name }}">
+                    <img class="example-material__image" src="{{ pattern_img }}" alt="{{ metafields_pattern_name }}">
+                    <strong class="example-material__title"><span>{{ metafields_pattern_name | replace: '-', ' '  }}</span></strong>
+                  </a>
+              {% endfor %}
+            {% else %}
+              {%- assign limit_material = shop.metafields.globals.material_name.size | minus: 1 -%}
+              {% for i in (0..limit_material) %}
+                  {%- assign metafields_material_name = shop.metafields.globals.material_name[i] | handleize -%}
+                  {%- assign material_img = shop.metafields.globals.material_image[i] -%}
+                  <a class="example-material__item" href="/collections/all/material:{{ metafields_material_name }}">
+                    <img class="example-material__image" src="{{ material_img }}" alt="{{ metafields_material_name }}">
+                    <strong class="example-material__title"><span>{{ metafields_material_name | replace: '-', ' '  }}</span></strong>
+                  </a>
+              {% endfor %}
+          {% endcase %}
+
+
+
+
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+
+{% schema %}
+{
+  "name": "Swatch Feed",
+  "settings": [
+  ],
+  "blocks": [
+    {
+      "type": "drop",
+      "name": "Drop",
+      "settings": [
+        {
+          "type": "radio",
+          "id": "type_drop",
+          "label": "Type of drop",
+          "options": [
+            {
+              "value": "color",
+              "label": "Color"
+            },
+            {
+              "value": "pattern",
+              "label": "Pattern"
+            },
+            {
+              "value": "material",
+              "label": "Material"
+            }
+          ],
+          "default": "color"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subheading"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Swatch Feed",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}

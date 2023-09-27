@@ -1,0 +1,37 @@
+{%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+
+{%- capture crop_size -%}
+  {%- if width -%}
+    {{ width }}x{{ width }}
+  {%- else -%}
+    master
+  {%- endif -%}
+{%- endcapture -%}
+
+<img class="lazyload js{% if classes %} {{ classes }}{% endif %}" 
+    src="{{ image | img_url: '50x50' }}" 
+    data-src="{{ image | img_url:'x50' }}"
+    data-sizes="auto"
+    data-srcset="{{ image | img_url: '120x' }} 60w,
+           {{ image | img_url: '240x' }} 120w, 
+           {{ image | img_url: '360x' }} 180w, 
+           {{ image | img_url: '440x' }} 220w, 
+           {{ image | img_url: '720x' }} 360w, 
+           {{ image | img_url: '1080x' }} 540w,
+           {{ image | img_url: '1440x' }} 720w,
+           {{ image | img_url: '1800x' }} 900w,
+           {{ image | img_url: '2160x' }} 2x" 
+           {% if width %} width="{{ width }}" {% endif %}
+           {% if height %} height="{{ height }}" {% endif %}
+               alt="{{ image.alt | escape }}">
+
+
+<noscript>
+  <img src="{{ image | img_url: crop_size }}"
+       srcset="{{ image | img_url: crop_size }} 1x, {{ image | img_url: crop_size, scale: 2 }} 2x"
+       alt="{{ image.alt | default: shop.name }}"
+    {% if width %} width="{{ width }}" {% endif %}
+    {% if height %} height="{{ height }}" {% endif %}
+       class="{{ classes }}">
+</noscript>
+

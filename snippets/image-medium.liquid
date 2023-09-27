@@ -1,0 +1,46 @@
+{%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+
+{%- capture crop_size -%}
+  {%- if width -%}
+    {{ width }}x{{ width }}
+  {%- else -%}
+    master
+  {%- endif -%}
+{%- endcapture -%}
+
+<style>
+  .reduced_collection_banner_image{
+    width:70% !important;
+    height:70% !important;
+    bottom: 0 !important;
+    top: unset !important;
+  }
+
+  @media (max-width: 768px){
+    .reduced_collection_banner_image{
+        width:100% !important;
+        height:100% !important;
+        top: 0 !important;
+    }
+  }
+</style>
+
+<img class="lazyload js{% if classes %} {{ classes }}{% endif %} {% if collection %}reduced_collection_banner_image{% endif %}" 
+    src="{{ image | img_url: '50x50' }}" 
+    data-src="{{ image | img_url:'x50' }}"
+    data-sizes="auto"
+    data-srcset="{{ image | img_url: '1200x' }} 60w" 
+           {% if width %} width="{{ width }}" {% endif %}
+           {% if height %} height="{{ height }}" {% endif %}
+               alt="{{ image.alt | escape }}">
+
+
+<noscript>
+  <img src="{{ image | img_url: crop_size }}"
+       srcset="{{ image | img_url: crop_size }} 1x, {{ image | img_url: crop_size, scale: 2 }} 2x"
+       alt="{{ image.alt | default: shop.name }}"
+    {% if width %} width="{{ width }}" {% endif %}
+    {% if height %} height="{{ height }}" {% endif %}
+       class="{{ classes }}">
+</noscript>
+

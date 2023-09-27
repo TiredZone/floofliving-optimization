@@ -1,0 +1,54 @@
+<a class="product-drop__item" href="{{ childlink.url }}?variant={{ current_variant.id }}">
+  {% if current_variant.image != blank %}
+    {% render 'image',
+      image: current_variant.image,
+      width: 144,
+      classes: "product-set-drop__image" %}
+  {% else %}
+    {% render 'image',
+      image: childlink.object.featured_image,
+      width: 144,
+      classes: "product-set-drop__image" %}
+  {% endif %}
+  <div class="product-drop__wrap">
+    <strong class="product-drop__title">{{ childlink.object.title }} {% if has_new_tag  %}
+        <span class="product-drop__label">{{ 'general.accessibility.new' | t }}</span>
+      {% endif %}</strong>
+
+    {%- assign product_index = 0 -%}
+    {%- assign product_option_list = '' -%}
+    {% for product_option in childlink.object.options_with_values %}
+      {% if product_option.name == 'Fill' %}
+        {%- assign product_index = product_option.position -%}
+      {% endif %}
+    {% endfor %}
+    {% for i in (1..3) %}
+      {% if forloop.index == 1 and forloop.index != product_index  %}
+        {% if current_variant.option1 != blank %}
+          {% if current_variant.option1 == 'Default Title' %}
+            {%- assign product_option_list = product_option_list  -%}
+          {% else %}
+            {%- assign product_option_list = product_option_list | append: current_variant.option1 | append: ' / ' -%}
+          {% endif %}
+        {% endif %}
+      {% endif %}
+      {% if forloop.index == 2 and forloop.index != product_index  %}
+        {% if current_variant.option2 != blank %}
+         {%- assign product_option_list = product_option_list | append: current_variant.option2 | append: ' / ' -%}
+        {% endif %}
+      {% endif %}
+      {% if forloop.index == 3 and forloop.index != product_index  %}
+        {% if current_variant.option3 != blank %}
+          {%- assign product_option_list = product_option_list | append: current_variant.option3 | append: ' / ' -%}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    <p class="product-drop__text">
+      {{ product_option_list }}
+      {%- if current_variant.compare_at_price > current_variant.price -%}
+        <s>{{ current_variant.compare_at_price | money }}</s>
+      {%- endif -%}
+      <span>{{ current_variant.price | money }}</span>
+    </p>
+  </div>
+</a>

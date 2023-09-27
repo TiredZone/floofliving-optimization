@@ -1,0 +1,49 @@
+{%- assign main_product = product.handle -%}
+
+{% if collections['sets'].products.size > 0 %}
+  <div class="recommended-set">
+    <div class="{% if section.settings.count > 2 %}without-pad{% else %}page-width{% endif %} ">
+      <div class="recommended-set__head text-center">
+        {% if section.settings.title != blank %}
+          <h2 data-product-title="{%- render 'product-title', product:product -%}" class="recommended-set__title">{{ section.settings.title }}</h2>
+        {% endif %}
+      </div>
+
+      <div class="set-carousel__slideshow {% if section.settings.count > 2 %}js-set-carousel{% endif %}">
+
+        {%- for product in collections['sets'].products limit: section.settings.count -%}
+          {%- if main_product != product.handle -%}
+            {% render 'set-carousel-slide', product:product %}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+    </div>
+  </div>
+{% endif %}
+
+
+{% schema %}
+{
+  "name": "Recommended set",
+  "class": "viewport-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading"
+    },
+    {
+      "type": "range",
+      "id": "count",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "unit": "pcs",
+      "label": "Item count",
+      "default": 4
+    }
+  ]
+}
+{% endschema %}
+

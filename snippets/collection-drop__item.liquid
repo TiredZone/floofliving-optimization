@@ -1,0 +1,31 @@
+<a class="collection-drop__item" href="{{ childlink.url }}">
+  {% if childlink.object.metafields.custom.image_navbar_mobile %}
+    {%- assign mobile_img_url = childlink.object.metafields.custom.image_navbar_mobile.value | img_url: 'master' -%}
+  {% else %}
+    {%- assign mobile_img_url = childlink.object.image | img_url: 'master' -%}
+  {% endif %}
+  {% if mobile_img_url != blank %}
+    <div class="collection-drop__image lazyload"
+         data-bgset="{{ mobile_img_url }}"
+         data-sizes="auto"></div>
+  {% endif %}
+
+  
+  <strong class="collection-drop__title">{{ childlink.object.title }} {% if childlink.object.metafields.collection.new_label  %}
+      <span class="product-drop__label">{{ 'general.accessibility.new' | t }}</span>
+    {% endif %}</strong>
+  <p class="collection-drop__text">{{ childlink.object.description | strip_html | truncatewords: 7 }}</p>
+
+
+  {% if childlink.object.metafields.custom.image_navbar_desktop %}
+    {%- assign desktop_img_url = childlink.object.metafields.custom.image_navbar_desktop.value | img_url: 'master' -%}
+  {% else %}
+    {%- assign desktop_img_url = childlink.object.image | img_url: 'master' -%}
+  {% endif %}
+  {% if desktop_img_url != blank %}
+    <div class="collection-drop__hover-image lazyload"
+         data-bgset="{{ desktop_img_url }}"
+         data-sizes="auto"></div>
+  {% endif %}
+
+</a>

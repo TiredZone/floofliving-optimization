@@ -1,0 +1,7 @@
+{% if linklists[footer_linklist].links.size > 0 %}
+  <ul class="footer-list">
+    {% for link in linklists[footer_linklist].links %}
+      <li class="footer-list__item"><a class="footer-list__link" href="{{ link.url }}">{{ link.title }}</a></li>
+    {% endfor %}
+  </ul>
+{% endif %}

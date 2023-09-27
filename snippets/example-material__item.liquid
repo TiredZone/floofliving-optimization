@@ -1,0 +1,18 @@
+<a class="example-material__item" href="{{ childlink.url }}">
+  {% if link.title == 'Color' %}
+    {%- assign selected_color = "#000" -%}
+    {%- assign color_name = childlink.url | split: "/" | last | handleize  -%}
+    {%- assign limit_color = shop.metafields.globals.color_name.size | minus: 1 -%}
+    {% for i in (0..limit_color) %}
+      {%- assign metafields_color_name = shop.metafields.globals.color_name[i] | handleize -%}
+      {% if  metafields_color_name == color_name %}
+        {%- assign selected_color = shop.metafields.globals.color_hex[i] -%}
+      {% endif %}
+    {% endfor %}
+    <div class="color-example" data-color="{{ color_name }}" style="background-color:{{ selected_color}}"></div>
+  {% else %}
+    {%- assign file = childlink.url | split: "/" | last | append: ".png" -%}
+    <img class="example-material__image" src="{{ file | file_img_url: '88x88' }}" alt="{{ childlink.title }}">
+  {% endif %}
+  <strong class="example-material__title"><span>{{ childlink.title | replace: '-', ' ' }}</span></strong>
+</a>

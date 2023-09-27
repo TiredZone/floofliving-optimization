@@ -1,0 +1,48 @@
+<div class="trade-head">
+  <div class="page-width">
+    <div class="trade-head__text">
+      <div class="trade-head__wrap">
+        <h1 class="trade-head__title">{{ page.title }}</h1>
+        <div class="trade-head__content">
+          {{ page.content }}
+          {% if section.settings.button_label != blank %}
+            <a href="#trade-form" class="js-smooth-link trade--btn">{{ section.settings.button_label }}</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="trade-head__image lazyload"
+         data-bgset="
+      {% if section.settings.image_mobile != blank %}{{ section.settings.image_mobile | img_url: 'master' }} [(max-width: 767px)] | {% endif %}
+      {{ section.settings.image | img_url: 'master' }}"
+         data-sizes="auto"
+    ></div>
+  </div>
+</div>
+
+
+
+{% schema %}
+{
+  "name": "Trade page head",
+  "class": "viewport-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Image for mobile"
+    }
+  ]
+}
+{% endschema %}
+

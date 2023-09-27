@@ -1,0 +1,88 @@
+{% comment %}
+  Set the extension of your color files below. Use 'png', 'jpeg', 'jpg' or 'gif'.
+{% endcomment %}
+
+{% assign file_extension = 'png' %}
+{% assign title_swatch =  title_swatch | handleize %}
+
+{% if swatch == blank %}
+  <div class="swatch error">
+    <p>You must include the snippet swatch.liquid with the name of a product option.</p>
+    <p>Use: <code>{% raw %}{% include 'swatch' with 'name of your product option here' %}{% endraw %}</code></p>
+    <p>Example: <code>{% raw %}{% include 'swatch' with 'Color' %}{% endraw %}</code></p>
+  </div>
+{% else %}
+
+  {%- assign found_option = false -%}
+  {%- assign is_color = false -%}
+  {%- assign option_index = 0 -%}
+
+  {%- for option in product.options -%}
+    {% if option == swatch %}
+      {% assign found_option = true %}
+      {% assign option_index = forloop.index0 %}
+      {% assign downcased_option = swatch | downcase %}
+
+      {% if downcased_option contains 'color' or downcased_option contains 'colour' or downcased_option contains 'Color' %}
+        {% assign is_color = true %}
+      {% endif %}
+    {% endif %}
+  {%- endfor -%}
+
+  {% unless found_option %}
+    <div class="swatch error">
+      <p>You included the snippet swatch.liquid with the name of a product option — <code>'{{ swatch }}'</code> — that does not belong to your product.</p>
+      <p>Use <code>{% raw %}{% include 'swatch' with 'name of your product option here' %}{% endraw %}</code></p>
+      <p>Example: <code>{% raw %}{% include 'swatch' with 'Color' %}{% endraw %}</code></p>
+      <p><strong>This is case-sensitive!</strong> Do not put in <code>'color'</code> if your product option name is <code>'Color'</code>.</p>
+    </div>
+  {% else %}
+    <div class="swatch clearfix" data-option-index="{{ option_index }}" data-swatch="{{ swatch }}">
+      {% assign values = '' %}
+      {% for variant in product.variants %}
+          {% assign value = variant.options[option_index] %}
+          {% unless values contains value %}
+            {% assign values = values | join: ',' | append: ',' | append: value | split: ',' %}
+            <div data-value="{{ value | escape }}" class="swatch-element {% if is_color %}color {% endif %}{% if count > 4 and swatch_limit %}hide {% endif %}{{ value | handle }}{% if current_variant.title contains value %} hover{% endif %}">
+              {% if is_color %}
+                {%- assign count = count | plus: 1 -%}
+                {%- assign sku_array = variant.sku | split: ' ' -%}
+                {% comment %}
+                {%- assign url_handle = sku_array[0]  | append: value | handle -%}
+                {% endcomment %}
+                {%- assign url_handle = value | handle -%}
+
+                {% if variant.image != blank %}
+                  {% assign image_url = variant.image.src | img_url: '50x' %}
+                {% else %}
+                  {% assign image_url = url_handle | downcase | replace: "-", "_" | append: '.' | append: file_extension | file_url %}
+                {% endif %}
+
+                <label for="swatch-{{ option_index }}-{{ value | handle }}-{{ product.id }}-{{ collectionid }}">
+                  <span class="bg_color {% if value == 'white' %}bg_color_{{value}}{%  endif %}"
+                        style="background-color: {{ value | split: ' ' | last | handle }};
+                          background-image: url({{ image_url }})">
+                    <span class="visually-hidden">{{ value | split: ' ' | last | handle }}</span>
+                  </span>
+                </label>
+                  <input id="swatch-{{ option_index }}-{{ value | handle }}-{{ product.id }}-{{ collectionid }}"
+                        type="radio"
+                        data-variant-image="{{ variant.id }}"
+                        name="option-{{ option_index }}-{{ product.id }}-{{ title_swatch }}"
+                        value="{{ value | escape }}">
+
+              {% else %}
+                <label for="swatch-{{ option_index }}-{{ value | handle }}-{{ product.id }}">
+                  {{ value }}
+                </label>
+              {% endif %}
+            </div>
+          {% endunless %}
+      {% endfor %}
+      {% assign count = count | minus: 5 %}
+      {% if count > 0 and swatch_limit %}
+        <div class="swatch-rest"><span>+{{count}}</span></div>
+      {% endif %}
+    </div>
+  {% endunless %}
+{% endif %}

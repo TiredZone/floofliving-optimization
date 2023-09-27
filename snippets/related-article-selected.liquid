@@ -1,0 +1,62 @@
+<div class="blog-section">
+  <div class="page-width">
+    {% assign current_tag = '' %}
+    <div class="blog-section__head">
+      <h2 class="h4 blog-section__title">{{ 'blogs.article.related_stories' | t}}</h2>
+      {%- if section.settings.button_link != blank -%}
+        <a href="{{ section.settings.button_link }}" class="btn blog-section__btn">{{ 'blogs.article.read_blog' | t}}</a>
+      {%- endif -%}
+    </div>
+
+    <div class="article-list">
+
+      {% assign related_articles = article.metafields.accentuate.related_stories | split: '|' %}
+
+      {% for item in related_articles %}
+
+        {% assign article = articles[item] %}
+
+        {%- assign article_tag = false  -%}
+        {% for tag in article.tags %}
+          {% if tag contains "category:" %}
+            {%- assign article_tag = tag | remove: "category:"  -%}
+          {% endif %}
+        {% endfor %}
+
+        <div class="article-item viewport-section text-center">
+          {%- assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+          {% case article.metafields.accentuate.mask_for_image %}
+            {% when 'clever', 'clover' %}
+              {%- assign mask_class = 'clover-big-image-svg-mask' -%}
+            {% when 'circle' %}
+              {%- assign mask_class = 'circle-image-svg-mask' -%}
+            {% when 'arc', 'vase' %}
+              {%- assign mask_class = 'vase-image-svg-mask' -%}
+            {% when 'square' %}
+              {%- assign mask_class = 'square-image-svg-mask' -%}
+            {% when 'flover', 'flower' %}
+              {%- assign mask_class = 'flower-image-svg-mask' -%}
+            {% when 'rounded-square', 'square' %}
+              {%- assign mask_class = 'square-image-svg-mask' -%}
+            {% when 'none' %}
+              {%- assign mask_class = 'square-image-svg-mask' -%}
+            {% else %}
+              {%- assign mask_class = 'square-image-svg-mask' -%}
+          {% endcase %}
+
+          <a href="{{ article.url }}" class="article-item__image-wrap article-item__image-wrap--absolute" title="{{ 'blogs.article.read_more' | t }}">
+            <img class="article-item__image article-item__image--absolute lazyload {{ mask_class }} " title="{{ 'blogs.article.read_more' | t }}" src="{{ img_url }}" data-src="{{ img_url }}" data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]" data-aspectratio="{{ block.image.aspect_ratio }}" data-sizes="auto" alt="{{ block.image.alt | escape }}" /></a>
+          {% if article.url != blank and article.title != blank %}
+            <div class="article-item__text">
+              {% if article_tag %}
+                <span class="article-item__blog-link">{{ article_tag }}</span>
+              {% endif %}
+              <h3 class="h5 article-item__title">{{ article.title }}</h3>
+              <a href="{{ article.url }}" class="btn--text">{{ 'blogs.article.read_more' | t }}</a>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,46 @@
+<div class="about-design__indent">
+  {% if section.settings.title != blank %}
+    <h2 class="about-design__title viewport-section">{{ section.settings.title }}</h2>
+  {% endif %}
+  {% if section.settings.text != blank %}
+    <div class="about-design__content viewport-section">
+      {{ section.settings.text }}
+    </div>
+  {% endif %}
+  {% if section.settings.image != blank %}
+    <div class="about-design__image viewport-section">
+      <div class="about-design__img-wrapper">
+        {%- assign img_url = section.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+        <img class="about-design__image lazyload"
+                src="{{ section.settings.image | img_url: '50x50' }}"
+                data-src="{{ img_url }}"
+                data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                data-aspectratio="{{ section.settings.image.aspect_ratio }}"
+                data-sizes="auto"
+                alt="{{ section.settings.image.alt | escape }}">
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% schema %}
+{
+  "name": "About Design",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    }
+  ]
+}
+{% endschema %}

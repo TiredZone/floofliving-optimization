@@ -1,0 +1,238 @@
+<div class="testimonial__section viewport-section">
+
+  {% if section.blocks.size > 0 %}
+    <div class="testimonial-blocks  page-width">
+      {% for block in section.blocks %}
+        {%- assign img_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+
+        {% case block.settings.image_mask %}
+          {% when 'rounded_square' %}
+            {%- assign mask_class = 'square-image-svg-mask' -%}
+          {% when 'rectangle' %}
+            {%- assign mask_class = 'rectangle-image-svg-mask' -%}
+          {% when 'mini_rectangle' %}
+            {%- assign mask_class = 'mini-rectangle-image-svg-mask' -%}
+          {% when 'vase' %}
+            {%- assign mask_class = 'vase-image-svg-mask' -%}
+          {% when 'arc' %}
+           {%- assign mask_class = 'arc-image-svg-mask' -%}
+          {% when 'circle' %}
+           {%- assign mask_class = 'circle-image-svg-mask' -%}
+          {% when 'cloud' %}
+            {%- assign mask_class = 'cloud-image-svg-mask' -%}
+          {% when 'clover' %}
+           {%- assign mask_class = 'clover-image-svg-mask' -%}
+          {% when 'flower' %}
+           {%- assign mask_class = 'flower-image-svg-mask' -%}
+          {% when 'none' %}
+            {%- assign mask_class = 'none-image-svg-mask' -%}
+        {% endcase %}
+
+
+        {% case block.settings.text_mask %}
+          {% when 'rounded_square' %}
+            {%- assign text_mask_class = 'square-text-svg-mask' -%}
+          {% when 'vase' %}
+            {%- assign text_mask_class = 'vase-text-svg-mask' -%}
+          {% when 'arc' %}
+            {%- assign text_mask_class = 'arc-text-svg-mask' -%}
+          {% when 'circle' %}
+            {%- assign text_mask_class = 'circle-text-svg-mask' -%}
+          {% when 'cloud' %}
+            {%- assign text_mask_class = 'cloud-text-svg-mask' -%}
+          {% when 'clover' %}
+            {%- assign text_mask_class = 'clover-text-svg-mask' -%}
+          {% when 'flower' %}
+            {%- assign text_mask_class = 'flower-text-svg-mask' -%}
+        {% endcase %}
+
+        <div class="testimonial-block viewport-section testimonial-block--text-{{ block.settings.text_position }} testimonial-desktop-only">
+
+          {% if block.settings.text != blank %}
+            <blockquote class="testimonial-block__text {{ text_mask_class }} {{ text_mask_class }}--white {{ block.settings.text_position }}">
+              <div class="testimonial-block__holder">
+                <p class="testimonial-block__content">{{ block.settings.text }}</p>
+                {% if block.settings.cite != blank %}
+                  <cite class="testimonial-block__cite">{{ block.settings.cite }}</cite>
+                {% endif %}
+              </div>
+            </blockquote>
+          {% endif %}
+
+          {% if block.settings.video_id != blank %}
+            <div class="testimonial-block__video {{ mask_class }}" data-video='{"type": "html5", "video": "{{ block.settings.video_id }}", "autoplay": true}'></div>
+          {% else %}
+            <img class="testimonial-block__image lazyload {{ mask_class }}"
+                 src="{{ block.settings.image | img_url: '50x50' }}"
+                 data-src="{{ img_url }}"
+                 data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                 data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                 data-sizes="auto"
+                 alt="{{ block.settings.image.alt | escape }}">
+          {% endif %}
+        </div>
+
+        {% if block.settings.text != blank %}
+          <blockquote class="testimonial-block__text--{{ forloop.index }} testimonial-mobile-only testimonial-block__text {{ text_mask_class }} {{ text_mask_class }}--white {{ block.settings.text_position }}">
+            <div class="testimonial-block__holder">
+              <p class="testimonial-block__content">{{ block.settings.text }}</p>
+              {% if block.settings.cite != blank %}
+                <cite class="testimonial-block__cite">{{ block.settings.cite }}</cite>
+              {% endif %}
+            </div>
+          </blockquote>
+        {% endif %}
+
+        {% if block.settings.video_id != blank %}
+          <div class="testimonial-block__video testimonial-block__video--{{ forloop.index }} testimonial-mobile-only {{ mask_class }}" data-video='{"type": "html5", "video": "{{ block.settings.video_id }}", "autoplay": true}'></div>
+        {% else %}
+          <img class="testimonial-block__image--{{ forloop.index }} testimonial-mobile-only testimonial-block__image lazyload {{ mask_class }}"
+               src="{{ block.settings.image | img_url: '50x50' }}"
+               data-src="{{ img_url }}"
+               data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+               data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+               data-sizes="auto"
+               alt="{{ block.settings.image.alt | escape }}">
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "max_blocks": 2,
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "radio",
+          "id": "image_mask",
+          "label": "Image mask",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "rounded_square",
+              "label": "Rounded square"
+            },
+            {
+              "value": "flower",
+              "label": "Flower"
+            },
+            {
+              "value": "clover",
+              "label": "Clover"
+            },
+            {
+              "value": "cloud",
+              "label": "Cloud"
+            },
+            {
+              "value": "circle",
+              "label": "Circle"
+            },
+            {
+              "value": "vase",
+              "label": "Vase"
+            },
+            {
+              "value": "arc",
+              "label": "Arc"
+            },
+            {
+              "value": "mini_rectangle",
+              "label": "Rounded mini rectangle"
+            },
+            {
+              "value": "rectangle",
+              "label": "Rounded rectangle"
+            }
+          ],
+          "default": "rounded_square"
+        },
+        {
+          "id": "text",
+          "label": "Text",
+          "type": "textarea"
+        },
+        {
+          "id": "cite",
+          "label": "Cite",
+          "type": "text"
+          },
+          {
+            "type": "radio",
+            "id": "text_position",
+            "label": "Text block position",
+            "options": [
+              {
+                "value": "top",
+                "label": "Top"
+              },
+              {
+                "value": "bottom",
+                "label": "Bottom"
+              }
+            ],
+            "default": "top"
+          },
+            {
+              "type": "radio",
+              "id": "text_mask",
+              "label": "Text mask",
+              "options": [
+            {
+              "value": "rounded_square",
+              "label": "Rounded square"
+            },
+            {
+              "value": "flower",
+              "label": "Flower"
+            },
+            {
+              "value": "cloud",
+              "label": "Cloud"
+            },
+            {
+              "value": "circle",
+              "label": "Circle"
+            },
+            {
+              "value": "vase",
+              "label": "Vase"
+            },
+            {
+              "value": "arc",
+              "label": "Arc"
+            }
+          ],
+          "default": "rounded_square"
+        },
+        {
+          "id": "video_id",
+          "label": "Video url",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}

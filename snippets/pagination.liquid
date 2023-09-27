@@ -1,0 +1,19 @@
+<div class="pagination">
+  {% assign rotate = null %}
+  {% if paginate.previous.is_link %}
+    <a class="prev" href="{{ paginate.previous.url }}">
+      {% render 'icon-pagination-arrow' rotate: true %}
+    </a>
+  {% else %}
+    {% render 'icon-pagination-arrow', rotate: true %}
+  {% endif %}
+
+  {{ paginate | default_pagination }}
+
+  {% if paginate.next.is_link %}
+    <a class="next" href="{{ paginate.next.url }}">
+      {% render 'icon-pagination-arrow' %}</a>
+    {% else %}
+      {% render 'icon-pagination-arrow', rotate: false %}
+  {% endif %}
+</div>

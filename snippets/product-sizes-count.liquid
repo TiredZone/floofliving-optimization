@@ -1,0 +1,19 @@
+
+{% if product.title contains settings.variant_separator %}
+    <div class="swatch-wrapper featured-product__wrapper">
+        <div class="header">
+            {% for option in product.options_with_values %}
+                {% if option.name == 'Size' %}
+                    {% assign size_option = option.values.size %}
+                {% endif %}
+            {% endfor %}
+            <strong>{{- size_option }} Sizes</strong>
+        </div>
+    </div>
+{% elsif product.variants.size > 0 and is_color == true %}
+    {% unless product.has_only_default_variant %}
+        <div class="swatch-wrapper featured-product__wrapper">
+            {% render 'product-cart-swatch-header', swatch: 'Color', product: product, current_variant: current_variant, title_swatch: title_swatch, swatch_limit: true, collectionid:count %}
+		</div>
+    {% endunless %}
+{% endif %}

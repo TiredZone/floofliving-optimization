@@ -1,0 +1,30 @@
+{% if media.media_type == 'video' %}
+  <div
+    class="product__gallery-item"
+    data-product-slide
+    data-color="all colors">
+    <div class="product-single__media product-single__media--video product-single__media--{{ media.id }}">
+      {{ media | video_tag: class: 'media-video', image_size: '1000x' }}
+    </div>
+  </div>
+{% else %}
+  <div
+    class="product__gallery-item"
+    data-product-slide
+    data-color="{{ thumbnailAlt }}"
+    data-alt='{{ media.preview_image.alt }}'>
+    <a
+      {% if quickview -%}data-quickview-gallery{%- else -%}data-fancybox="gallery"{%- endif %}
+      class="product__gallery-link"
+      href="{{ media.preview_image | img_url: 'master' }}">
+      <img
+        class="product__gallery-image"
+        src="{{ media.preview_image | img_url: '1206x' }}"
+        alt='{{ media.preview_image.alt }}'
+        data-product-image>
+    </a>
+    <div class='tap-to-zoom'>
+      {% render 'icon-enlarge' %}
+    </div>
+  </div>
+{% endif %}

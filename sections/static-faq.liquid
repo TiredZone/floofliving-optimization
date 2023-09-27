@@ -1,0 +1,100 @@
+<header class="page-header lazyload viewport-section"
+{% if section.settings.image != blank %}
+  data-bgset="
+      {% if section.settings.image_mobile != blank %}{{ section.settings.image_mobile | img_url: 'master' }} [(max-width: 767px)] | {% endif %}
+      {{ section.settings.image | img_url: 'master' }}"
+  data-sizes="auto"
+  {% endif %}>
+
+  <h1 class="page-header__title">{{ page.title }}</h1>
+</header>
+
+<div class="page-width faq__page-width">
+  {% if section.blocks.size > 0 %}
+    <div class="faq__main-content faq__main">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'Question' %}
+            {% assign question 	= block.settings.title %}
+            {% assign answer 	= block.settings.answer %}
+            {% assign answer_image 	= block.settings.answer_image %}
+
+            {% if question != blank and answer != blank %}
+              <div class="faq__question js-toggle-item viewport-section active">
+                <button class="faq__question-title js-toggle-link">
+                  {{- question -}}
+                </button>
+
+                <div class="faq__answer js-toggle-content">
+                  {{- answer -}}
+                  {% if answer_image != blank %}
+                    {% render 'image',
+                      image: answer_image,
+                      classes: 'faq__image' %}
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% when 'Heading' %}
+            {% if block.settings.title != blank %}
+              <h2 class="h4 faq__heading-heading">{{- block.settings.title -}}</h2>
+            {% endif %}
+        {% endcase %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+
+
+{% schema %}
+{
+  "name": "FAQ",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Image for mobile"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "Question",
+      "name": "Question",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Question"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer"
+        },
+        {
+          "type": "image_picker",
+          "id": "answer_image",
+          "label": "Image"
+        }
+      ]
+    },
+    {
+      "type": "Heading",
+      "name": "Heading",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

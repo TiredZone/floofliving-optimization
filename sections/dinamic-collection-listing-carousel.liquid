@@ -1,0 +1,132 @@
+{% if section.blocks.size > 0 %}
+<div class="collection-carousel viewport-section">
+  <div class="page-width-1440 without-pad">
+    <div class="collection-carousel__box">
+      <div class="collection-carousel__left">
+        <span class="pagingInfo"></span>
+        {% if section.settings.sub_title != blank %}
+          <span class="sub_title">{{ section.settings.sub_title | escape }}</span>
+        {% endif %}
+        {% if section.settings.title != blank %}
+          <h2>{{ section.settings.title | escape }}</h2>
+        {% endif %}
+      </div>
+      <div class="collection-carousel__right">
+        <div class="collection-carousel__slideshow js-slideshow-collections">
+        {% for block in section.blocks limit: section.blocks.size %}
+          <div class="collection-carousel__slide" {{ block.shopify_attributes }}>
+            {%- assign collection = collections[block.settings.collection] -%}
+            {%- assign desc = collection.description | strip_html -%}
+              <div class="collection-carousel__img-wrapper">
+                {% if collection.image != blank %}
+                  {% render 'image',  image: collection.image, width: 884, height: 648,  classes: "collection-carousel__image" %}
+                {% endif %}
+              </div>
+              <div class="collection-carousel__content">
+                <div class="collection-carousel__text">
+                  {% if collection == empty %}
+                    {{ 'homepage.onboarding.collection_title' | t }}
+                  {% else %}
+                    <strong>{{ collection.title }}</strong>
+                    <span>{{ desc | truncate: 50 }}</span>
+
+
+                  {% endif %}
+                </div>
+                <a class="btn" href="{{ collection.url }}">Shop {{ collection.title }}</a>
+              </div>
+              <div class="collection-carousel__content-mobile">
+                <div class="collection-carousel__text">
+                  {% if collection == empty %}
+                    {{ 'homepage.onboarding.collection_title' | t }}
+                  {% else %}
+                    <strong>{{ collection.title }}</strong>
+                    <span>{{ desc | truncate: 50 }}</span>
+
+                    <a class="btn btn--border" href="{{ collection.url }}">Shop {{ collection.title }}</a>
+                  {% endif %}
+                </div>
+              </div>
+
+          </div>
+        {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% javascript %}
+  ;(function($) {
+    var $status = document.querySelector('.pagingInfo');
+    var $slickElement = $('.js-slideshow-collections');
+
+    $slickElement.on('init reInit afterChange', function (event, slick, currentSlide, nextSlide) {
+      //currentSlide is undefined on init -- set it to 0 in this case (currentSlide is 0 based)
+      if(!slick.$dots){
+        return;
+      }
+      var i = (currentSlide ? currentSlide : 0) + 1;
+      $status.innerHTML = i + '<span></span>' + (slick.$dots[0].children.length);
+    });
+    $slickElement.slick({
+      infinite: false,
+      slidesToShow: 1,
+      dots: true,
+      fade:false,
+      prevArrow: '<button class="btn-collections btn-prev"><svg width="32" height="12" viewBox="0 0 32 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.62402 10.7471L2.00002 6.12307L6.62402 1.50007" stroke="black" stroke-width="1.2" stroke-linecap="round"/><path d="M2.00049 6.12353L30.0005 6.12354" stroke="black" stroke-width="1.2" stroke-linecap="round"/></svg></button>',
+      nextArrow: '<button class="btn-collections btn-next"><svg width="30" height="12" viewBox="0 0 30 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24.3765 1.5L29.0005 6.124L24.3765 10.747" stroke="black" stroke-width="1.2" stroke-linecap="round"/><path d="M29 6.12354H1" stroke="black" stroke-width="1.2" stroke-linecap="round"/></svg></button>'
+    });
+  }(jQuery));
+{% endjavascript %}
+{% schema %}
+  {
+    "name": "Collection list carousel",
+    "max_blocks": 8,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collection list carousel"
+      },
+      {
+        "type": "text",
+        "id": "sub_title",
+        "label": "Sub Title",
+        "default": "Collections"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection list carousel",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

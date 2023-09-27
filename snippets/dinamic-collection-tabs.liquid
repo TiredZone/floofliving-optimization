@@ -1,0 +1,148 @@
+<div class="collections-tabs__box viewport-section">
+  <div class="page-width-1440 text-center header-content">
+    {% if section.settings.image != blank %}
+      <img class="lazyload collections-tabs__img-gif"
+           src="{{ section.settings.image | img_url: '50x50' }}"
+           data-src="{{ section.settings.image | img_url: 'master' }}"
+           data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+           data-aspectratio="{{ section.settings.image.aspect_ratio }}"
+           data-sizes="auto"
+           alt="{{ section.settings.image.alt }}">
+           
+    {% else %}
+      <div class="poodle-animated" style="width: 106px; margin: 0 auto;">
+        <span></span>
+      </div>
+    {% endif %}
+
+    {% if section.settings.sub_title != blank %}
+      <span class="sub_title">{{ section.settings.sub_title | escape }}</span>
+    {% endif %}
+    {% if section.settings.title != blank %}
+      <h2>{{ section.settings.title }}</h2>
+    {% endif %}
+  </div>
+  <div class="collections-tabs__content">
+    <div class="page-width-1440 text-center without-pad">
+      {%- if  section.blocks.size != 1 -%}
+        <div class="collections-tabs__dropdown">
+          <a href="#" class="collections-tabs__opener">
+            <span class="visually-hidden">Opener</span>
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20.2471 14.0449L15.6231 18.5309L11.0001 14.0449" stroke="black" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </a>
+
+          <ul class="tabset">
+            {% for block in section.blocks limit: section.blocks.size %}
+              {%- assign collection = collections[block.settings.collection] -%}
+              {%- if  forloop.index0 == 0 -%}
+                {%- assign active = ' active' -%}
+              {%- else -%}
+                {%- assign active = '' -%}
+              {%- endif -%}
+              <li class="tablinks">
+                <a href="#tab1-{{ forloop.index0 }}">{{ collection.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+
+
+      <div class="tab-content collections-tabs__list">
+
+        {% for block in section.blocks limit: section.blocks.size %}
+          {%- assign count = forloop.index0 -%}
+          {%- if  forloop.index0 == 0 -%}
+            {%- assign active = ' active' -%}
+          {%- else -%}
+            {%- assign active = '' -%}
+          {% endif %}
+          {%- assign collection = collections[block.settings.collection] -%}
+          <div id="tab1-{{ forloop.index0 }}" class="tabcontent {{active}}">
+              <div class="page-width-1440 text-center">
+                <h6 class="collections-tabs__desc">{{ collection.description }}</h6>
+              </div>
+            <ul class="collections-tabs js-collections-tabs count-{{collection.products.size}} {% if collection.products.size < 4 %}collections-tabs--no-slick{% endif %}">
+              {% for product in collection.products limit: 10 -%}
+                <li class="collections-tabs__item">
+                  <div class="collections-tabs__indent">
+                    {% render 'product-item', product: product , collectionid:count %}
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endfor %}
+
+      </div>
+
+    {%- if section.settings.btn_lbl != blank -%}
+      <a class="btn btn--bottom btn--arrow" href="{{ routes.all_products_collection_url }}">{{ section.settings.btn_lbl }}</a>
+    {% endif %}
+  </div>
+</div>
+
+<script type="text/javascript">
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+    SlickCorousel();
+  });
+
+  // slick carousel
+  function SlickCorousel() {
+    (function($) {
+      $('.js-collections-tabs').slick({
+        slidesToScroll: 3,
+        infinite: true,
+        rows: 1,
+        slidesToShow: 3,
+        prevArrow: `<button class="btn-collections btn-prev"><svg width="32" height="12" viewBox="0 0 32 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.62402 10.7471L2.00002 6.12307L6.62402 1.50007" stroke="black" stroke-width="1.2" stroke-linecap="round"/><path d="M2.00049 6.12353L30.0005 6.12354" stroke="black" stroke-width="1.2" stroke-linecap="round"/></svg></button>`,
+        nextArrow: `<button class="btn-collections btn-next"><svg width="30" height="12" viewBox="0 0 30 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24.3765 1.5L29.0005 6.124L24.3765 10.747" stroke="black" stroke-width="1.2" stroke-linecap="round"/><path d="M29 6.12354H1" stroke="black" stroke-width="1.2" stroke-linecap="round"/></svg></button>`,
+        dots: true,
+        variableWidth: true,
+        centerMode: true,
+        autoplaySpeed: 12000,
+        responsive: [
+          {
+            breakpoint: 1200,
+            settings: {
+              slidesToShow: 2,
+              slidesToScroll: 1,
+              rows: 1
+            }
+          },
+          {
+            breakpoint: 992,
+            settings: {
+              slidesToShow: 2,
+              slidesToScroll: 1,
+              rows: 1
+            }
+          },
+          {
+            breakpoint: 750,
+            settings: {
+              slidesToShow: 2,
+              slidesToScroll: 1,
+              rows: 1
+            }
+          },
+          {
+            breakpoint: 700,
+            settings: {
+              slidesToShow: 1,
+              slidesToScroll: 1,
+              rows: 1
+            }
+          }
+        ]
+      });
+
+    }(jQuery));
+  }
+</script>
+

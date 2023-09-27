@@ -1,0 +1,76 @@
+@font-face {
+  font-family: 'Haas Grot Text Web';
+  src: url({{ 'NeueHaasGrotText-55Roman-Web.woff2' | asset_url }}) format('woff2'),
+  url({{ 'NeueHaasGrotText-55Roman-Web.woff' | asset_url }}) format('woff');
+  font-weight:  400;
+  font-style:   normal;
+  font-stretch: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Haas Grot Text Web';
+  src: url({{ 'NeueHaasGrotText-65Medium-Web.woff2' | asset_url }}) format('woff2'),
+  url({{ 'NeueHaasGrotText-65Medium-Web.woff' | asset_url }}) format('woff');
+  font-weight:  500;
+  font-style:   normal;
+  font-stretch: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Wulkan Display';
+  src:  url({{ 'Wulkan-Display-Regular.woff2' | asset_url }}) format('woff2'), /* Super Modern Browsers */
+  url({{ 'Wulkan-Display-Regular.woff' | asset_url }}) format('woff'); /* Pretty Modern Browsers */
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.modal-title {
+  font-family: 'Wulkan Display';
+  font-size: 28px;
+}
+
+.btn {
+  border-radius: 0;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.125em;
+  transition: .3s;
+}
+.btn:hover {
+  background-color: transparent;
+  color: black;
+}
+
+#container {
+  border-radius: 0;
+}
+
+.form-control {
+  border-radius: 0;
+  border-color: #c5c3bd;
+  box-shadow: none;
+  background-color: transparent;
+  font-size: 12px;
+  color: black;
+  letter-spacing: .06em;
+  padding: 5px 14px;
+}
+.form-control:not(:active):not(:focus)::placeholder {
+  color: black;
+}
+.form-control:focus,
+.form-control:active {
+  outline: none;
+  border-color: black;
+}
+select.form-control {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABlSURBVHgB7c7BCYAwEETRwQa0hC3BUuzAlGAH2pElWIql6Bz0sqgQJAmBefBvCzuAiIhIRYarL8YmRGgibju2shHvzzfWIqHAjocRxnY2I4PgRljO537EUuK5H1Hk+a2HiIjITycF7A8C1nhArgAAAABJRU5ErkJggg==);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  -webkit-appearance: none;
+  appearance:  none;
+  padding-right: 50px;
+}

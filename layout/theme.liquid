@@ -1,0 +1,376 @@
+<!doctype html>
+<!--[if IE 9]> <html class="ie9 no-js supports-no-cookies" lang="{{ shop.locale }}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!-->
+  <html class="no-js supports-no-cookies" lang="{{ shop.locale }}"> <!--<![endif]-->
+  <head>
+<link rel='preconnect dns-prefetch' href='https://api.config-security.com/' crossorigin />
+<link rel='preconnect dns-prefetch' href='https://conf.config-security.com/' crossorigin />
+<link rel='preconnect dns-prefetch' href='https://triplewhale-pixel.web.app/' crossorigin />
+<link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@10.2.0/swiper-bundle.min.css"
+      integrity="sha256-VKTOFh4rb/lZu9Rktyy6vmg79KTu/kFrOTgSWFLJmOU="
+      crossorigin="anonymous"
+    >
+<script>
+/* >> TriplePixel :: start*/
+window.TriplePixelData={TripleName:"floof-living.myshopify.com",ver:"1.9.0"},function(W,H,A,L,E,_,B,N){function O(U,T,P,H,R){void 0===R&&(R=!1),H=new XMLHttpRequest,P?(H.open("POST",U,!0),H.setRequestHeader("Content-Type","application/json")):H.open("GET",U,!0),H.send(JSON.stringify(P||{})),H.onreadystatechange=function(){4===H.readyState&&200===H.status?(R=H.responseText,U.includes(".txt")?eval(R):P||(N[B]=R)):(299<H.status||H.status<200)&&T&&!R&&(R=!0,O(U,T-1))}}if(N=window,!N[H+"sn"]){N[H+"sn"]=1;try{A.setItem(H,1+(0|A.getItem(H)||0)),(E=JSON.parse(A.getItem(H+"U")||"[]")).push(location.href),A.setItem(H+"U",JSON.stringify(E))}catch(e){}var i,m,p;A.getItem('"!nC`')||(_=A,A=N,A[H]||(L=function(){return Date.now().toString(36)+"_"+Math.random().toString(36)},E=A[H]=function(t,e){return"State"==t?E.s:(W=L(),(E._q=E._q||[]).push([W,t,e]),W)},E.s="Installed",E._q=[],E.ch=W,B="configSecurityConfModel",N[B]=1,O("//conf.config-security.com/model",5),i=L(),m=A[atob("c2NyZWVu")],_.setItem("di_pmt_wt",i),p={id:i,action:"profile",avatar:_.getItem("auth-security_rand_salt_"),time:m[atob("d2lkdGg=")]+":"+m[atob("aGVpZ2h0")],host:A.TriplePixelData.TripleName,url:window.location.href,ref:document.referrer,ver:window.TriplePixelData.ver},O("//api.config-security.com/",5,p),O("//triplewhale-pixel.web.app/dot1.9.txt",5)))}}("","TriplePixel",localStorage);
+/* << TriplePixel :: end*/
+</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-N7VJSKV');</script>
+<!-- End Google Tag Manager -->
+
+<script type="text/javascript">(function e(){var e=document.createElement("script");e.type="text/javascript",e.async=true,e.src="//staticw2.yotpo.com/TAGJnlSw7ScEHTgtdmRCBTTxNTpyINpCfwuuCEva/widget.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)})(); </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no, shrink-to-fit=no" />
+    <meta name="HandheldFriendly" content="true">
+    <meta name="theme-color" content="{{ settings.color_primary }}">
+    <meta name="facebook-domain-verification" content="6cu6f50wzw3kfntper3ox5gyk2xcun" />
+    <link rel="canonical" href="{{ canonical_url }}">
+
+    <link
+      rel="apple-touch-icon"
+      sizes="120x120"
+      href="{{ 'apple-touch-icon.png' | file_url | split: '?' | first }}">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="{{ 'favicon-32x32.png' | file_url | split: '?' | first }}">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="{{ 'favicon-16x16.png' | file_url | split: '?' | first }}">
+    <link rel="manifest" href="{{ 'site.webmanifest' | file_url | split: '?' | first }}">
+    <link
+      rel="mask-icon"
+      href="{{ 'safari-pinned-tab.svg' | file_url | split: '?' | first }}"
+      color="#000000">
+    <link rel="shortcut icon" href="{{ 'favicon.ico' | file_url  | split: '?' | first }}">
+    <meta name="msapplication-TileColor" content="#f6f4ee">
+    <meta name="msapplication-config" content="{{ 'browserconfig.xml' | file_url | split: '?' | first }}">
+    <meta name="theme-color" content="#ffffff">
+
+    {% capture seo_title %}
+      {{ page_title }}
+      {% if current_tags %}
+        {%- assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags -}}
+      {% endif %}
+      {% if current_page != 1 %}
+        &ndash; {{ 'general.meta.page' | t: page: current_page }}
+      {% endif %}
+      {% unless page_title contains shop.name %}
+        &ndash; {{ shop.name }}
+      {% endunless %}
+    {% endcapture %}
+    <title>{{ seo_title }}</title>
+
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+
+    {% include 'social-meta-tags' %}
+
+    <link
+      rel="preload stylesheet"
+      href="https://cdn.plyr.io/3.6.3/plyr.css"
+      as="style" />
+    <link
+      rel="preload stylesheet"
+      href="{{ 'theme.compiled.css' | asset_url }}"
+      as="style">
+    {% if template == 'cart' %}
+      <script>
+        window.location.href = "{{ shop.secure_url }}#cart";
+      </script>
+    {% endif %}
+    <script>
+      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+
+      window.theme = {
+        strings: {
+          addToCart: {{ 'products.product.add_to_cart' | t | json }},
+          soldOut: {{ 'products.product.sold_out' | t | json }},
+          unavailable: {{ 'products.product.unavailable' | t | json }}
+        },
+        moneyFormat: {{ shop.money_format | json }}
+      };
+      window.variant_separator = "{{- settings.variant_separator -}}";
+    </script>
+
+    {{ 'option_selection.js' | shopify_asset_url | script_tag }}
+
+    {% if template.directory == 'customers' %}
+      <!--[if (gt IE 9)|!(IE)]><!-->
+      <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer="defer"></script>
+      <!--<![endif]-->
+      <!--[if lte IE 9]><script src="{{ 'shopify_common.js' | shopify_asset_url }}"></script><![endif]-->
+    {% endif %}
+
+    <!--[if (gt IE 9)|!(IE)]><!-->
+    <script src="{{ 'vendor.js' | asset_url }}" defer="defer"></script>
+    <!--<![endif]-->
+    <!--[if lt IE 9]><script src="{{ 'vendor.js' | asset_url }}"></script><![endif]-->
+
+    <!--[if (gt IE 9)|!(IE)]><!--><script src="{{ 'theme.js' | asset_url }}" defer="defer"> </script>
+    <!--<![endif]-->
+    <!--[if lt IE 9]><script src="{{ 'theme.js' | asset_url }}"></script><![endif]-->
+
+
+    {% if template contains 'tearsheet' %}
+      <!--[if (gt IE 9)|!(IE)]><!--><script src="{{ 'jquery.qrcode.js' | asset_url }}" defer="defer"> </script>
+      <!--<![endif]-->
+      <!--[if lt IE 9]><script src="{{ 'jquery.qrcode.js' | asset_url }}"></script><![endif]-->
+
+      
+      <!--[if (gt IE 9)|!(IE)]><!--> <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer="defer"></script>
+      <!--<![endif]-->
+      <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script><![endif]-->
+    {% endif %}
+
+    {% include 'globo.filter.script' %}{{ content_for_header }}
+
+    <!-- Initialise Cart.js once the page has loaded -->
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function() {
+      CartJS.init( {{ cart | json }}, {
+      "requestBodyClass": "minicart-loading"
+                  } );
+                })
+    </script>
+
+    {% if template contains 'product' and product.tags contains 'floofism' %}
+      <script>
+        window.location.href = "{{ shop.secure_url }}";
+      </script>
+    {% endif %}
+    
+  
+  <!--begin-boost-pfs-filter-css-->
+   
+   <!--end-boost-pfs-filter-css-->
+    {{ shop.metafields.okendo.ReviewsWidgetStyleTag }}
+    {{ shop.metafields.okendo.StyleCustomizations }}
+    <link
+      rel="preload stylesheet"
+      href="{{ 'style.scss.css' | asset_url }}"
+      as="style">
+    {% if template contains 'tearsheet' %}
+      <link
+        rel="preload stylesheet"
+        href="{{ 'tearsheet.scss.css' | asset_url }}"
+        as="style">
+    {% endif %}
+    <style>
+      .template-search .globo-hide-product{
+        display:none!important;
+      }
+      .globo-hide-product{
+        display:none!important;
+      }
+    </style>
+
+    <script type="application/ld+json">{
+ "@context": "https://schema.org",
+ "@type": "Organization",
+ "name": "Floof",
+ "url": "https://floofliving.com/",
+ "logo":"https://i.pinimg.com/280x280_RS/79/5d/01/795d013dc32839133764bec55a4b7af8.jpg",
+ "contactPoint":[
+     {
+         "@type": "ContactPoint",
+         "contactType": "customer service",
+         "email": "concierge@floofliving.com",
+        
+         "areaServed": [
+             "USA"
+         ],
+         "availableLanguage": [
+             "English"
+         ]
+     }
+ ]
+}</script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "url": "https://floofliving.com/",
+  "name": "Floof",
+  "description":"Throw pillows that make any look possible. Just follow our lead.",
+ "logo":"https://i.pinimg.com/280x280_RS/79/5d/01/795d013dc32839133764bec55a4b7af8.jpg",
+  "image": [
+  {
+  "@type": "imageObject",
+  "url": "https://cdn.accentuate.io/282083983559/20336957325511/Mod-Victorian-Collection-Image-in-Nav-v1635810657552.jpg?960x1600"
+   }
+   ],
+          "email": "concierge@floofliving.com",
+          
+  "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "426 W. Bedford Ave.",
+      "addressLocality": "Fresno ",
+      "postalCode": "93711",
+      "addressCountry": "USA"
+  },
+  "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "36.8464024",
+      "longitude": "-119.7998388"
+  },
+  "openingHours": [
+      "Mon-Fri 08:00-16:30"
+          
+  ],
+  "priceRange": "$$-$$$"
+ 
+}</script>
+
+<!-- Google Optimize --> 
+    <script src="https://www.googleoptimize.com/optimize.js?id=OPT-M7H57PC"></script>
+<!-- End Google Optimize --> 
+    
+ 
+</head>
+
+  <body
+    id="{{ page_title | handle }}"
+    class="template-{{ handle }} template-{{ template.name | handle }} {% if template contains 'tearsheet' %}tearsheet-body{% endif %}"
+    data-mini-cart>
+{% capture the_snippet_content %}{% render 'socialshopwave-helper' %}{% endcapture %}
+            {% unless the_snippet_content contains 'Liquid error' %}
+              {{ the_snippet_content }}
+            {% endunless %}
+    <div class="cursor">
+      <span></span>
+    </div>
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N7VJSKV"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+    {% if template contains 'tearsheet' %}
+      <div class="tearsheet-header">
+          <a href="" class="btn download-tearsheet" data-filename="{{- product.handle -}}-tearsheet.pdf">
+            <span>Download Tearsheet</span>
+            <svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M400.125 560.703L287 447.578L315.281 419.297L380.125 484.141V240H420.125V484.141L484.969 419.297L513.25 447.578L400.125 560.703Z" fill="#f6f4ee"/>
+            </svg>
+          </a>
+          <a href="" class="btn btn-secondary hide-msrp">Hide MSRP</a>
+
+      </div>
+    {% endif %}
+
+    {% if template contains 'tearsheet' %}<div id="print-area">{% endif %}
+    <div class="page-wrap">
+      <span class="body__overlay js-search__opener">
+        <span class="visually-hidden">{{ 'general.accessibility.search_opener' | t }}</span>
+      </span>
+      <span class="body__overlay_navigation js-has-drop">
+        <span class="visually-hidden">{{ 'general.accessibility.overlay_navigation' | t }}</span>
+      </span>
+
+      <a class="in-page-link visually-hidden skip-link" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
+      {% section 'header' %}
+
+      <main role="main" id="MainContent">
+        {{ content_for_layout }}
+      </main>
+    </div>
+
+    
+
+    <button class="sm_menu_ham--button">
+      <span class="visually-hidden">{{ 'general.accessibility.close_menu' | t }}</span>
+      <svg
+        width="19"
+        height="19"
+        viewBox="0 0 19 19"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M1 17.9707L17.9706 1.00014"
+          stroke="black"
+          stroke-width="1.5"
+          stroke-linecap="round" />
+        <path
+          d="M1 1L17.9706 17.9706"
+          stroke="black"
+          stroke-width="1.5"
+          stroke-linecap="round" />
+      </svg>
+    </button>
+
+    {% section 'footer' %}
+
+    {% if template contains 'tearsheet' %}
+      </div>
+      <div id="print-wrapper"></div>
+    {% endif %}
+    {% include 'svg-mask' %}
+
+    {% unless template contains 'cart' %}
+      {% section 'mini-cart' %}
+    {% endunless %}
+
+    <!--begin-boost-pfs-js-->
+    
+    <!--end-boost-pfs-js-->
+    <script
+      async
+      type="text/javascript"
+      src="//static.klaviyo.com/onsite/js/klaviyo.js?company_id=Y7hedK"></script>
+    <script>
+      var _learnq = _learnq || [];
+      if ('{{ customer.email }}') {
+        _learnq.push([
+          'identify', {
+            '$email': '{{ customer.email }}'
+          }
+        ]);
+      }
+    </script>
+
+    {% comment %}
+    {{ 'iframe.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'iframe.js' |  asset_url }}"></script>
+    {% endcomment %}
+    <!--Gorgias Chat Widget Start-->
+    <script id="gorgias-chat-widget-install-v2" src="https://config.gorgias.chat/gorgias-chat-bundle-loader.js?applicationId=12286"></script>
+    <script id="gorgias-chat-shopify-install">
+      !function(_){_.SHOPIFY_PERMANENT_DOMAIN="{{ shop.permanent_domain }}",_.SHOPIFY_CUSTOMER_ID="{{ customer.id }}",_.SHOPIFY_CUSTOMER_EMAIL="{{ customer.email }}"}(window||{});</script>
+    <!--Gorgias Chat Widget End-->
+    <script>
+      GorgiasChat.init().then(function() {
+        GorgiasChat.hidePoweredBy(true) // To hide.
+      })
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@loophq/onstore-sdk@latest/dist/loop-onstore-sdk.min.js"></script>
+    <script>
+      LoopOnstore.init({key: "d2a1ddbaad44dd824692c8bda568f1eb456fa629", attach: ".checkout-btn"});
+    </script>
+{{ "//cdn.shopify.com/s/files/1/0603/7530/2276/t/1/assets/optimizers.js" | script_tag}}
+{% include 'globo.filter.action' %}
+	
+ <!--begin-boost-pfs-js-->
+   
+ <!--end-boost-pfs-js-->
+ <script
+      src="https://cdn.jsdelivr.net/npm/swiper@10.2.0/swiper-bundle.min.js"
+      integrity="sha256-W1EevMnQZKpkTdbA7fyzCVlU8ZMk+xDZoU+kfQHd70M="
+      crossorigin="anonymous"
+    ></script>
+<!--   //Klavyo Add to Cart Tracker -->
+{% render 'klavyo-ATC-Trigger' %}
+<!--   End of Klavyo Add to Cart Tracker -->
+</body>
+</html>

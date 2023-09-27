@@ -1,0 +1,59 @@
+<div class="not-found-page text-center">
+  <div class="page-width">
+    {% if section.settings.image != blank %}
+      <img class="lazyload not-found-page__img-gif"
+           src="{{ section.settings.image | img_url: '50x50' }}"
+           data-src="{{ section.settings.image | img_url: 'master' }}"
+           data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+           data-aspectratio="{{ section.settings.image.aspect_ratio }}"
+           data-sizes="auto"
+           alt="feather">
+    {% endif %}
+
+      {% if section.settings.heading != blank %}
+        <h1 class="not-found-page__title">{{ section.settings.heading }}</h1>
+      {% endif %}
+      {% if section.settings.text != blank %}
+        <div class="not-found-page__text-box">{{ section.settings.text }}</div>
+      {% endif %}
+      {% if section.settings.btn_text != blank and section.settings.btn_link != blank %}
+        <a href="{{ section.settings.btn_link }}" class="btn btn--arrow">{{ section.settings.btn_text }}</a>
+      {% endif %}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Not Found",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "404"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button text",
+      "default": "Return to home"
+    },
+    {
+      "type": "url",
+      "id": "btn_link",
+      "label": "Button url"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    }
+  ]
+}
+{% endschema %}

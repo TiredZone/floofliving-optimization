@@ -1,0 +1,70 @@
+<div class="login-page">
+  <div class="without-pad">
+    <div class="login-page__flex form-reset-password">
+      {% if section.settings.image != blank %}
+      <div class="login-page__flex-left">
+        {%- assign img_url = section.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+          <div class="login-page__img">
+            <img class="login-page__image lazyload"
+            src="{{ section.settings.image | img_url: '50x50' }}"
+            data-src="{{ img_url }}"
+            data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+            data-aspectratio="{{ section.settings.image.aspect_ratio }}"
+            data-sizes="auto"
+            alt="{{ section.settings.image.alt | escape }}">
+          </div>
+      </div>
+      {% endif %}
+      <div class="login-page__flex-right">
+        <h1>{{ 'customer.reset_password.title' | t }}</h1>
+        <div class="login-page-info">
+          {{ 'customer.reset_password.subtext' | t: email: email }}
+        </div>
+        {% form 'reset_customer_password' , class: 'js-validation reset-form' %}
+        
+        <div class="general-form__row">
+          <label for="ResetPassword" class="label-hidden">
+            {{ 'customer.reset_password.password' | t }}
+          </label>
+          <input type="password"
+            name="customer[password]"
+            id="ResetPassword"
+            data-required="true"
+            data-interactive="true"
+            class="general-form__label {% if form.errors contains 'password' %}input-error{% endif %}"
+            placeholder="{{ 'customer.reset_password.password' | t }}">
+            <span class="error-message">{{ 'customer.register.errors.password' | t }}</span>
+        </div>
+        <div class="general-form__row">
+          <label for="PasswordConfirmation" class="label-hidden">
+            {{ 'customer.reset_password.password_confirm' | t }}
+          </label>
+          <input type="password"
+            name="customer[password_confirmation]"
+            id="PasswordConfirmation"
+            data-required="true"
+            data-interactive="true"
+            class="general-form__label {% if form.errors contains 'password_confirmation' %}input-error{% endif %}"
+            placeholder="{{ 'customer.reset_password.password_confirm' | t }}">
+            <span class="error-message">Confirm {{ 'customer.register.errors.password' | t }}</span>
+        </div>
+        {{ form.errors | default_errors }}
+        <button type="submit" class="btn">{{ 'customer.reset_password.submit' | t }}</button>
+      {% endform %}
+      </div>
+    </div>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Register Page",
+  "class": "register-page__section-wrap",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image Background"
+    }
+  ]
+}
+{% endschema %}        

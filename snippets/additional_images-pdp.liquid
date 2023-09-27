@@ -1,0 +1,18 @@
+{% for multi_images in product.metafields.product.additional_images %}
+  {% assign loop_var = multi_images %}
+  {% if multi_images.media_type != blank %}
+    {% assign loop_var = product.metafields.product.additional_images %}
+  {% endif %}
+  {% for image in loop_var %}
+    {% if image.media_type == 'video' %}
+      <div class="product__add-image product__add-image--video viewport-section">
+        <div class="product__add-video" data-video='{"type": "html5", "video": "{{ image.src }}", "autoplay": true}'></div>
+      </div>
+    {% else %}
+      <div class="product__add-image viewport-section" style="background: url('{{ image.src }}') no-repeat 50%"></div>
+    {% endif %}
+  {% endfor %}
+  {% if multi_images.media_type != blank %}
+    {% break %}
+  {% endif %}
+{% endfor %}

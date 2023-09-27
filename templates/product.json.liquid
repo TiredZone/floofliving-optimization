@@ -1,0 +1,33 @@
+{%- layout none -%}
+
+{% assign raw = '' %}
+{%- assign variant_array_string = '' -%}
+
+{% for variant in product.variants %}
+{%- assign option_key = variant.inventory_quantity -%}
+{%- assign option_quantity = variant.inventory_quantity -%}
+{%- assign option_policy = variant.inventory_policy -%}
+{%- assign option_management = variant.inventory_management -%}
+{%- assign option_name = variant.title -%}
+{%- assign option_id = variant.id -%}
+
+{%- capture option -%}
+{
+  "variant_id": "{{ option_id }}",
+  "variant_inventory_quantity": "{{ option_quantity }}",
+  "variant_inventory_policy": "{{ option_policy }}",
+  "variant_inventory_management": "{{ option_management }}"
+}
+{%- endcapture -%}
+
+{%- capture option_string -%},{{ option }}{%- endcapture -%}
+
+{%- assign variant_array_string = variant_array_string | append: option_string -%}
+{%- endfor -%}
+
+{%- assign variant_array_string = variant_array_string | replace_first: ',' -%}
+{%- assign option_array = '[' | append: variant_array_string | append: ']' -%}
+{%- capture option_object_string -%}"handle": "{{ product.handle }}", "option": {{ option_array }}{% endcapture %}
+{%- assign option_object = '{' | append: option_object_string | append: '}' -%}
+
+{{- option_object | trim -}}

@@ -1,0 +1,237 @@
+{% stylesheet %}
+    .container {
+      height: auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column; /* To align its children (the slider and the button) vertically */
+      gap: 20px; /* Spacing between the slider and the button */
+      align-items: center;
+      justify-content: center;
+      background-color: #000000;
+    }
+    .testimonial {
+      position: relative;
+      /* max-width: 900px; */
+      width: 100%;
+      padding: 20px 0;
+      overflow: hidden;
+    }
+
+    .swiper-pagination{
+      bottom: unset !important;
+    }
+
+    .testimonial .image {
+      object-fit: cover;
+    }
+    .testimonial .slide {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      row-gap: 20px;
+      height: 100%;
+      width: 100%;
+    }
+    .slide p {
+      text-align: center;
+      padding: 0 50px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #E6DACD;
+      margin: 0;
+    }
+
+    .slide .details {
+      display: flex;
+      padding: 0 50px;
+      
+    }
+
+    .details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 600px; /* Adjust as necessary */
+  }
+
+  .details .name {
+      font-size: 20px;
+      font-weight: 900;
+      font-family: Wulkan Display;
+      color: #E6DACD;
+      margin-right: auto; /* This will push the name to the left */
+  }
+
+  .details .stars {
+      display: flex;
+      margin-left: auto; /* This will push the stars to the right */
+  }
+
+  .star {
+      color: #FF5757;
+      font-size: 20px;
+      margin: 0 3px;
+  }
+
+    .view-all-btn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-family: Wulkan Display;
+      background-color: transparent;
+      color: #E6DACD;
+      border: 2px solid white;
+      border-radius: 5px;
+      cursor: pointer;
+      align-self: center; /* This will center the button */
+      transition: 0.3s; /* Smooth transition for hover effects */
+  }
+
+  .view-all-btn:hover {
+      background-color: #E6DACD; /* Invert colors on hover for better UX */
+      color: #000; /* Black text on hover, adjust as necessary */
+  }
+
+    /* swiper button css */
+    .nav-btn {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      transform: translateY(30px);
+      background-color: rgba(0, 0, 0, 0.1);
+      transition: 0.2s;
+    }
+    .nav-btn:hover {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+    .nav-btn::after,
+    .nav-btn::before {
+      font-size: 20px;
+      color: #ffffff;
+    }
+    .swiper-pagination-bullet {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+    .swiper-pagination-bullet-active {
+      background-color: #E6DACD;
+    }
+    @media screen and (max-width: 768px) {
+
+      .slide p {
+        padding: 0 30px;
+      }
+
+       .slide .details {
+         padding: 0 30px;
+       }
+
+      .view-all-btn{
+        margin-top: 0;
+      }
+
+      .section-title{
+        margin-top: 10px;
+      }
+      
+      .nav-btn {
+        display: none;
+      }
+    }
+{% endstylesheet %}
+
+<section class="container">
+  <h2 class="section-title" style="color: #E6DACD; text-align: center;">Customer Reviews</h2>
+  <div class="testimonial mySwiper">
+    <div class="testi-content swiper-wrapper" id="swiper-wrapper-content">
+      <!-- Slides will be appended here -->
+    </div>
+    <div class="swiper-pagination"></div>
+  </div>
+  <button href="https://floofliving.com/pages/reviews" id="all-reviews-button" class="view-all-btn">See All Reviews</button>
+</section>
+
+{% javascript %}
+  
+ document.getElementById("all-reviews-button").onclick = function () {
+        location.href = "https://floofliving.com/pages/reviews";
+    }; 
+  
+  
+  
+fetch('https://cdn.shopify.com/s/files/1/0566/6317/9463/files/Testimonials.json?v=1693308141', {
+    method: 'GET',
+    headers: {
+        'Accept': 'application/json',
+    },
+})
+.then(response => response.json())
+.then(data => {
+    const swiperWrapper = document.getElementById("swiper-wrapper-content");
+    swiperWrapper.innerHTML = ''; // Clear any existing testimonials
+
+    data.slice(0, 6).forEach((review) => { // Only take the first 6 reviews
+        const slideDiv = document.createElement("div");
+        slideDiv.classList.add("slide");
+        slideDiv.classList.add("swiper-slide");
+        slideDiv.innerHTML = `
+   <img src="${review["Published Image URLs"].split("; ")[0]}" alt="" class="image clover-image-svg-mask" loading="lazy" />
+   <div class="details">
+       <span class="name">${review["Reviewer Display Name"]}</span>
+       <div class="stars">
+           <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+       </div>
+   </div>
+   <p>${review["Review Content"]}</p>
+   <a class="review__product_link" href="${review["Product URL"]}" style="color: #FF5757; text-decoration: underline;">Shop ${review["Product Title"]}</a>
+`;
+
+        swiperWrapper.appendChild(slideDiv);
+    });
+
+    // Initialize the Swiper after appending the slides
+    initializeSwiper();
+
+}).catch(err => {
+    console.error('Failed to fetch testimonials:', err);
+});
+
+function initializeSwiper() {
+    var swiper = new Swiper(".mySwiper", {
+        slidesPerView: 1,
+        slidesPerGroup: 1,
+        grabCursor: true,
+        loop: true,
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+        },
+        breakpoints: {
+            768: {
+                slidesPerView: 3,
+                slidesPerGroup: 3
+            }, 
+        }
+      // autoplay: {
+      //     delay: 5000,
+      //   },
+    });
+}
+
+
+
+
+
+
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Testimonials Slider",
+  "presets": [
+    {
+      "name": "Testimonials Slider"
+    }
+  ]
+}
+{% endschema %}

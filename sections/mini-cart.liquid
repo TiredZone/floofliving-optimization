@@ -1,0 +1,389 @@
+<style>
+  .perz-title {
+    border: 1px solid black;
+  }
+  
+  #countdown-timer {
+    font-family: "Wulkan Display", sans-serif;
+    font-weight: bold;
+    color: #ff5757;
+    text-align:center;
+  }
+</style>
+
+<!--Script For Countdown Timer  -->
+<script>
+  // Function to start the countdown
+  function startCountdown(duration, display) {
+    var timer = duration, minutes, seconds;
+    var countdownInterval = setInterval(function () {
+      minutes = parseInt(timer / 60, 10);
+      seconds = parseInt(timer % 60, 10);
+
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
+
+      display.textContent = minutes + ":" + seconds;
+
+      if (--timer < 0) {
+        clearInterval(countdownInterval); // Stop the countdown when it reaches 0
+        // You can add any action you want to perform when the timer reaches 0 here.
+        // For example, you can hide the timer or display a message.
+      }
+    }, 1000);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var countdownElement = document.getElementById("countdown");
+    var storedExpirationTime = localStorage.getItem("countdownExpirationTime");
+
+    if (storedExpirationTime) {
+      var currentTime = Math.floor(Date.now() / 1000);
+      var remainingTime = storedExpirationTime - currentTime;
+
+      if (remainingTime > 0) {
+        startCountdown(remainingTime, countdownElement);
+      }
+    }
+
+    // Set a new countdown expiration time (e.g., 10 minutes from now)
+    var newExpirationTime = Math.floor(Date.now() / 1000) + 600; // 600 seconds = 10 minutes
+    localStorage.setItem("countdownExpirationTime", newExpirationTime);
+  });
+</script>
+<!--End of Script For Countdown Timer  -->
+
+<section class="mini-cart" data-cart-view>
+  <div class="mini-cart__overlay" data-mini-cart-trigger></div>
+  <div class="mini-cart__container">
+    {% if cart.item_count != 0 %}
+    <div id="countdown-timer">
+          We're holding your pillows for <span id="countdown"></span>
+    </div>
+    {% endif %}
+    <div class="mini-cart__header">
+      {% if section.settings.title != blank %}
+        <h2 class="mini-cart__title h4">{{ section.settings.title }}</h2>
+      {% endif %}
+
+      <button class="mini-cart__close" data-mini-cart-trigger>
+        <span class="visually-hidden">{{ 'cart.minicart.close' | t}}</span>
+        <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 17.9706L17.9706 1.00002" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M1 1L17.9706 17.9706" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="mini-cart__wrapper {% if cart.item_count == 0 %} hide{% endif %}" data-full-cart-content>
+      {% if section.settings.free_shipping %}
+        <div class="count-shipping">
+          {% if section.settings.shipping_method == 'cart-total' %}
+            {% assign cart_total_price = cart.total_price | times: 0.01 %}
+            {% assign shipping_price = section.settings.shipping_price | plus: 0 %}
+            {% assign shipping_text = '' %}
+            {% assign shipping_width = 0 %}
+            {% assign shipping_difference = shipping_price | minus: cart_total_price | plus: 0 | times: 100 | money %}
+
+            {% if cart_total_price > shipping_price %}
+              {% assign free_shipping = true %}
+              {% assign shipping_text = section.settings.shipping_title_full %}
+              {% assign shipping_width = 100 %}
+            {% else %}
+              {% assign shipping_text = section.settings.shipping_title %}
+              {% assign shipping_width = cart_total_price | divided_by: shipping_price | times: 100 %}
+            {% endif %}
+          {% else %}
+            {% assign cart_total_items = cart.item_count %}
+            {% assign set_count = 0 %}
+            {% for item in cart.items %}
+              {% for tag in item.product.tags %}
+                {% if tag contains 'pfs:swatch' %}
+                  {% assign cart_total_items = cart_total_items | minus: item.quantity %}
+                {% elsif tag contains 'count:' %}
+                  {% assign set_count_single = tag | remove:'count:' | strip | minus:1 %}
+                  {% assign set_count = set_count | plus:set_count_single %}
+                  {% break %}
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+            {% assign cart_total_items = cart_total_items | plus:set_count %}
+            {% assign shipping_items = section.settings.shipping_items | plus: 0 %}
+            {% assign shipping_text = '' %}
+            {% assign shipping_width = 0 %}
+            {% assign shipping_difference = shipping_items | minus: cart_total_items | append: ' items' %}
+
+            {% if cart_total_items >= shipping_items %}
+              {% assign free_shipping = true %}
+              {% assign shipping_text = section.settings.shipping_title_full %}
+              {% assign shipping_width = 100 %}
+            {% else %}
+              {% assign shipping_text = section.settings.shipping_title %}
+              {% assign shipping_width = cart_total_items | divided_by: shipping_items | times: 100 %}
+            {% endif %}
+          {% endif %}
+
+          <span data-not-full-text="{{ section.settings.shipping_title }}"
+                data-full-text="{{ section.settings.shipping_title_full }}"
+                {% if section.settings.shipping_method == 'cart-total' %}
+                  data-price="{{ section.settings.shipping_price }}"
+                {% else %}
+                  data-total-items ="{{ section.settings.shipping_items }}"
+                {% endif %}
+                class="count-shipping__title"><em class="{% if shipping_items < 0 %}hide{%endif%}">{{ shipping_difference }}</em> <strong> {{ shipping_text }}</strong></span>
+          <div class="count-shipping__line"><em style="width: {{ shipping_width }}%">{{ shipping_width }}%</em></div>
+        </div>
+      {% endif %}
+
+      <div class="mini-cart__content" data-cart-wrapper>
+        <div data-rv-each-item="cart.items">
+          <div class="mini-cart__item js-minicart-item" data-minicart-item>
+            <a class="mini-cart__item-image-link" data-rv-href="item.url">
+              <img class="mini-cart__item-image"
+                   src="{{ item.image | img_url: '50x50' }}"
+                   alt="{{ item.title }}"
+                   data-rv-alt="item.product_title"
+                   data-rv-show="item.image"
+                   data-rv-src="item.image | productImageSize  'large'">
+              <div data-rv-hide="item.image">{{ 'product-1' | placeholder_svg_tag }}</div>
+            </a>
+            <div class="mini-cart__item-content">
+              <div data-rv-class="item.product_type">
+                <div class="mini-cart__item-row">
+                  <strong class="mini-cart__item-title">
+                    <a class="mini-cart__item-title-link" data-rv-href="item.url" data-rv-text="item.product_title"></a>
+                  </strong>
+
+                  <div class="mini-cart__prices">
+                   <s class="minicart__list-item-price-sale hide"
+                       data-compare-price
+                       data-rv-data="item.url"></s>
+                    <span class="minicart__list-item-price visually-hidden"
+                          data-rv-data-minicart-price="item.price"
+                          data-price-item
+                          data-rv-html="item.price | money Currency.currentCurrency"></span>
+                    <strong class="minicart__list-line-price"
+                          data-rv-data-minicart-price="item.line_price"
+                          data-line-price
+                          data-rv-html="item.line_price | money Currency.currentCurrency"></strong>
+                  </div>
+                </div>
+
+                <div class="mini-cart__item-options">
+                  <span class="mini-cart__properties" data-rv-hide="item.propertyArray | empty">
+                    <span class="mini-cart__property" data-rv-each-property="item.propertyArray < properties">
+                      <span data-rv-class="property.name" data-rv-unless="property.name | eq 'count'"><em>{property.name}:</em> {property.value}</span>
+                    </span>
+                  </span>
+
+                  <span data-rv-each-option="item.options_with_values"> / <span data-rv-class="option.value" data-rv-text="option.value"></span></span>
+                  / <span data-rv-data-minicart-price="item.price"
+                        data-price
+                        data-rv-html="item.price | money Currency.currentCurrency"></span>
+                </div>
+
+                <div class="mini-cart__properties" data-rv-hide="item.propertyArray | empty">
+                  <div class="mini-cart__property" data-rv-each-property="item.propertyArray < properties">
+                    <span data-rv-class="property.name" data-rv-unless="property.name | starts_with '_'"><em>{property.name}:</em> {property.value}</span>
+                  </div>
+                </div>
+
+                <div data-rv-if="item.set_items_count">
+                  {item.set_items_count} Pillow<span data-rv-if="item.set_items_count | > 1">s</span> / {item.price | money Currency.currentCurrency}
+                </div>
+
+                <div class="mini-cart__item-row footer--row">
+                  <a href="{{ routes.cart_change_url }}?line=&amp;quantity=0"
+                     data-rv-data-cart-remove="index | plus 1"
+                     class="mini-cart__item-remove"
+                     data-cart-remove="1">{{ 'cart.minicart.remove' | t }}</a>
+
+                  <div class="qty-number mini-cart__qty">
+                    <button type="button"
+                            class="qty-number__button qty-number--minus"
+                            data-qty-number-minus
+                            data-rv-data-cart-update="index | plus 1"
+                            data-rv-data-cart-quantity="item.quantity | minus 1">—
+                    </button>
+                    <input type="number"
+                           class="qty-number__qty js-default-input jcf-ignore"
+                           data-rv-value="item.quantity | maxQty"
+                           data-rv-data-variant="index | plus 1"
+                           min="0"
+                           aria-label="quantity"
+                           data-item-qty
+                           pattern="[0-9]*">
+                    <button type="button"
+                            class="qty-number__button qty-number--plus"
+                            data-qty-number-plus
+                            data-rv-data-cart-update="index | plus 1"
+                            data-rv-data-cart-quantity="item.quantity | plus 1">+
+                    </button>
+                  </div>
+                </div>
+                <div class="mini-cart__message hide" data-limit-message>{{ 'cart.minicart.limit' | t }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mini-cart__footer {% if cart.item_count == 0 %} hide{% endif %}" data-full-cart-content>
+      <div class="mini-cart__subtotal">
+        <span class="mini-cart__subtotal_title">{{ 'cart.minicart.subtotal' | t }}</span>
+        <span class="mini-cart__subtotal_price"
+              data-rv-html="cart.total_price | money Currency.currentCurrency">
+          {{ cart.total_price | money }}
+        </span>
+      </div>
+      <p class="mini-cart__shipping">{{ 'cart.minicart.shipping_at_checkout' | t }}</p>
+
+      <div class="mini-cart__footer-buttons">
+        {% if customer.tags contains 'Trade Program' %}
+          <a href="javascript:void(0)" class="btn mini-cart__footer-button precheckout-btn">{{ 'cart.minicart.checkout_link' | t }}</a>
+          {% else %}
+            <form action="{{ routes.cart_url }}" method="post" class="form-cart">
+              <textarea id="order-notes" name="note" cols="4" rows="4" class="hidden"></textarea>
+              <button type="submit" name="checkout" class="btn mini-cart__footer-button checkout-btn">{{ 'cart.minicart.checkout_link' | t }}</a>
+            </form>
+          {% endif %}
+      </div>
+      <p style="margin-top:10px;font-size:12px;text-align:center;">Love your Floof, or send it back for a full <a href="https://fgjgvshzjz6gvvpd-56663179463.shopifypreview.com/policies/refund-policy" style="font-size:12px;text-transform:lowercase;border-bottom:1px solid black;">refund.</a></p>
+      <!--PERZONALIZATION-START Do not modify or delete this comment-->
+      <div id="perzonalization-custom-cart-drawer" class="perzonalization"></div>
+      <script type='text/javascript'>var productDetailsForPrz = {{ product | json }};var basketDetailsForPrz = {{ cart | json }};var filterDetailsForPrz = {{ collection | json }};var detailsForPrz = { userId: '{{ customer.id }}', language: '{{ shop.locale }}', currency:'{{ shop.currency }}' };var searchDetailsForPrz = {{ search.results | json }};if(productDetailsForPrz) { productDetailsForPrz.collections = []; }{% for collection in product.collections %}   if(productDetailsForPrz) { productDetailsForPrz.collections.push("{{ collection.title }}") }{% endfor %}if (filterDetailsForPrz) { filterDetailsForPrz.products = []; }{% for product in collection.products %}   if(filterDetailsForPrz) { filterDetailsForPrz.products.push({ id:"{{ product.id }}", handle:"{{ product.handle }}" }) }{% endfor %}</script>
+      <!--Do not modify or delete this comment PERZONALIZATION-END-->
+    </div>
+
+
+    <div class="mini-cart__empty text-center {% if cart.item_count > 0 %} hide{% endif %}" data-empty-cart-content>
+      {% if section.settings.image != blank %}
+        {% render 'image',
+          image: section.settings.image,
+          width: 144,
+          classes: "mini-cart__image" %}
+      {% else %}
+        <div class="poodle-animated" style="width: 83px; margin: 0 auto 11px;">
+          <span></span>
+        </div>
+      {% endif %}
+
+      {% if section.settings.empty_text != blank %}
+        <p class="mini-cart__empty-title">{{ section.settings.empty_text }}</p>
+      {% endif %}
+
+      {% if section.settings.btn_url != blank and section.settings.btn_label != blank %}
+        <a class="btn mini-cart__empty-btn"
+           href="{{ section.settings.btn_url }}">{{ section.settings.btn_label }}</a>
+      {% endif %}
+    </div>
+    {% if customer.tags contains 'Trade Program' %}
+      <div class="cart-popup">
+          <div class="popup-overlay"></div>
+          <div class="popup-content">
+            <form action="{{ routes.cart_url }}" method="post" class="form-cart">
+              <h3>Order Notes</h3>
+              <label for="shipping-notice" class="checkbox-wrapper">
+                <span>Here's your place to put sidemarks, PO, Ship by dates, etc.*</span>
+                <textarea id="order-notes" name="note" cols="4" rows="4">
+                  {%- if cart.note -%}{{- cart.note -}}{%- endif -%}
+                </textarea>
+              </label>
+              <button type="submit" name="checkout" class="btn btn--full btn--large cart__checkout">
+                <span>Submit Notes</span>
+              </button>
+            </form>
+          </div>
+      </div>
+    {% endif %}
+    
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Mini cart",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Mini cart"
+    },
+    {
+      "type": "header",
+      "content": "Shipping info"
+    },
+    {
+      "type": "checkbox",
+      "id": "free_shipping",
+      "label": "Enable free shipping"
+    },
+    {
+      "type": "text",
+      "id": "shipping_title_full",
+      "label": "Heading for full shipping"
+    },
+    {
+      "type": "text",
+      "id": "shipping_title",
+      "label": "Heading for not full shipping"
+    },
+    {
+      "type": "select",
+      "id": "shipping_method",
+      "label": "Free shipping requirement",
+      "options":[
+        {
+          "label": "Cart Total ($)",
+          "value": "cart-total"
+        },
+        {
+          "label": "Cart Items Total",
+          "value": "cart-items"
+        }
+      ]
+    },
+    {
+      "type": "number",
+      "id": "shipping_price",
+      "label": "Required amount ($)",
+      "info": "Fill this if you select Cart Total in free shipping requirement options"
+    },
+    {
+      "type": "number",
+      "id": "shipping_items",
+      "label": "Required items",
+      "info": "Fill this if you select Cart Items Total in free shipping requirement options"
+    },
+    {
+      "type": "header",
+      "content": "Empty cart"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Text",
+      "default": "Your cart is currently empty"
+    },
+    {
+      "type": "url",
+      "id": "btn_url",
+      "label": "Button url"
+    },
+    {
+    "type": "text",
+      "id": "btn_label",
+      "label": "Button label",
+      "default": "Shop now"
+    }
+  ]
+}
+{% endschema %}
+

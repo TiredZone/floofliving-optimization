@@ -1,0 +1,236 @@
+<div
+    data-section-id="{{ section.id }}"
+    data-enable-history-state="true"
+    itemscope
+    itemtype="http://schema.org/Product">
+  
+    {%- assign current_variant = product.selected_or_first_available_variant -%}
+    {%- assign featured_image = current_variant.featured_image | default: product.featured_image -%}
+    {%- assign add_class = product.metafields.accentuate.select_content_type | handleize | remove: '1-' | remove: '2-' -%}
+  
+    <meta itemprop="name" content="{%- render 'product-title', product:product %}{% unless product.has_only_default_variant -%} - {{ current_variant.title }}{% endunless %}">
+    <meta itemprop="url" content="{{ shop.url }}{{ current_variant.url }}">
+    <meta itemprop="brand" content="{{ product.vendor }}">
+    <meta itemprop="image" content="{{ featured_image | img_url: '600x600' }}">
+    <meta itemprop="description" content="{{ product.description | strip_html | escape }}">
+  
+    <span
+      class="js-current-variant-id hide"
+      data-current-variant-id="{{ current_variant.id }}"
+      data-current-variant-option1='{{ current_variant.option1 }}'
+      data-current-variant-option2='{{ current_variant.option2 }}'
+      data-current-variant-option3='{{ current_variant.option3 }}'></span>
+  
+    {% comment %}
+    <div class="test-sliders">
+    {% for image in product.images %}
+  
+    {%- assign variantsID = '' -%}
+    {%- assign numb = 0 -%}
+    {%- assign thumbnailAlt = image.alt | split: "|| " | last -%}
+  
+    {%- for variant in product.variants -%}
+    {% if image.id == variant.image.id %}
+    {% if numb == 0 %}
+    {%- assign variantsID = variantsID | append: variant.id -%}
+    {%- assign numb = numb | plus:1 -%}
+    {% else %}
+    {%- assign variantsID = variantsID  | append: ',' | append: variant.id -%}
+    {% endif %}
+    {% endif %}
+    {%- endfor -%}
+  
+    <div class="product__gallery-item" data-product-slide data-color="{{ thumbnailAlt }}" data-variant-id="{{ variantsID }}">
+    <img width="50" src="{{ image.src | img_url: '50x' }}" alt="{{ image.alt }}" data-product-image>
+    </div>
+  
+    {% endfor %}
+    </div>
+    {% endcomment %}
+
+    <div class="product__holder">
+      <div class="product__images--holder">
+  
+        <div class="product__images">
+  
+          {% if product.images.size == 0 %}
+            <div class="product-gallery__svg">
+              {{ 'product-1' | placeholder_svg_tag }}
+            </div>
+          {% endif %}
+  
+          {% if product.images.size == 1 and featured_image != blank %}
+            <div
+              class="product-gallery__image"
+              style="background-image:url({{ featured_image | img_url: 'master' }})"
+              data-product-featured-image>
+              {%- assign featured_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media -%}
+              <img
+                src="{{ featured_media | img_url: product_image_size, scale: product_image_scale }}"
+                alt="{{ featured_media.alt }}"
+                id="FeaturedMedia-{{ section.id }}"
+                class="product-featured-media visually-hidden">
+            </div>
+          {% endif %}
+  
+          {% if product.media.size > 1 %}
+            <ul class="product__gallery js-product__gallery">
+              {%- assign thumbnailAlt = media.preview_image.alt | split: "|| " | last -%}
+              <div>{% render 'gallery-item-tearsheet', media: product.media[0], thumbnailAlt: thumbnailAlt %}</div>
+            </ul>
+          {% endif %}
+        </div>
+  
+      </div>
+  
+      <div class="product__info--holder">
+        <div class="product__info-wrapper">
+          <div class="product__info">
+            <div class="product__head">
+              <h1 class="product__title">{%- render 'product-title', product: product -%}</h1>
+  
+              <div class="product__price" data-price-wrapper>
+                {%- if product.compare_at_price_max > product.price -%}
+                  <span class="visually-hidden" data-compare-text>{{ 'products.product.regular_price' | t }}</span>
+                  <s
+                    data-compare-price
+                    {% if current_variant.compare_at_price == blank %}
+                    class="hide"
+                    {% endif %}>
+                    {%- if current_variant.compare_at_price > current_variant.price -%}
+                      {{ current_variant.compare_at_price | money }}
+                    {%- endif -%}
+                  </s>
+                {%- endif -%}
+                <span data-product-price>{{ current_variant.price | money }}</span>
+              </div>
+            </div>
+            
+            <span class="product__collection">{{ product.title | split: settings.variant_separator | last | strip }}</span>
+  
+            <div class="product-description">
+                {{ product.metafields.product.additional_information }}
+            </div>
+            <div
+              itemprop="offers"
+              itemscope
+              itemtype="http://schema.org/Offer">
+              <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+              <meta itemprop="price" content="{{ current_variant.price | divided_by: 100.00 }}">
+              <link itemprop="availability" href="http://schema.org/{% if current_variant.available %}InStock{% else %}OutOfStock{% endif %}">
+  
+              <form
+                action="/cart/add"
+                method="post"
+                enctype="multipart/form-data"
+                data-cart-submit="data-cart-submit">
+                <div class="form-loading">
+                  {% render 'loading-animation' %}
+                </div>
+                {% unless product.has_only_default_variant %}
+  
+                  <div class="swatch-wrap">
+                    {%- if product.title contains settings.variant_separator -%}
+                      {% for col in product.collections %}
+                        {% assign colTitle = col.title | downcase %}
+                        {% if colTitle contains '[variants]' %}
+                          {% assign variantsCollection = col %}
+                          {% break %}
+                        {% endif %}
+                      {% endfor %}
+                      {% if variantsCollection %}
+                        {% render 'swatch-from-collection-tearsheet', collection: variantsCollection, current: product %}
+                      {% endif %}
+                    {%- endif -%}
+                    {% for swatch in product.options %}
+                        {% if swatch contains 'size' or swatch contains 'Size' %}
+                            {% render 'swatch-tearsheet', swatch:swatch %}
+                        {% endif %}
+                    {% endfor %}
+                  </div>
+                {% endunless %}
+  
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="product__holder">
+      <div class="product__images--holder">
+  
+        <div class="product__images">
+          {% if product.images.size == 1 and featured_image != blank %}
+            <div
+              class="product-gallery__image"
+              style="background-image:url({{ featured_image | img_url: 'master' }})"
+              data-product-featured-image>
+              {%- assign featured_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media -%}
+              <img
+                src="{{ featured_media | img_url: product_image_size, scale: product_image_scale }}"
+                alt="{{ featured_media.alt }}"
+                id="FeaturedMedia-{{ section.id }}"
+                class="product-featured-media visually-hidden">
+            </div>
+          {% endif %}
+  
+          {% if product.media.size > 1 %}
+            <ul class="product__gallery js-product__gallery">
+
+              {%- assign thumbnailAlt = media.preview_image.alt | split: "|| " | last -%}
+              <div>{% render 'gallery-item-tearsheet', media: product.media[1], thumbnailAlt: thumbnailAlt %}</div>
+            </ul>
+          {% endif %}
+        </div>
+  
+      </div>
+  
+      <div class="product__info--holder">
+        <div class="product__info-wrapper">
+          <div class="product__info">
+            <div class="the-details">
+                <h3>The Details</h3>
+                {{ product.description | split:'</h3>' | last }}
+            </div>
+
+          </div>
+        </div>
+        <div id="qrcode-wrapper" data-url="{{-shop.secure_url-}}{{- product.url -}}">
+            <span>see the product online</span>
+            <span class="qrcode"></span>
+        </div>
+        {% unless product == empty %}
+          <script type="application/json" data-product-json>{{ product | json }}</script>
+        {% endunless %}
+      </div>
+    </div>
+  
+  </div>
+  
+  <style>
+    .product__add-info.arc-text-svg-mask {
+      background-image: url('{{ 'pdp_arc.svg' | asset_url }}');
+    }
+  
+    .product__add-info.cloud-text-svg-mask {
+      background-image: url('{{ 'pdp_cloud.svg' | asset_url }}');
+  
+    }
+  
+  
+  
+    .product__add-info.flower-text-svg-mask {
+      background-image: url('{{ 'pdp_flower.svg' | asset_url }}');
+    }
+  
+    .product__add-info.vase-text-svg-mask {
+      background-image: url('{{ 'pdp_vase.svg' | asset_url }}');
+    }
+  </style>
+  
+  {% schema %}
+    {
+      "name": "Product pages",
+      "settings": []
+    }
+  {% endschema %}

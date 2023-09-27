@@ -1,0 +1,148 @@
+<footer>
+  <div class="page-width-1440">
+    <div class="footer_newsletter">
+      <div class="section-header">
+        {% if section.settings.section_title != blank %}
+          <h2 class="h2">{{ section.settings.section_title | escape }}</h2>
+        {% endif %}
+        {% if section.settings.subheading != blank %}
+          <h6 class="h6">{{ section.settings.subheading }}</h6>
+        {% endif %}
+      </div>
+      {% if section.settings.form_box != blank %}
+        <div id="footer_newsletter--klavio" class="{{ section.settings.form_box }}"></div>
+      {% else %}
+      {% form 'customer', id: 'newsletter__control', novalidate: 'novalidate', class: 'js-newsletter__form form-validation general-form js-validation'  %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+          <p class="form-message form-message--success {%- if form.posted_successfully? -%}form-message--success--active{%- endif -%}" tabindex="-1" data-form-status>
+            Thanks for signing up! Check your inbox for a confirmation email!
+          </p>
+
+          <div class="newsletter__row">
+              <input type="email" name="contact[email]"
+                      id="newsletter-popup__email"
+                      class="newsletter-popup__input{% if form.errors %} input--error{% endif %}"
+                      placeholder="Enter your email"
+                      aria-label="Enter your email"
+                      aria-required="true"
+                      required
+                      data-required="true"
+                      data-interactive="true"
+                      autocapitalize="off">
+          </div>
+
+          <div class="newsletter__actions">
+              <button type="submit" class="btn newsletter__btn">{% include 'icon-footer-arrow' %}<span class="visually-hidden">Submit</span></button>
+          </div>
+
+          {%- if form.errors contains 'email' -%}
+            <span id="newsletter__controls-email-error" class="input-error-message">
+              <span class="visually-hidden">Error</span>
+              <span>{{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}.</span>
+            </span>
+          {%- endif -%}
+
+      {% endform %}
+
+      {% endif %}
+
+    </div>
+    <div class="footer__row">
+      <div class="footer__column width-2">
+        <a title="{{ shop.name }}" href="{{ routes.root_url }}">{% include "icon-footer" %}</a>
+      </div>
+      <div class="footer__column width-8">
+        <div class="footer__list-row">
+          {% render 'footer-list', footer_linklist: section.settings.footer_linklist  %}
+          {% render 'footer-list', footer_linklist: section.settings.footer_linklist2  %}
+          {% render 'footer-list', footer_linklist: section.settings.footer_linklist3  %}
+          {% render 'footer-list', footer_linklist: section.settings.footer_linklist4  %}
+        </div>
+      </div>
+      <div class="footer__column width-4">
+        {%- assign social_accounts = 'Instagram , Facebook, Twitter, Pinterest, Snapchat, Tumblr, YouTube, Vimeo,' | split: ', ' -%}
+        <ul class="footer__social">
+          {% for social in social_accounts %}
+            {%- assign social_handle = social | handleize -%}
+            {% capture social_link %}social_{{ social_handle }}_link{% endcapture %}
+            {% capture social_icon %}icon-{{ social_handle }}{% endcapture %}
+
+            {% if settings[social_link] != blank %}
+              <li>
+                <a target="_blank" href="{{ settings[social_link] }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: social }}">
+                  {% include social_icon %}
+                  <span class="icon-fallback">{{ social }}</span>
+                </a>
+              </li>
+            {% endif %}
+
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+
+    {% if section.settings.show_copyright %}
+      <div class="copyright">
+        <small>{{ 'layout.footer.copyright' | t }} &copy; {{ 'now' | date: "%Y" }}, {{ shop.name | link_to: '/' }}. {{ powered_by_link }}</small>
+      </div>
+    {% endif %}
+  </div>
+</footer>
+
+{% schema %}
+  {
+    "name": "Footer",
+    "settings": [
+      {
+        "type": "text",
+        "id": "section_title",
+        "label": {
+          "en": "Heading Newsletter"
+        },
+        "default": {
+          "en": "Subscribe to our newsletter"
+        }
+      },
+      {
+        "type": "text",
+        "id": "subheading",
+        "label": "Subheading Newsletter"
+      },
+      {
+        "type": "text",
+        "id": "form_box",
+        "label": {
+          "en": "Div to be provided for Klaviyo"
+        }
+      },
+      {
+        "type": "link_list",
+        "id": "footer_linklist",
+        "label": "First menu"
+      },
+      {
+        "type": "link_list",
+        "id": "footer_linklist2",
+        "label": "Second menu"
+      },
+      {
+        "type": "link_list",
+        "id": "footer_linklist3",
+        "label": "Third menu"
+      },
+      {
+        "type": "link_list",
+        "id": "footer_linklist4",
+        "label": "Fourth menu"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_copyright",
+        "label": "Show Copyright",
+        "default": true
+      }
+    ]
+  }
+
+{% endschema %}

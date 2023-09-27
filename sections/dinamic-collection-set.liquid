@@ -1,0 +1,62 @@
+{% if section.blocks.size > 0 %}
+<div class="set-carousel viewport-section">
+  <div class="{% if section.blocks.size > 2 %}without-pad{% else %}page-width{% endif %}">
+    {% if section.settings.sub_title != blank or section.settings.title != blank %}
+      <div class="set-carousel__header text-center">
+        {% if section.settings.sub_title != blank %}
+          <span class="set-carousel__sub_title">{{ section.settings.sub_title | escape }}</span>
+        {% endif %}
+        {% if section.settings.title != blank %}
+          <h2 class="set-carousel__heading">{{ section.settings.title | escape }}</h2>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="set-carousel__slideshow {% if section.blocks.size > 2 %}js-set-carousel{% endif %}">
+      {% for block in section.blocks limit: section.blocks.size %}
+        {%- assign product = all_products[block.settings.product] -%}
+        {% render 'set-carousel-slide', product:product %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+{% schema %}
+  {
+    "name": "Collection set products",
+    "max_blocks": 6,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading"
+      },
+      {
+        "type": "text",
+        "id": "sub_title",
+        "label": "Sub Title"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "product",
+        "name": "Product",
+        "settings": [
+          {
+            "label": "Product",
+            "id": "product",
+            "type": "product"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection set products",
+        "category": "Collection"
+      }
+    ]
+  }
+{% endschema %}

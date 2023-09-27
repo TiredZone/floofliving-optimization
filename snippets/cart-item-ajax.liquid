@@ -1,0 +1,144 @@
+{% comment %}
+
+Cart Item Template
+=====================
+The data-label attributes on
+<td> elements are mobile-friendly
+     helpers used for responsive-table labels
+  {% endcomment %}
+
+<tr class="cart-table__tr responsive-table-row js-minicart-item"
+    data-rv-each-item="cart.items" data-minicart-item>
+  <td class="cart-table__td cart-table__product-image-td"
+      data-label="{{ 'customer.order.product' | t }}">
+    <a data-rv-href="item.url">
+      <img class="cart-table__item-image"
+           src="{{ item | img_url: '60x60' }}"
+           data-rv-alt="item.product_title"
+           data-rv-show="item.image"
+           data-rv-src="item.image | productImageSize  'large'">
+      <div data-rv-hide="item.image">
+        {{ 'product-1' | placeholder_svg_tag }}
+      </div>
+    </a>
+  </td>
+
+  <td class="cart-table__td cart-table__product-info-td" data-rv-attr-class="item.product_type">
+    <div class="cart-table__product-info-td-holder">
+      <div data-rv-class="item.product_type">
+        <a class="cart-table__product-title"
+           href="{{ item.url }}"
+           data-rv-href="item.url"
+           data-rv-text="item.product_title">{%- render 'product-title', product:item.product -%}</a>
+
+        <div class="mini-cart__item-options" >
+
+          <span data-rv-each-option="item.options_with_values"> / <span data-rv-class="option.value" data-rv-text="option.value"></span></span>
+          <em> / </em>
+          <span data-rv-data-minicart-price="item.price"
+                  data-price
+                  data-rv-html="item.price | money Currency.currentCurrency"></span>
+        </div>
+
+        <div class="mini-cart__properties" data-rv-hide="item.propertyArray | empty">
+          <div class="mini-cart__property" data-rv-each-property="item.propertyArray < properties">
+            <span data-rv-class="property.name" data-rv-unless="property.name | starts_with '_'"><em>{property.name}:</em> {property.value}</span>
+          </div>
+        </div>
+
+        <div data-rv-if="item.set_items_count">
+          {item.set_items_count} Pillow<span data-rv-if="item.set_items_count | > 1">s</span> / {item.price | money Currency.currentCurrency}
+        </div>
+
+
+        <div class="cart-table__qty-number--mobile visible-phone">
+          <div class="qty-number mini-cart__qty js-default-input">
+            <button type="button"
+                    class="qty-number__button qty-number--minus"
+                    data-qty-number-minus
+                    data-rv-data-cart-update="index | plus 1"
+                    data-rv-data-cart-quantity="item.quantity | minus 1">—
+            </button>
+            <input type="text"
+                   class="qty-number__qty js-default-input jcf-ignore"
+                   data-rv-value="item.quantity | maxQty"
+                   data-rv-data-variant="index | plus 1"
+                   min="0"
+                   aria-label="quantity"
+                   data-item-qty
+                   pattern="[0-9]*">
+            <button type="button"
+                    class="qty-number__button qty-number--plus"
+                    data-qty-number-plus
+                    data-rv-data-cart-update="index | plus 1"
+                    data-rv-data-cart-quantity="item.quantity | plus 1">+
+            </button>
+          </div>
+          <div class="cart-table__message hide" data-limit-message>{{ 'cart.minicart.limit' | t }}</div>
+        </div>
+      </div>
+    </div>
+
+    <a href="{{ routes.cart_change_url }}?line={{ forloop.index }}&amp;quantity=0"
+       class="cart-table__product-remove"
+       data-rv-data-cart-remove="index | plus 1"
+       data-cart-remove="1">{{- 'cart.general.remove' | t -}}</a>
+  </td>
+
+  <td class="cart-table__td cart-table__product-price-td"
+      data-label="{{ 'cart.label.price' | t }}">
+    <div class="cart-table__product-price-holder">
+      <span class="cart-table__list-item-price-sale js-price"
+            data-rv-data-minicart-price="item.price"
+            data-rv-html="item.price | money Currency.currentCurrency"></span>
+      <s class="minicart__list-item-price"
+         data-rv-data-minicart-price="item.price"
+         data-price-item
+         data-rv-html="item.price | money Currency.currentCurrency"></s>
+    </div>
+
+
+  </td>
+
+  <td class="cart-table__td cart-table__product-quantity-td text-center"
+      data-label="{{ 'cart.label.quantity' | t }}">
+    <div data-rv-class="item.product_type">
+      <div class="qty-number mini-cart__qty js-default-input">
+        <button type="button"
+                class="qty-number__button qty-number--minus"
+                data-qty-number-minus
+                data-rv-data-cart-update="index | plus 1"
+                data-rv-data-cart-quantity="item.quantity | minus 1">—
+        </button>
+        <input type="text"
+               class="qty-number__qty js-default-input jcf-ignore"
+               data-rv-value="item.quantity | maxQty"
+               data-rv-data-variant="index | plus 1"
+               min="0"
+               aria-label="quantity"
+               data-item-qty
+               pattern="[0-9]*">
+        <button type="button"
+                class="qty-number__button qty-number--plus"
+                data-qty-number-plus
+                data-rv-data-cart-update="index | plus 1"
+                data-rv-data-cart-quantity="item.quantity | plus 1">+
+        </button>
+      </div>
+      <div class="cart-table__message hide" data-limit-message>{{ 'cart.minicart.limit' | t }}</div>
+    </div>
+  </td>
+
+  <td class="cart-table__td cart-table__product-total-td text-right"
+      data-label="{{ 'cart.label.price' | t }}">
+    <div class="cart-table__product-price-holder">
+      <span class="cart-table__list-item-price-sale js-price"
+            data-rv-data-minicart-price="item.line_price"
+            data-line-price
+            data-rv-html="item.line_price | money Currency.currentCurrency"></span>
+      <s class="minicart__list-item-price-sale hide"
+         data-compare-price
+         data-rv-data="item.url"></s>
+    </div>
+  </td>
+</tr>

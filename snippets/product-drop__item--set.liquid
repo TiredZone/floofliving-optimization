@@ -1,0 +1,55 @@
+<a class="product-drop__item product-drop__item--set" href="{{ childlink.url }}">
+
+    <img class="lazyload js product-set-drop__image" 
+      src="{{ featured_image | img_url: '50x50' }}" 
+      data-src="{{ featured_image | img_url:'x50' }}"
+      data-sizes="auto"
+      data-srcset="{{ featured_image | img_url: '120x' }} 60w,
+             {{ featured_image | img_url: '120x' }} 120w, 
+             {{ featured_image | img_url: '180x' }} 180w, 
+             {{ featured_image | img_url: '220x' }} 220w"
+             width="216" height="72"
+                 alt="{{ image.alt | default:shop.name | escape }}">
+
+  <noscript>
+    <img src="{{ featured_image | img_url: 'master' }}"
+         srcset="{{ featured_image | img_url: 'master' }} 1x, {{ featured_image | img_url: 'master', scale: 2 }} 2x"
+         alt="{{ featured_image.alt | default:shop.name }}"
+         width="216" height="72"
+         class="product-set-drop__image">
+  </noscript>
+
+  <div class="product-drop__wrap">
+    <strong class="product-drop__title">{{ childlink.object.title }} {% if has_new_tag  %}
+        <span class="product-drop__label">{{ 'general.accessibility.new' | t }}</span>
+      {% endif %}</strong>
+
+    {%- assign count = 'Several pillows'  -%}
+    {%- assign has_count = false  -%}
+
+    {% for tag in childlink.object.tags %}
+      {% if tag contains 'count:' %}
+        {%- assign has_count = true  -%}
+        {%- assign count = tag | remove: "count:" | plus: 0 -%}
+      {% endif %}
+    {% endfor %}
+
+    <p class="product-drop__text">
+      {% if has_count == true %}
+        {% if count == 1 %}
+          {{ count }} {{ 'general.accessibility.pillow' | t }} /
+        {% elsif count > 1 %}
+          {{ count }} {{ 'general.accessibility.pillows' | t }} /
+        {% endif %}
+      {% else %}
+          Several pillows /
+      {% endif %}
+
+      {%- if current_variant.compare_at_price > current_variant.price -%}
+        <s>{{ current_variant.compare_at_price | money }}</s>
+      {%- endif -%}
+      <span>{{ current_variant.price | money }}</span>
+    </p>
+  </div>
+</a>
+

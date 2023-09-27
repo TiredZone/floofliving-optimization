@@ -1,0 +1,692 @@
+{% assign collection_values = collection.metafields.accentuate.collections_header | split: '|' %}
+<div class="{% if collection_values != blank %} hasMetafield {% endif %}collection-header-wrapper-v2 {% if section.settings.show_collection_image and collection.image %}boost-pfs-filter-collection-has-image{% endif %}">
+  <div class="boost-pfs-section-header">
+    <div class="boost-pfs-section-header-left">
+      {% include 'breadcrumbs' %}
+      <h1 class="h2 boost-pfs-filter-collection-header">
+        <span role="text">
+          {{ collection.title }}
+        </span>
+      </h1>
+      {%- if section.settings.show_collection_des and collection.description != blank -%}
+        <div class="boost-pfs-filter-collection-description rte">
+          {{ collection.description }}
+        </div>
+      {%- endif -%}
+    </div>
+    {% if section.settings.show_collection_image and collection.image %}
+      <div class="boost-pfs-section-header-right">
+        <div class="boost-pfs-section-header-img-wrapper boost-pfs-filter-collection-image">
+          {% if collection.image != blank %}
+            {% render 'image-small', image: collection.image, width: 884, height: 648, classes: "boost-pfs-section-header-image" %}
+          {% elsif collection == empty %}
+            {% capture current %}
+              {% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+            {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg placeholder-svg--small' }}
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+  {% if collection_values != blank %}
+    {% render 'breadcrumbs' %}
+    <div class="collection-header__box">
+      <div class="collection-header__slideshow  js-header-collections count-{{collection_values.size}}">
+        {% for value in collection_values %}
+          <div class="collection-header__slide" {{ block.shopify_attributes }}>
+            {%- assign collectionValues = collections[value] -%}
+            <a class="collection-header__link" href="{{ collectionValues.url }}">
+              <div class="collection-header__img-wrapper">
+                {% if collectionValues.image != blank %}
+                  {% render 'image-small', image: collectionValues.image, width: 692, height: 370, classes: "collection-header__image" %}
+                {% endif %}
+              </div>
+              <div class="collection-header__content">
+                <div class="collection-header__text">
+                  {% if collectionValues.title == empty %}
+                    <h4>{{ 'homepage.onboarding.collection_title' | t }}</h4>
+                  {% else %}
+                    <h4>{{ collectionValues.title }}</h4>
+                  {% endif %}
+                </div>
+              </div>
+            </a>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% paginate collection.products by 12 %}
+  
+  <div data-section-id="{% if section.id %}{{section.id}}{% endif %}" data-sectionId="{% if section.id %}{{section.id}}{% endif %}" {% if section.blocks %}data-blocks='{ {%- capture blocks_json -%}{% for block in section.blocks %}{%- capture block_json -%}"{{ block.type }}":{{ block.settings | json }}{%- endcapture -%}{{ block_json | prepend: ","  }}{% endfor %}{%- endcapture -%}{{ blocks_json | remove_first: "," }} }' {% endif %} data-settings='{% if section.settings %}{{section.settings | json}}{% endif %}'>
+    {% for product in collection.products %}
+      <div>
+        {% if product.featured_image != blank %}
+          <a href="{{ product.url | within: collection }}">
+            {{ product.featured_image.src | img_url: '480x480' | img_tag: product.featured_image.alt }}
+          </a>
+        {% endif %}
+
+        <p>
+          <a href="{{ product.url | within: collection }}">{%- render 'product-title', product:product -%}</a>
+        </p>
+        <p>
+          {% if product.compare_at_price > product.price %}
+
+            {% if product.price_varies %}
+              {%- assign sale_price = product.price | money -%}
+              {{ 'products.product.on_sale_from_html' | t: price: sale_price }}
+            {% else %}
+              {{ 'products.product.on_sale' | t }}
+              {{ product.price | money }}
+            {% endif %}
+
+          {% else %}
+
+            {% if product.price_varies %}
+              {%- assign price = product.price | money -%}
+              {{ 'products.product.from_text_html' | t: price: price }}
+            {% else %}
+              {{ product.price | money }}
+            {% endif %}
+
+          {% endif %}
+
+          {% if product.compare_at_price > product.price %}
+            <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+            <s>{{ product.compare_at_price | money }}</s>
+          {% endif %}
+
+          {% unless product.available %}
+            {{ 'products.product.sold_out' | t }}
+          {% endunless %}
+        </p>
+      </div>
+
+    {% else %}
+      {% if collection.handle == 'all' and collection.all_vendors.size == 0 and collection.all_types.size == 0 %}
+        {% for i in (1..8) %}
+          <a href="#">
+            {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+            {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg placeholder-svg--small' }}
+          </a>
+
+          <p>
+            <a href="#">{{ 'homepage.onboarding.product_title' | t }}</a>
+          </p>
+
+          <p>
+            {{ 1999 | money }}
+          </p>
+        {% endfor %}
+      {% else %}
+        <p>{{ 'collections.general.no_matches' | t }}</p>
+      {% endif %}
+
+    {% endfor %}
+  </div>
+
+  {% if paginate.pages > 1 %}
+    {% include 'pagination' %}
+  {% endif %}
+{% endpaginate %}
+
+
+{% schema %}
+  {
+    "name": "Collection pages",
+    "settings": [
+      {
+        "type": "header",
+        "content": "For Filter"
+      },
+      {
+        "type": "radio",
+        "id": "switch_layout_filter",
+        "label": "Switch Layout Filter",
+        "options": [
+          {
+            "value": "switch_layout_filter_vertical",
+            "label": "Vertical Filter"
+          }, {
+            "value": "switch_layout_filter_horizontal",
+            "label": "Horizonal Filter"
+          }
+        ],
+        "default": "switch_layout_filter_vertical"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_filter_sticky",
+        "label": "Enable Filter Sticky on Desktop",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "toolbar_filter_sticky_mobile",
+        "label": "Enable Filter Toolbar Sticky on Mobile",
+        "default": true
+      }, {
+        "type": "radio",
+        "id": "filter_layout",
+        "label": "Filter Layout",
+        "options": [
+          {
+            "value": "filter_layout_default",
+            "label": "Filter Layout Default"
+          }, {
+            "value": "filter_layout_collapse",
+            "label": "Filter Layout Collapse"
+          }, {
+            "value": "filter_layout_slide",
+            "label": "Filter Layout Slide (Only work on Vertical Layout)"
+          }
+        ],
+        "default": "filter_layout_default"
+      }, {
+        "type": "header",
+        "content": "For Layout Page"
+      }, {
+        "type": "radio",
+        "id": "layout_type",
+        "label": "Layout Type",
+        "options": [
+          {
+            "value": "box",
+            "label": "Box"
+          }, {
+            "value": "fullwidth",
+            "label": "Full Width"
+          }
+        ],
+        "default": "box"
+      }, {
+        "type": "header",
+        "content": "Collection Header"
+      }, {
+        "type": "checkbox",
+        "id": "show_collection_image",
+        "label": "Show Collection Image",
+        "default": true
+      }, {
+        "type": "checkbox",
+        "id": "show_collection_des",
+        "label": "Show Collection Description",
+        "default": true
+      }, {
+        "type": "color",
+        "id": "collection_header_bg_color",
+        "label": "Collection Header Background Color"
+      }, {
+        "type": "color",
+        "id": "collection_header_text_color",
+        "label": "Collection Header Text Color"
+      }, {
+        "type": "header",
+        "content": "Toolbar"
+      }, {
+        "type": "checkbox",
+        "id": "show_toolbar_view_as",
+        "label": "Show - View As",
+        "default": true
+      }, {
+        "type": "checkbox",
+        "id": "show_toolbar_product_count",
+        "label": "Show - Product Count",
+        "default": true
+      }, {
+        "type": "checkbox",
+        "id": "show_toolbar_sort_by",
+        "label": "Show - Sort By",
+        "default": true
+      }, {
+        "type": "checkbox",
+        "id": "show_toolbar_view_as_mobile",
+        "label": "Show - View As - Mobile",
+        "default": true
+      }, {
+        "type": "checkbox",
+        "id": "show_toolbar_product_count_mobile",
+        "label": "Show - Product Count - Mobile",
+        "default": true
+      }, {
+        "type": "checkbox",
+        "id": "show_toolbar_sort_by_mobile",
+        "label": "Show - Sort By - Mobile",
+        "default": true
+      }, {
+        "type": "radio",
+        "id": "view_as_type",
+        "label": "View As Type",
+        "options": [
+          {
+            "value": "view_as_type_grid_list",
+            "label": "Grid/List"
+          }, {
+            "value": "view_as_type_list_grid_multi_col",
+            "label": "List/Grid Multi Column (Only works on Desktop)"
+          }
+        ],
+        "default": "view_as_type_grid_list"
+      }, {
+        "type": "header",
+        "content": "Product List"
+      }, {
+        "type": "range",
+        "id": "products_per_page",
+        "label": "Products per page",
+        "min": 2,
+        "max": 50,
+        "step": 1,
+        "default": 24
+      }, {
+        "type": "range",
+        "id": "products_per_row",
+        "label": "Products per row on Desktop",
+        "min": 2,
+        "max": 6,
+        "step": 1,
+        "default": 3
+      }, {
+        "type": "range",
+        "id": "products_per_row_mobile",
+        "label": "Products per row on Mobile",
+        "min": 1,
+        "max": 3,
+        "step": 1,
+        "default": 2
+      }, {
+        "type": "header",
+        "content": "Product Item"
+      }, {
+        "type": "select",
+        "id": "product_item_type",
+        "label": "Product Item Type",
+        "options": [
+          {
+            "value": "grid",
+            "label": "Grid"
+          }, {
+            "value": "list",
+            "label": "List"
+          }
+        ],
+        "default": "grid"
+      }, {
+        "type": "select",
+        "id": "product_item_layout",
+        "label": "Product Item Layout",
+        "options": [
+          {
+            "value": "no-border",
+            "label": "No Border (Default)"
+          }, {
+            "value": "border-no-padding",
+            "label": "Border No Padding"
+          }, {
+            "value": "border-no-padding-img",
+            "label": "Border No Padding Image"
+          }, {
+            "value": "border-has-padding",
+            "label": "Border Has Padding"
+          }
+        ],
+        "default": "no-border"
+      }, {
+        "type": "select",
+        "id": "text_alignment",
+        "label": "Text alignment",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          }, {
+            "value": "center",
+            "label": "Center"
+          }, {
+            "value": "right",
+            "label": "Right"
+          }
+        ],
+        "default": "left",
+        "info": "Use this setting for Product type Grid"
+      }, {
+        "type": "checkbox",
+        "id": "show_details_when_hovering",
+        "label": "Show details when hovering",
+        "default": false,
+        "info": "This setting only works on Desktop"
+      }, {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show product vendor",
+        "default": true
+      }, {
+        "type": "checkbox",
+        "id": "show_price",
+        "label": "Show price",
+        "default": true
+      }, {
+        "type": "checkbox",
+        "id": "active_image_swap",
+        "label": "Active image swap",
+        "default": true
+      }, {
+        "type": "checkbox",
+        "id": "show_product_review",
+        "label": "Show product review",
+        "default": false,
+        "info": "Use this setting when store has product reviews integration"
+      }, {
+        "type": "header",
+        "content": "Product Item - Label"
+      }, {
+        "type": "checkbox",
+        "id": "show_sold_out_label",
+        "label": "Show sold out label",
+        "default": true
+      }, {
+        "type": "checkbox",
+        "id": "show_sale_label",
+        "label": "Show sale label",
+        "default": true
+      }, {
+        "type": "checkbox",
+        "id": "show_sale_percent",
+        "label": "Show sale Percent",
+        "default": false
+      }, {
+        "type": "checkbox",
+        "id": "product_label_has_border_radius",
+        "label": "Has Border Radius",
+        "default": true
+      }, {
+        "type": "checkbox",
+        "id": "show_label_by_tag",
+        "label": "Enable the Custom Label By Tag",
+        "default": false,
+        "info": "Please refer [this link](https:\/\/help.boostcommerce.net\/article\/475-how-to-create-custom-label-by-tag-in-the-default-theme) to create a Custom Label By Tag!"
+      }, {
+        "type": "select",
+        "id": "product_item_label_position",
+        "label": "Product Label Position",
+        "default": "center",
+        "options": [
+          {
+            "value": "top_left",
+            "label": "Top Left"
+          }, {
+            "value": "top_right",
+            "label": "Top Right"
+          }, {
+            "value": "bottom_left",
+            "label": "Bottom Left"
+          }, {
+            "value": "bottom_right",
+            "label": "Bottom Right"
+          }
+        ],
+        "default": "top_left"
+      }, {
+        "type": "select",
+        "id": "product_label_type",
+        "label": "Product Label Type",
+        "options": [
+          {
+            "value": "rectangle",
+            "label": "Rectangle"
+          }, {
+            "value": "circle",
+            "label": "Circle"
+          }
+        ],
+        "default": "rectangle"
+      }, {
+        "type": "color",
+        "id": "product_item_label_bg_color",
+        "label": "Background Color"
+      }, {
+        "type": "color",
+        "id": "product_item_label_text_color",
+        "label": "Text Color"
+      }, {
+        "type": "checkbox",
+        "id": "show_product_label_image",
+        "label": "Use Product Label Image",
+        "default": false
+      }, {
+        "type": "image_picker",
+        "id": "product_label_image_sale",
+        "label": "Upload Product Label Sale"
+      }, {
+        "type": "image_picker",
+        "id": "product_label_image_sold_out",
+        "label": "Upload Product Label Sold Out "
+      }, {
+        "type": "header",
+        "content": "Product Item - Title"
+      }, {
+        "type": "color",
+        "id": "product_item_title_color",
+        "label": "Title",
+        "default": "#3d4246"
+      }, {
+        "type": "font_picker",
+        "id": "product_item_title_font",
+        "label": "Font",
+        "default": "poppins_n6"
+      }, {
+        "type": "range",
+        "id": "product_item_title_font_size",
+        "label": "Product Item Title - Font Size",
+        "min": 10,
+        "max": 30,
+        "step": 1,
+        "default": 14,
+        "unit": "px"
+      }, {
+        "type": "header",
+        "content": "Product Item - Vendor"
+      }, {
+        "type": "color",
+        "id": "product_item_vendor_color",
+        "label": "Vendor",
+        "default": "#969595"
+      }, {
+        "type": "font_picker",
+        "id": "product_item_vendor_font",
+        "label": "Font",
+        "default": "poppins_n4"
+      }, {
+        "type": "range",
+        "id": "product_item_vendor_font_size",
+        "label": "Product Item Vendor - Font Size",
+        "min": 10,
+        "max": 30,
+        "step": 1,
+        "default": 12,
+        "unit": "px"
+      }, {
+        "type": "header",
+        "content": "Product Item - Price"
+      }, {
+        "type": "color",
+        "id": "product_item_price_color",
+        "label": "Price",
+        "default": "#222"
+      }, {
+        "type": "color",
+        "id": "product_item_old_price_color",
+        "label": "Old Price",
+        "default": "#969595"
+      }, {
+        "type": "color",
+        "id": "product_item_sale_price_color",
+        "label": "Sale Price",
+        "default": "#f30000"
+      }, {
+        "type": "font_picker",
+        "id": "product_item_price_font",
+        "label": "Font",
+        "default": "poppins_n4"
+      }, {
+        "type": "range",
+        "id": "product_item_price_font_size",
+        "label": "Product Item Price - Font Size",
+        "min": 10,
+        "max": 30,
+        "step": 1,
+        "default": 14,
+        "unit": "px"
+      }, {
+        "type": "header",
+        "content": "Product Item - Description"
+      }, {
+        "type": "color",
+        "id": "product_item_des_color",
+        "label": "Description Color",
+        "default": "#3a3a3a"
+      }, {
+        "type": "font_picker",
+        "id": "product_item_des_font",
+        "label": "Font",
+        "default": "poppins_n4"
+      }, {
+        "type": "range",
+        "id": "product_item_des_font_size",
+        "label": "Product Item Description - Font Size",
+        "min": 10,
+        "max": 30,
+        "step": 1,
+        "default": 14,
+        "unit": "px"
+      }, {
+        "type": "header",
+        "content": "Product Item - Swatch Color"
+      }, {
+        "type": "checkbox",
+        "id": "display_item_swatch",
+        "label": "Enable Display Item Swatch",
+        "default": true
+      }, {
+        "type": "checkbox",
+        "id": "show_item_swatch_tooltip",
+        "label": "Show Item Swatch Tooltip",
+        "default": true
+      }, {
+        "type": "radio",
+        "id": "swatch_color_display_type",
+        "label": "Display Type",
+        "options": [
+          {
+            "value": "swatch_color_display_type_color",
+            "label": "Color"
+          }, {
+            "value": "swatch_color_display_type_image_color",
+            "label": "Color Image"
+          }, {
+            "value": "swatch_color_display_type_image_product",
+            "label": "Product Image"
+          }
+        ],
+        "default": "swatch_color_display_type_image_product",
+        "info": "Please refer [this link](https:\/\/help.boostcommerce.net\/article\/417-how-to-config-the-product-item-layout-in-our-default-theme#a5) about 3 display types of Color swatches!"
+      }, {
+        "type": "radio",
+        "id": "swatch_color_event_change_image",
+        "label": "Change Image When Hovering swatch icon",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          }, {
+            "value": "hover",
+            "label": "Hover"
+          }, {
+            "value": "click",
+            "label": "Click"
+          }
+        ],
+        "default": "hover"
+      }, {
+        "type": "radio",
+        "id": "swatches_color_shape",
+        "label": "Swatch shape",
+        "options": [
+          {
+            "value": "circle",
+            "label": "Circle"
+          }, {
+            "value": "square",
+            "label": "Square"
+          }
+        ],
+        "default": "circle"
+      }, {
+        "type": "header",
+        "content": "Product Item - Swatch Size"
+      }, {
+        "type": "checkbox",
+        "id": "display_item_swatch_size",
+        "label": "Display Swatch Size",
+        "default": false
+      }, {
+        "type": "header",
+        "content": "Product Item - Equal Height"
+      }, {
+        "type": "select",
+        "id": "equal_height",
+        "label": "Product image aspect ratio (Width x Height)",
+        "options": [
+          {
+            "value": "false",
+            "label": "Disabled"
+          },
+          {
+            "value": "auto",
+            "label": "Auto"
+          },
+          {
+            "value": "1:1",
+            "label": "Square (1:1)"
+          },
+          {
+            "value": "2:3",
+            "label": "Portrait (2:3)"
+          }, {
+            "value": "4:3",
+            "label": "Landscape (4:3)"
+          }, {
+            "value": "other",
+            "label": "Manual ratio below"
+          }
+        ],
+        "default": "auto",
+        "info": "For best results [all product photos should be the same ratio](https:\/\/help.shopify.com\/manual\/productivity-tools\/image-editor#image-aspect-ratio)."
+      }, {
+        "type": "text",
+        "id": "ratio_width_height_other",
+        "label": "Example: 6:7",
+        "info": "If the ratios above is not suitable for your store, could you please enter your aspect ratio (Width x Height) in the form below?"
+      }, {
+        "type": "select",
+        "id": "equal_height_crop_image_position",
+        "label": "Equal Height Crop Image Position",
+        "options": [
+          {
+            "value": "top",
+            "label": "Top"
+          }, {
+            "value": "center",
+            "label": "Center"
+          }, {
+            "value": "bottom",
+            "label": "Bottom"
+          }
+        ],
+        "default": "center"
+      }
+    ]
+  }
+{% endschema %}

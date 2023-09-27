@@ -1,0 +1,132 @@
+
+<div class="account-page">
+  <div class="without-pad">
+    <div class="account-page__flex">
+      <div class="account-page__flex-left">
+        {% section 'account-sidebar' %}
+      </div>
+      <div class="account-page__flex-right">
+        {% if routes.account_url == '/account' %}
+          {% assign active = ' active' %}
+          {% else %}
+          {% assign active = 'active' %}
+        {% endif %}
+        <div class="account-tab{{active}}" id="my-account">
+          <h2>{{ 'customer.account.personal' | t }}</h2>
+          <div class="account-page__personal">
+
+            {% if customer.name != blank %}
+              <span>{{ customer.name }}</span>
+            {% endif %}
+            {% if customer.email != blank %}
+              <span>{{customer.email}}</span>
+            {% endif %}
+           
+          </div>
+         
+          {% if customer.tags contains 'Trade Program' %}
+            {% if customer.tags contains 'platinum' or customer.tags contains 'Platinum' %}
+              {% assign tier_level = 'Platinum' %}
+              {% assign tier_discount = settings.platinum_discount | append:'%' %}
+              {% assign next_tier_spending = settings.platinum_requirement | times:100 %}
+              {% assign next_tier = 'Platinum' %}
+              {% assign next_tier_discount = '25%' %}
+            {% elsif customer.tags contains 'gold' or customer.tags contains 'Gold' %}
+              {% assign tier_level = 'Gold' %}
+              {% assign tier_discount = settings.gold_discount | append:'%' %}
+              {% assign next_tier_spending = settings.platinum_requirement | times:100 %}
+              {% assign next_tier = 'Platinum' %}
+              {% assign next_tier_discount = settings.platinum_discount | append:'%' %}
+            {% elsif customer.tags contains 'silver' or customer.tags contains 'Silver' or customer.tags contains 'Trade Program' %}
+              {% assign tier_level = 'Silver' %}
+              {% assign tier_discount = settings.silver_discount | append:'%' %}
+              {% assign next_tier_spending = settings.gold_requirement | times:100 %}
+              {% assign next_tier = 'Gold' %}
+              {% assign next_tier_discount = settings.gold_discount | append:'%' %}
+            {% endif %}
+
+            {% assign this_year = 'now' | date: "%Y" %}
+            {% assign order_this_year = 0 %}
+            {% for order in customer.orders %}
+              {% assign order_year = order.created_at | date: "%Y" %}
+              {% if this_year >= order_year %}
+                {% assign order_this_year = order_this_year | plus: order.total_price %}
+              {% endif %}
+            {% endfor %}
+
+            <h2>Trade Account Status</h2>
+            <div class="account-page__trade">
+              <div>Tier Level: <strong>{{ tier_level }}</strong></div>
+              <div>Discount: <strong>{{ tier_discount }}</strong></div>
+              <br/>
+              <div class="tier-progress">
+                {% if tier_level == 'Platinum' %}
+                  <span>You have reached our <strong>Platinum Trade Partner</strong> Pricing Tier, giving you the highest discount.</span>
+                  {% if settings.trade_info_link != blank %}<a href="{{ settings.trade_info_link }}" target="_blank">{{ settings.trade_info | default:"More Info" }}</a>{% endif %}
+                {% elsif order_this_year < next_tier_spending %}
+                  <span>Spend <strong>{{ next_tier_spending | minus:order_this_year | money }}</strong> more to reach <strong>{{ next_tier }} status</strong> and receive {{ next_tier_discount }} off.</span>
+                  {% if settings.trade_info_link != blank %}<a href="{{ settings.trade_info_link }}" target="_blank">{{ settings.trade_info | default:"More Info" }}</a>{% endif %}
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+
+          <h2>{{ 'customer.account.details' | t }}</h2>
+          {% if  customer.default_address %}
+            <p><strong>{{ 'customer.addresses.default' | t }}</strong></p>
+          {% endif %}
+          <div class="account-page__sdress">
+            {% for address in customer.addresses %}
+              {% if address == customer.default_address %}
+              <span>{{ address.street }}</span>
+              <span>{{ address.city }}{% if address.province_code %}, {{address.province_code}}</span> {% endif %}
+              <span>{{ address.country }}, {{address.zip}}</span>
+              <span>{{ address.phone }}</span>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <a class="edit" href="{{routes.account_addresses_url}}">{{ 'customer.account.edit' | t }}</a>
+
+        </div>
+
+
+        <div class="history-tab" id="order-history">
+          <h2>{{ 'customer.orders.title' | t }}</h2>
+
+          {% paginate customer.orders by 20 %}
+            {% if customer.orders.size != 0 %}
+              <table class="responsive-table">
+                <thead>
+                  <tr>
+                    <th>{{ 'customer.orders.order_number' | t }}</th>
+                    <th>{{ 'customer.orders.date' | t }}</th>
+                    <th>{{ 'customer.account.track' | t }}</th>
+                    <th>{{ 'customer.orders.total' | t }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in customer.orders %}
+                    <tr class="responsive-table-row">
+                      <td data-label="{{ 'customer.orders.order_number' | t }}">{{ order.name | link_to: order.customer_url }}</td>
+                      <td data-label="{{ 'customer.orders.date' | t }}">{{ order.created_at | date: format: 'month_day_year' }}</td>
+                      <td> <a href="{{shop.url}}/apps/tracktor/track?token={{ order.email | split: "" | reverse | join: "" | replace: '@', '_-_' | url_encode }}&order={{ order.name | url_encode }}" target="_new">{{ 'customer.account.get_shipping' | t }}</a></td>
+                      <td data-label="{{ 'customer.orders.total' | t }}">{{ order.total_price | money }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+              <p>{{ 'customer.orders.none' | t }}</p>
+            {% endif %}
+          
+            {% if paginate.pages > 1 %}
+              {% include 'pagination' %}
+            {% endif %}
+          
+          {% endpaginate %}
+        </div>
+      </div>
+    </div>  
+  </div>
+</div>

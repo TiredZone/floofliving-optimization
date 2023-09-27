@@ -1,0 +1,29 @@
+<div class="about-difference">
+  <div class="page-width-1440 without-pad">
+    <div class="about-difference__indent">
+      {% if page.title != blank %}
+        <h1 class="about-difference__title viewport-section">{{ page.title }}</h1>
+      {% endif %}
+      {% if page.content != blank %}
+        <div class="about-difference__content viewport-section">
+          {{ page.content }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<div class="about-design">
+  <div class="page-width-1440">
+    {% section "about-design" %}
+  </div>
+</div>
+<div class="about-making">
+  <div class="page-width-1440">
+    {% section "about-making" %}
+  </div>
+</div>
+<div class="about-family">
+  <div class="page-width-1440">
+    {% section "about-family" %}
+  </div>
+</div>

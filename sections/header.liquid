@@ -1,0 +1,281 @@
+<div data-section-id="{{ section.id }}" data-section-type="header-section">
+    <div class="announcement-bar text-center">
+      {% if section.blocks.size > 0 %}
+        {%- capture announcement_items -%}
+          {%- for block in section.blocks -%}
+            {%- assign is_displayed = false -%}
+            {%- if block.settings.page_category == 'all' -%}
+              {%- assign is_displayed = true -%}
+            {%- elsif block.settings.page_category == 'product' and template.name == 'product' -%}
+              {%- assign is_displayed = true -%}
+            {%- elsif block.settings.page_category == 'collection' and template.name == 'collection' -%}
+              {%- assign is_displayed = true -%}
+            {%- elsif block.settings.page_category == 'collection_list' and template.name == 'list-collections' -%}
+              {%- assign is_displayed = true -%}
+            {%- elsif block.settings.page_category == 'pages' and template.name == 'page' -%}
+              {%- assign is_displayed = true -%}
+            {%- elsif block.settings.page_category == 'blog' and template.name == 'blog' -%}
+              {%- assign is_displayed = true -%}
+            {%- elsif block.settings.page_category == 'article' and template.name == 'article' -%}
+              {%- assign is_displayed = true -%}
+            {%- elsif block.settings.page_category == 'cart' and template.name == 'cart' -%}
+              {%- assign is_displayed = true -%}
+            {%- elsif block.settings.page_category == 'account' and template.directory == 'customers' -%}
+              {%- assign is_displayed = true -%}
+            {%- endif -%}
+            {%- if block.settings.page != blank -%}
+              {%- assign is_displayed = false -%}
+            {%- endif -%}
+            {%- assign urlSetting = shop.url | append:block.settings.page -%}
+            {%- if urlSetting == canonical_url %}
+              {%- assign is_displayed = true -%}
+            {%- endif -%}
+            {%- if block.settings.title != blank and is_displayed -%}
+              <div class="announcement-text">{{ block.settings.title }}</div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+      {% endif %}
+      {% if announcement_items != blank %}
+          <div class="announcement-slider" {% if section.settings.announcement_speed != blank %}data-autoplay-speed="{{section.settings.announcement_speed}}"{% endif %}>
+            {{ announcement_items }}
+          </div>
+      {% endif %}
+    </div>
+
+  <style>
+    .announcement-bar {
+      background-color: {{ section.settings.announcement_color_bg }}
+      ;
+      color: {{ section.settings.announcement_color_text }}
+      ;
+    }
+
+    .announcement-bar a {
+      color: inherit;
+      font-weight: inherit;
+      text-decoration: underline;
+    }
+
+    .announcement-bar a:hover {
+      text-decoration: none;
+    }
+  </style>
+
+  <header role="banner" class="header__holder">
+
+    {% if template.name == 'index' %}
+      <h1
+        itemscope
+        class="site-logo"
+        itemtype="http://schema.org/Organization">
+      {% else %}
+        <div
+          class="h1 site-logo"
+          itemscope
+          itemtype="http://schema.org/Organization">
+        {% endif %}
+        <{% if template contains 'tearsheet' %}span{% else %}a href="{{ routes.root_url }}"{% endif %}
+          itemprop="url"
+          class="site-logo__link {% if section.settings.logo != blank %} site-header__logo-image{% endif %}"
+          title="{{ shop.name }}">
+          {% if section.settings.logo_svg != blank %}
+            {{- section.settings.logo_svg -}}
+          {% elsif section.settings.logo != blank %}
+            <img
+              src="{{ section.settings.logo | img_url: '104x' }}"
+              srcset="{{ section.settings.logo | img_url: '104x' }} 1x, {{ section.settings.logo | img_url: '104x', scale: 2 }} 2x"
+              alt="{{ section.settings.logo.alt | default: shop.name }}"
+              itemprop="logo">
+          {% else %}
+            {{ shop.name }}
+          {% endif %}
+        </{% if template contains 'tearsheet' %}span{% else %}a{% endif %}>
+        {% if template.name == 'index' %}
+        </h1>
+    {% else %}
+      </div>
+    {% endif %}
+
+    {% render 'navigation', menu_item: section.settings.menu_item %}
+
+    <div class="header__frame">
+      
+      <button class="header__search-link js-search__opener">
+        <span class="visually-hidden">{{ 'general.search.placeholder' | t }}</span>
+        {% render 'icon-search' %}
+      </button>
+
+      {% render 'account-link', class: 'header__account-link' %}
+
+      <a
+        class="header__cart-link"
+        href="{{ routes.cart_url }}"
+        data-mini-cart-trigger>
+        {% render 'icon-cart' %}
+        <span class="visually-hidden">{{ 'layout.cart.title' | t }}</span>
+        <span class="header__cart-count {% if cart.item_count == 0 %}hide{% endif %}" data-cart-count>{{ cart.item_count }}</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="search__holder">
+    {% include 'search-form' %}
+    <button class="form__search-link clear-search-input">
+      <span class="visually-hidden">{{ 'general.search.placeholder' | t }}</span>
+      <svg
+        width="19"
+        height="19"
+        viewBox="0 0 19 19"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M1 17.9707L17.9706 1.00014"
+          stroke="black"
+          stroke-width="1.5"
+          stroke-linecap="round" />
+        <path
+          d="M1 1L17.9706 17.9706"
+          stroke="black"
+          stroke-width="1.5"
+          stroke-linecap="round" />
+      </svg>
+    </button>
+  </div>
+
+  {% if section.settings.menu_item != blank and section.settings.drop_linklist != blank %}
+    {% include 'navigation-drop' %}
+  {% endif %}
+
+</div>
+
+{% include 'mobile-navigation' %}
+
+{% schema %}
+  {
+    "name": "Header",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo image"
+      },
+      {
+        "type": "textarea",
+        "id": "logo_svg",
+        "label": "SVG Logo"
+      },
+      {
+        "type": "header",
+        "content": "Menu"
+      },
+      {
+        "type": "link_list",
+        "id": "main_linklist",
+        "label": "Menu",
+        "default": "main-menu",
+        "info": "Desktop top menu. Will show only first level."
+      }, {
+        "type": "text",
+        "id": "menu_item",
+        "label": "Menu item",
+        "info": "Item which will have mega menu"
+      }, {
+        "type": "link_list",
+        "id": "drop_linklist",
+        "label": "Main dropdown menu",
+        "info": "Main menu in the dropdown"
+      }, {
+        "type": "text",
+        "id": "submenu_title",
+        "label": "Sub menu title"
+      }, {
+        "type": "header",
+        "content": "Announcement bar"
+      },  {
+        "type": "color",
+        "id": "announcement_color_text",
+        "label": "Color text",
+        "default": "#f6f4ee"
+      }, {
+        "type": "color",
+        "id": "announcement_color_bg",
+        "label": "Background color",
+        "default": "#000"
+      },
+      {
+        "type": "number",
+        "id": "announcement_speed",
+        "label": "Autoplay speed",
+        "info": "in miliseconds"
+      }
+    ],
+    "blocks":[
+      {
+        "type": "text",
+        "name": "Announcement text",
+        "settings": [
+          {
+            "type": "richtext",
+            "id": "title",
+            "label": "Text"
+          },
+          {
+            "type": "header",
+            "content": "Display Settings"
+          },
+          {
+            "type": "select",
+            "id": "page_category",
+            "label": "Display on page category:",
+            "options": [
+              {
+                "value": "all",
+                "label": "All"
+              },
+              {
+                "value": "product",
+                "label": "Product"
+              },
+              {
+                "value": "collection",
+                "label": "Collection"
+              },
+              {
+                "value": "collection_list",
+                "label": "Collection List"
+              },
+              {
+                "value": "pages",
+                "label": "Pages"
+              },
+              {
+                "value": "blog",
+                "label": "Blog"
+              },
+              {
+                "value": "article",
+                "label": "Article"
+              },
+              {
+                "value": "cart",
+                "label": "Cart"
+              },
+              {
+                "value": "account",
+                "label": "Account Pages"
+              }
+            ],
+            "default": "all"
+          },
+          {
+            "type": "url",
+            "id": "page",
+            "label": "Show on specific URL",
+            "info": "This option will override option above"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

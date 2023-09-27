@@ -1,0 +1,78 @@
+{% if section.settings.featured_article != blank %}
+<div class="blog-section">
+  <div class="page-width">
+    <div class="article-list">
+        {%- assign article = articles[section.settings.featured_article] -%}
+
+        {%- assign article_tag = false  -%}
+        {% for tag in article.tags %}
+          {% if tag contains "category:" %}
+            {%- assign article_tag = tag | remove: "category:"  -%}
+          {% endif %}
+        {% endfor %}
+
+        <div class="article-item viewport-section text-center">
+          {%- assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+
+          {% case section.settings.image_mask %}
+            {% when 'rounded_square' %}
+              {%- assign mask_class = 'square-image-svg-mask' -%}
+            {% when 'vase' %}
+              {%- assign mask_class = 'vase-image-svg-mask' -%}
+            {% when 'arc' %}
+              {%- assign mask_class = 'arc-image-svg-mask' -%}
+            {% when 'circle' %}
+              {%- assign mask_class = 'circle-image-svg-mask' -%}
+            {% when 'cloud' %}
+              {%- assign mask_class = 'cloud-bigest-image-svg-mask' -%}
+            {% when 'clover' %}
+              {%- assign mask_class = 'test_mask' -%}
+            {% when 'flower' %}
+              {%- assign mask_class = 'flower-image-svg-mask' -%}
+            {% when 'none' %}
+              {%- assign mask_class = 'none-image-svg-mask' -%}
+          {% endcase %}
+
+          <a href="{{ article.url }}" class="article-item__image-wrap" title="{{ 'blogs.article.read_more' | t }}">
+             <img class="article-item__image hero lazyload {{ mask_class }} "
+                src="{{ img_url }}"
+                data-src="{{ img_url }}"
+                data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                data-aspectratio="{{ article.image.aspect_ratio }}"
+                data-sizes="auto"
+                alt="{{ article.image.alt | escape }}"> 
+              
+          </a>
+
+          <div class="article-item__text">
+
+            {% if article.tags.size > 0 %}
+              <ul class="article-item__lists article-item__lists--top-article">
+                  {% for tag in article.tags %}
+                    {% if tag contains "category:" %}
+                      {%- assign article_tag = tag | remove: "category:"  -%}
+                      <li class="article-item__list">
+                        <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ article_tag }}</a>
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+              </ul>
+            {% endif %}
+            <a class="h2" href="{{ article.url }}">{{ article.title }}</a>
+
+            <div class="rte">
+              {% if article.excerpt.size > 0 %}
+                {{ article.excerpt }}
+              {% else %}
+                <p>
+                  {{ article.content | strip_html | truncatewords: 36 }}
+                </p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+

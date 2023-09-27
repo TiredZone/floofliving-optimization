@@ -1,0 +1,55 @@
+{% if section.blocks.size > 0 %}
+  <div class="careers-benefits">
+    <div class="page-width">
+
+      {% if section.settings.title != blank %}
+        <h2 class="h5 careers-benefits__title">{{ section.settings.title }}</h2>
+      {% endif %}
+
+      <div class="careers-benefits__holder">
+        {% for block in section.blocks %}
+          <div class="careers-benefit viewport-section">
+            <h3 class="careers-benefit__title">{{ block.settings.text }}</h3>
+            {{ block.settings.content }}
+          </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+{% endif %}
+
+
+{% schema %}
+{
+  "name": "Сareers benefits",
+  "class": "viewport-section",
+  "max_blocks": 9,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading"
+    }
+  ],
+  "blocks": [
+    {
+    "type": "block",
+    "name": "Block",
+    "settings": [
+        {
+          "id": "text",
+          "label": "Text",
+          "type": "text"
+        },
+        {
+          "id": "content",
+          "label": "Content",
+          "type": "richtext"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+

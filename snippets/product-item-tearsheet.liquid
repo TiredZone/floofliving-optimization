@@ -1,0 +1,100 @@
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{% assign sku_parts = current_variant.sku | split: ' ' %}
+{% assign variant_colors = '' %}
+{% assign is_variant_image = false %}
+{% assign values = '' %}
+{%- assign count = collectionid -%}
+<div class="featured-product {% unless product.available%}sold-out{% endunless %}">
+  <div class="featured-product__holder">
+    <div class="featured-product__gallery">
+      <div class="featured-product__gallery-wrap">
+        {% assign option_index = 0 %}
+        {%- for variant in product.variants -%}
+        
+          {%- for option in product.options -%}
+            {%- if option == 'color' or  option == 'Color' -%}
+              {% assign option_index = forloop.index0 %}
+              
+            {%- endif -%}
+          {%- endfor -%}
+          
+          {% assign value = variant.options[option_index] %}
+          
+          {% if value != blank %}
+          
+            {% unless values contains value %}
+           
+              {% assign values = values | join: ',' | append: ',' | append: value | split: ',' %}   
+              
+              {% if variant.image.src != blank %}
+                <div data-value="{{ variant.id | escape }}" data-href="{{ product.url | within: collection }}" class="featured-product__image {% unless forloop.first %} hide{% endunless %}">
+                  {% assign is_variant_image = true %}
+                  <span href="{{ product.url | within: collection }}" class="js-featured-product__link">
+                    {% render 'image-small', image: variant.image, width: 370, classes: "featured-product__img" %}
+                  </span>
+                </div>
+              {% else %}
+                <div data-value="{{ variant.id | escape }}" data-href="{{ product.url | within: collection }}" class="featured-product__image {% unless forloop.first %} hide{% endunless %}">
+                  {% assign is_variant_image = true %}
+                  <span href="{{ product.url | within: collection }}" class="js-featured-product__link">
+                    {% render 'image-small', image: product.images[0], width: 370, classes: "featured-product__img" %}
+                  </span>
+                </div>
+              {% endif %}
+
+            {% endunless %}
+          {% endif %}
+        {%- endfor -%}
+
+        {% if is_variant_image == false %}
+          <div class="featured-product__image">
+            <span href="{{ product.url | within: collection }}">
+              {% render 'image', image: product.featured_image, width: 370 %}
+            </span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="featured-product__frame {% if product.title contains settings.variant_separator %}swatch-active{% endif %}">
+
+
+      <div class="featured-product__wrap">
+
+      {% assign is_color = false %}
+      {% for option in product.options %}
+        {% if option contains 'color' or option contains 'colour' or option contains 'Color' %}
+          {% assign is_color = true %}
+        {% endif %}
+      {% endfor %}
+
+        <h4 class="featured-product__title">
+          <span class="js-featured-product__link">{%- render 'product-title', product:product -%}</span>
+          {% render 'product-color', product:product, current_variant: current_variant, title_swatch: title_swatch, swatch_limit: true, collectionid:count, is_color:is_color %}
+        </h4>
+        <div class="featured-product__price-box">
+          {% assign price_values = '' %}
+          {% for variant in product.variants %}
+            {% for option in product.options %}
+            {% if option == 'color' or  option == 'Color' %}
+              {% assign option_index = forloop.index0 %}
+            {% endif %}
+            {% endfor %}
+      
+          {% endfor %}
+        </div>
+      </div>
+      
+      {% if product.variants.size > 0 and is_color == true %}
+        {% unless product.has_only_default_variant %}
+          <div class="swatch-wrapper featured-product__wrapper">
+            {% render 'product-cart-swatch', swatch: 'Color', product: product, current_variant: current_variant, title_swatch: title_swatch, swatch_limit: true, collectionid:count %}
+          </div>
+        {% endunless %}
+      {% endif %}
+      
+
+    </div>
+  </div>
+</div>
+

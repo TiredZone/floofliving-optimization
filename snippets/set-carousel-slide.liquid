@@ -1,0 +1,21 @@
+<a href="{{ product.url }}" class="set-carousel__slide" {{ block.shopify_attributes }}>
+  {%- assign count = ''  -%}
+  {% for tag in product.tags %}
+    {% if tag contains 'count:' %}
+      {%- assign count = tag | remove: "count:" | append: " pillows"  -%}
+    {% endif %}
+  {% endfor %}
+
+  <div class="set-carousel__image lazyload"
+       data-bgset="{{ product.featured_image | img_url: 'master' }}"
+       data-sizes="auto"></div>
+  <div class="set-carousel__text">
+    <h3 class="set-carousel__title">{%- render 'product-title', product:product -%}</h3>
+    <div class="set-carousel__description">{{ product.description | strip_html | truncatewords: 8, "..." }}</div>
+    <div class="set-carousel__price">
+      <span>{{ product.price | money }}</span>
+      <div class="set-carousel__count">{{ count }}</div>
+    </div>
+  </div>
+  <span class="set-carousel__btn">{{ 'products.product.shop_set' | t }}</span>
+</a>

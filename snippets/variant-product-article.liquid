@@ -1,0 +1,156 @@
+{% assign product_handle = select_variant | split: ':' | first %}
+        {% assign variant_id = select_variant | split: ':' | last | plus: 0 %}
+        {% assign referenced_product = all_products[product_handle] %}
+        {% assign current_variant = referenced_product.selected_or_first_available_variant %}
+        {% assign referenced_variant = referenced_product.variants | where: "id", variant_id | first %}
+
+{% if referenced_product.template_suffix != "swatch" %}
+
+ {% for variant in referenced_product.variants %}
+   {% if variant.id == variant_id %}
+
+     {% assign current_variant = variant %}
+
+     {% if variant.image != blank %}
+       {% assign img_url = variant.image %}
+     {% else %}
+       {% assign img_url = referenced_product.images[0] %}
+     {% endif %}
+
+     <div class="variant-block__card viewport-section {% if referenced_product.title contains 'Set' %}variant-block__card--set{% endif %}">
+       <div {% if referenced_product.title contains 'Set' %} class="variant-block__image image-set" {% else %} class="variant-block__image"      {% endif %}>
+         <img class="lazyload variant-block__image"
+              src="{{ img_url | img_url: '328x328' }}"
+              data-src="{{ img_url | img_url: 'master' }}"
+              data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+              data-aspectratio="{{ img_url.aspect_ratio }}"
+              data-sizes="auto"
+              alt="{{referenced_product.title}}">
+       </div>
+
+       <div class="variant-block__body d-flex">
+         <div class="variant-block__title">{%- render 'product-title', product:referenced_product -%}</div>
+         <div class="variant-block__price">{{ variant.price | money}}</div>
+       </div>
+       {% if referenced_product.title contains 'Set' %}
+         <div class="variant-block__body">
+           <div class="variant-block__option font-body">{{ referenced_product.description | strip_html | truncatewords: 7 }}</div>
+           <div class="variant-block__option small-text js-count-pillows">{{ count }}</div>
+         </div>
+       {% else %}
+         <div class="variant-block__body">
+            {% if referenced_product.title contains settings.variant_separator %}
+              <div class="variant-block__option font-body">{% render 'product-color', product:referenced_product %}</div>
+              <div class="variant-block__option small-text">{{ variant.option1 }}</div>
+            {% else %}
+              <div class="variant-block__option font-body">{{ variant.option1 }}</div>
+              <div class="variant-block__option small-text">{{ variant.option2 }}</div>
+            {% endif %}
+         </div>
+       {% endif %}
+
+       <div class="variant-holder" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+         <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+         <meta itemprop="price" content="{{ current_variant.price | divided_by: 100.00 }}">
+         <link itemprop="availability" href="http://schema.org/{% if current_variant.available %}InStock{% else %}OutOfStock{% endif %}">
+
+         <form action="/cart/add" method="post" enctype="multipart/form-data" data-cart-submit="data-cart-submit">
+           {% unless referenced_product.has_only_default_variant %}
+
+             {% for option in referenced_product.options_with_values %}
+               <div class="selector-wrapper js">
+                 <label for="SingleOptionSelector-{{ forloop.index0 }}">
+                   {{ option.name }}
+                 </label>
+
+                 <select
+                   id="SingleOptionSelector-{{ forloop.index0 }}"
+                   data-single-option-selector
+                   data-index="option{{ option.position }}">
+                   {% for value in option.values %}
+                     <option
+                       value="{{ value | escape }}"
+                       {% if option.selected_value == value %}selected="selected"{% endif %}>
+                       {{ value }}
+                     </option>
+                   {% endfor %}
+                 </select>
+               </div>
+             {% endfor %}
+           {% endunless %}
+
+           <select name="id" class="no-js" data-product-select>
+             {% for variant in referenced_product.variants %}
+               <option
+                 {% if variant == current_variant %}selected="selected"{% endif %}
+                 {% unless variant.available %}disabled="disabled"{% endunless %}
+                 value="{{ variant.id }}">
+                 {{ variant.title }}
+               </option>
+             {% endfor %}
+           </select>
+
+           <div class="quantity-holder">
+             <div class="quantity-wrap">
+               <label class="visually-hidden" for="Quantity">{{ 'products.product.quantity' | t }}</label>
+               <div class="hide">
+                 <input type="number" id="Quantity" name="quantity" value="1" min="1"
+                   {% unless current_variant.inventory_management == null or current_variant.inventory_policy == 'continue' %}
+                     max="{{ current_variant.inventory_quantity }}"
+                   {% endunless %} class="product-qty-input">
+               </div>
+               <button
+                 type="submit"
+                 name="add"
+                 class="product__btn"
+                 data-add-to-cart
+                 {% unless current_variant.available %}disabled="disabled" {% endunless %}>
+                 <em class="product__btn-price hide" data-price-wrapper>
+                   <span data-product-price>{{ current_variant.price | money }}</span> -
+                 </em>
+                 {% if referenced_product.title contains 'Set' %}
+                   <span class="shop-set-link">
+                    {% if current_variant.available %}
+                      <a href="{{ item.url }}">{{ 'products.product.shop_sets' | t }}</a>
+                    {% else %}
+                      {{ 'products.product.sold_out' | t }}
+                    {% endif %}
+                  </span>
+                 {% else %}
+                   <span data-add-to-cart-text>
+                      {% if current_variant.available %}
+                        {{ 'products.product.add_to_cart' | t }}
+                      {% else %}
+                        {{ 'products.product.sold_out' | t }}
+                      {% endif %}
+                    </span>
+                 {% endif %}
+               </button>
+             </div>
+
+           </div>
+
+           {%- assign count = 'Several pillows'  -%}
+           {% for tag in referenced_product.tags %}
+             {% if tag contains 'count:' %}
+               {%- assign count = tag | remove: "count:"   -%}
+               {% if count == '1' %}
+                 {%- assign count = count | append: " pillow"  -%}
+               {% else %}
+                 {%- assign count = count | append: " pillows" -%}
+               {% endif %}
+             {% endif %}
+           {% endfor %}
+
+           <p class="hide">
+             <label for="your-name-count">{{ 'products.product.count_pillows' | t }}</label>
+             <input id="your-name-count" type="text" value="{{ count }}" name="properties[{{ 'products.product.count_pillows' | t }}]">
+           </p>
+
+         </form>
+       </div>
+     </div>
+   {% endif %}
+ {% endfor %}
+
+{% endif %}

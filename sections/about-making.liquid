@@ -1,0 +1,368 @@
+<div class="info-blocks__section">
+  {% if section.settings.title != blank %}
+    <div class="info-blocks__svg">
+      {% if section.settings.image != blank %}
+      <img class="info-block__image img-1 lazyload info-block__img-gif"
+           src="{{ section.settings.image | img_url: '96x96' }}"
+           data-src="{{ section.settings.image | img_url: 'master' }}"
+           data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+           data-aspectratio="{{ section.settings.image.aspect_ratio }}"
+           data-sizes="auto"
+           alt="feather">
+      {% endif %}
+    </div>
+
+    <h2 class="h1 info-blocks__title viewport-section">{{ section.settings.title }}</h2>
+  {% endif %}
+
+  {% if section.blocks.size > 0 %}
+    <div class="info-blocks">
+      {% for block in section.blocks %}
+        {%- assign img_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+        {%- assign img2_url = block.settings.image2 | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+        {% case block.settings.image_mask %}
+          {% when 'rounded_square' %}
+            {%- assign mask_class = 'square-image-svg-mask' -%}
+          {% when 'vase' %}
+            {%- assign mask_class = 'vase-image-svg-mask' -%}
+          {% when 'arc' %}
+            {%- assign mask_class = 'arc-image-svg-mask' -%}
+          {% when 'circle' %}
+            {%- assign mask_class = 'circle-image-svg-mask' -%}
+          {% when 'cloud' %}
+            {%- assign mask_class = 'cloud-image-svg-mask' -%}
+          {% when 'clover' %}
+            {%- assign mask_class = 'clover-image-svg-mask' -%}
+          {% when 'flower' %}
+            {%- assign mask_class = 'flower-image-svg-mask' -%}
+          {% when 'none' %}
+            {%- assign mask_class = 'none-image-svg-mask' -%}
+        {% endcase %}
+        {% case block.settings.image2_mask %}
+          {% when 'rounded_square' %}
+            {%- assign mask2_class = 'square-image-svg-mask' -%}
+          {% when 'vase' %}
+            {%- assign mask2_class = 'vase-image-svg-mask' -%}
+          {% when 'arc' %}
+            {%- assign mask2_class = 'arc-image-svg-mask' -%}
+          {% when 'circle' %}
+            {%- assign mask2_class = 'circle-image-svg-mask' -%}
+          {% when 'cloud' %}
+            {%- assign mask2_class = 'cloud-image-svg-mask' -%}
+          {% when 'clover' %}
+            {%- assign mask2_class = 'clover-image-svg-mask' -%}
+          {% when 'flower' %}
+            {%- assign mask2_class = 'flower-image-svg-mask' -%}
+          {% when 'none' %}
+            {%- assign mask2_class = 'none-image-svg-mask' -%}
+        {% endcase %}
+
+        {% case block.settings.text_mask %}
+          {% when 'rounded_square' %}
+            {%- assign text_mask_class = 'square-text-svg-mask' -%}
+          {% when 'vase' %}
+            {%- assign text_mask_class = 'vase-text-svg-mask-big' -%}
+          {% when 'arc' %}
+            {%- assign text_mask_class = 'arc-text-svg-mask-big' -%}
+          {% when 'circle' %}
+            {%- assign text_mask_class = 'circle-text-svg-mask-big' -%}
+          {% when 'cloud' %}
+            {%- assign text_mask_class = 'cloud-text-svg-mask-big' -%}
+          {% when 'clover' %}
+            {%- assign text_mask_class = 'clover-text-svg-mask-big' -%}
+          {% when 'flower' %}
+            {%- assign text_mask_class = 'flower-text-svg-mask-big' -%}
+        {% endcase %}
+
+        {%- assign mask_class_add = '' -%}
+        {% if block.settings.text_color == 'white' %}
+          {%- assign mask_class_add = '--black' -%}
+        {% endif %}
+
+        {% if block.settings.video_id != blank or block.settings.image != blank %}
+          <div class="info-block  info-block-{{ block.settings.image_mask }}">
+            <div class="info-block__holder">
+              {% if block.settings.image_left != blank %}
+              {%- assign img_url_left = block.settings.image_left | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+              <div class="info-blocks__img-icon-pos-left rellax" data-rellax-speed="3" data-rellax-percentage="0.5"><div class="info-blocks__img-icon-left ">
+                <img class="info-block__image img-left lazyload"
+                src="{{ block.settings.image_left | img_url: '50x50' }}"
+                data-src="{{ img_url_left }}"
+                data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                data-aspectratio="{{ block.settings.image_left.aspect_ratio }}"
+                data-sizes="auto"
+                alt="{{ block.settings.image_left.alt | escape }}">
+              </div></div>
+              {% endif %}
+
+              <div class="info-block__img {{ block.settings.image_position }} text-{{ block.settings.text_position }}">
+
+                {% if block.settings.video_id2 != blank %}
+                  <div class="info-block__video img-2 {{ mask2_class }}" data-video='{"type": "html5", "video": "{{ block.settings.video_id2 }}", "autoplay": true}'></div>
+                {% else %}
+                  <img class="info-block__image img-2 lazyload {{ mask2_class }}"
+                     src="{{ block.settings.image2 | img_url: '50x50' }}"
+                     data-src="{{ img2_url }}"
+                     data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                     data-aspectratio="{{ block.settings.image2.aspect_ratio }}"
+                     data-sizes="auto"
+                     alt="{{ block.settings.image2.alt | escape }}">
+                 {% endif %}
+
+                {% if block.settings.video_id != blank %}
+                  <div class="info-block__video img-1 {{ mask_class }}" data-video='{"type": "html5", "video": "{{ block.settings.video_id }}", "autoplay": true}'></div>
+                {% else %}
+                  <img class="info-block__image img-1 lazyload {{ mask_class }}"
+                     src="{{ block.settings.image | img_url: '50x50' }}"
+                     data-src="{{ img_url }}"
+                     data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                     data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                     data-sizes="auto"
+                     alt="{{ block.settings.image.alt | escape }}">
+                {% endif %}
+
+              </div>
+              {% if block.settings.title != blank %}
+                <div class="info-block__text {{ text_mask_class }}{{ mask_class_add }} {{ block.settings.text_position }} {{ block.settings.text_color }}">
+                  <div class="jcf-scrollable">
+                    <div class="info-block__count">{{ forloop.index }}<span></span>{{section.blocks.size}}</div>
+                    <h2>{{ block.settings.title }}</h2>
+                    <div class="info-block__desc">{{ block.settings.text }}</div>
+                  </div>
+                </div>
+              {% endif %}
+              {% if block.settings.image_right != blank %}
+              {%- assign img_url_right = block.settings.image_right | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+              <div class="info-blocks__img-icon-pos-right rellax"  data-rellax-speed="2" data-rellax-percentage="0.6"><div class="info-blocks__img-icon-right">
+                <img class="info-block__image img-right lazyload"
+                src="{{ block.settings.image_right | img_url: '50x50' }}"
+                data-src="{{ img_url_right }}"
+                data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                data-aspectratio="{{ block.settings.image_right.aspect_ratio }}"
+                data-sizes="auto"
+                alt="{{ block.settings.image_right.alt | escape }}">
+              </div></div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+</div>
+
+
+{% schema %}
+{
+  "name": "About Making",
+  "class": "about-making__section-wrap",
+  "max_blocks": 5,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image Icon"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "block",
+      "name": "Block",
+      "settings": [
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image position",
+          "options": [
+            {
+              "value": "img_left",
+              "label": "Left"
+            },
+            {
+              "value": "img_right",
+              "label": "Right"
+            }
+
+          ],
+          "default": "img_right"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "First Image"
+        },
+        {
+          "id": "video_id",
+          "label": "First Video url",
+          "type": "text"
+        },
+        {
+          "type": "select",
+          "id": "image_mask",
+          "label": "Image mask",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "rounded_square",
+              "label": "Rounded square"
+            },
+            {
+              "value": "flower",
+              "label": "Flower"
+            },
+            {
+              "value": "clover",
+              "label": "Clover"
+            },
+            {
+              "value": "cloud",
+              "label": "Cloud"
+            },
+            {
+              "value": "circle",
+              "label": "Circle"
+            },
+            {
+              "value": "vase",
+              "label": "Vase"
+            },
+            {
+              "value": "arc",
+              "label": "Arc"
+            }
+          ],
+          "default": "rounded_square"
+        },
+        {
+          "type": "image_picker",
+          "id": "image2",
+          "label": "Second Image"
+        },
+        {
+          "id": "video_id2",
+          "label": "Second Video url",
+          "type": "text"
+        },
+        {
+          "type": "select",
+          "id": "image2_mask",
+          "label": "Image mask",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "rounded_square",
+              "label": "Rounded square"
+            },
+            {
+              "value": "flower",
+              "label": "Flower"
+            },
+            {
+              "value": "clover",
+              "label": "Clover"
+            },
+            {
+              "value": "cloud",
+              "label": "Cloud"
+            },
+            {
+              "value": "circle",
+              "label": "Circle"
+            },
+            {
+              "value": "vase",
+              "label": "Vase"
+            },
+            {
+              "value": "arc",
+              "label": "Arc"
+            }
+          ],
+          "default": "rounded_square"
+        },
+        {
+          "id": "title",
+          "label": "Title",
+          "type": "text"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "select",
+          "id": "text_mask",
+          "label": "Text mask",
+          "options": [
+          {
+            "value": "rounded_square",
+            "label": "Rounded square"
+          },
+          {
+            "value": "flower",
+            "label": "Flower"
+          },
+          {
+            "value": "cloud",
+            "label": "Cloud"
+          },
+          {
+            "value": "circle",
+            "label": "Circle"
+          },
+          {
+            "value": "vase",
+            "label": "Vase"
+          },
+          {
+            "value": "arc",
+            "label": "Arc"
+          }
+        ],
+        "default": "rounded_square"
+        },
+        {
+          "type": "radio",
+          "id": "text_position",
+          "label": "Text position",
+          "options": [
+            {
+              "value": "top_left",
+              "label": "Left"
+            },
+            {
+              "value": "top_right",
+              "label": "Right"
+            }
+
+          ],
+          "default": "top_right"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_left",
+          "label": "Image Icon Left"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_right",
+          "label": "Image Icon Right"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

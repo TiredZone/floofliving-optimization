@@ -1,0 +1,130 @@
+<div class="trade-projects">
+  <div class="trade-projects__head text-center">
+    {% if section.settings.title != blank %}
+      <h2 class="trade-projects__title">{{ section.settings.title | escape }}</h2>
+    {% endif %}
+    {% if section.settings.content != blank %}
+      <div class="trade-projects__content">{{ section.settings.content }}</div>
+    {% endif %}
+  </div>
+
+  {% if section.blocks.size > 0 %}
+    <div class="trade-projects__slideshow {% if section.blocks.size > 3 %}js-trade-projects-carousel{% endif %}">
+      {% for block in section.blocks %}
+        {% if block.settings.image != blank %}
+          {% if block.settings.link != blank %}
+            <a href="{{ block.settings.link }}" target="_blank" class="trade-project__slide" {{ block.shopify_attributes }}>
+          {% else %}
+            <div class="trade-project__slide" {{ block.shopify_attributes }}>
+          {% endif %}
+            {% if block.settings.image != blank %}
+            <div class="trade-project__image lazyload"
+                 data-bgset="
+                  {% if block.settings.image_mobile != blank %}{{ block.settings.image_mobile | img_url: 'master' }} [(max-width: 767px)] | {% endif %}
+                  {{ block.settings.image | img_url: 'master' }}"
+                 data-sizes="auto"></div>
+            {% endif %}
+            {% if block.settings.title != blank %}
+              <h3 class="trade-project__title">{{ block.settings.title }}</h3>
+            {% endif %}
+            {% if block.settings.content != blank %}
+              <h4 class="trade-project__subtitle">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M17.1321 8C18.3106 8.00374 18.6221 8.01594 19.2977 8.04676C20.1492 8.0856 20.7308 8.22086 21.2397 8.41865C21.7658 8.62307 22.212 8.89663 22.6568 9.3414C23.1015 9.7862 23.3751 10.2324 23.5796 10.7585C23.7773 11.2674 23.9126 11.8489 23.9514 12.7005C23.9822 13.3761 23.9944 13.6876 23.9982 14.8661L23.9991 15.2685C23.9992 15.3409 23.9993 15.416 23.9994 15.4941V16.5041C23.9993 16.5822 23.9992 16.6573 23.9991 16.7297L23.9982 17.1321C23.9944 18.3106 23.9822 18.6221 23.9514 19.2977C23.9126 20.1492 23.7773 20.7308 23.5796 21.2397C23.3751 21.7658 23.1015 22.212 22.6568 22.6568C22.212 23.1015 21.7658 23.3751 21.2397 23.5796C20.7308 23.7773 20.1492 23.9126 19.2977 23.9514C18.6221 23.9822 18.3106 23.9944 17.1321 23.9982L16.7297 23.9991C16.6573 23.9992 16.5822 23.9993 16.5041 23.9994L15.2685 23.9991C13.7491 23.9968 13.4472 23.9855 12.7005 23.9514C11.8489 23.9126 11.2674 23.7773 10.7585 23.5796C10.2324 23.3751 9.7862 23.1015 9.3414 22.6568C8.89663 22.212 8.62307 21.7658 8.41865 21.2397C8.22086 20.7308 8.0856 20.1492 8.04676 19.2977C8.01594 18.6221 8.00374 18.3106 8 17.1321V14.8661C8.00374 13.6876 8.01594 13.3761 8.04676 12.7005C8.0856 11.8489 8.22086 11.2674 8.41865 10.7585C8.62307 10.2324 8.89663 9.7862 9.3414 9.3414C9.7862 8.89663 10.2324 8.62307 10.7585 8.41865C11.2674 8.22086 11.8489 8.0856 12.7005 8.04676C13.3761 8.01594 13.6876 8.00374 14.8661 8H17.1321ZM16.9217 9.44092H15.0765C14.2221 9.44273 13.7994 9.44801 13.415 9.4603L13.1503 9.46997C13.031 9.4748 12.9068 9.48038 12.7662 9.48679C11.9862 9.52236 11.5626 9.65269 11.2806 9.76226C10.9072 9.90739 10.6407 10.0808 10.3607 10.3607C10.0808 10.6407 9.90739 10.9072 9.76226 11.2806C9.65269 11.5626 9.52236 11.9862 9.48679 12.7662C9.48038 12.9068 9.4748 13.031 9.46997 13.1503L9.4603 13.415C9.44801 13.7994 9.44273 14.2221 9.44092 15.0765V16.9217C9.44273 17.776 9.44801 18.1988 9.4603 18.5831L9.46997 18.8479C9.4748 18.9672 9.48038 19.0914 9.48679 19.232C9.52236 20.012 9.65269 20.4356 9.76226 20.7175C9.90739 21.091 10.0808 21.3575 10.3607 21.6374C10.6407 21.9174 10.9072 22.0908 11.2806 22.2359C11.5626 22.3455 11.9862 22.4758 12.7662 22.5114C12.9068 22.5178 13.031 22.5234 13.1502 22.5282L13.415 22.5379C13.7993 22.5502 14.222 22.5554 15.0764 22.5573H16.9218C17.7762 22.5554 18.1989 22.5502 18.5832 22.5379L18.848 22.5282C18.9672 22.5234 19.0914 22.5178 19.232 22.5114C20.012 22.4758 20.4356 22.3455 20.7175 22.2359C21.091 22.0908 21.3575 21.9174 21.6374 21.6374C21.9174 21.3575 22.0908 21.091 22.2359 20.7175C22.3455 20.4356 22.4758 20.012 22.5114 19.232C22.5178 19.0914 22.5234 18.9672 22.5282 18.8479L22.5379 18.5831C22.5502 18.1988 22.5554 17.776 22.5573 16.9217V15.0765C22.5554 14.2221 22.5502 13.7994 22.5379 13.415L22.5282 13.1503C22.5234 13.031 22.5178 12.9068 22.5114 12.7662C22.4758 11.9862 22.3455 11.5626 22.2359 11.2806C22.0908 10.9072 21.9174 10.6407 21.6374 10.3607C21.3575 10.0808 21.091 9.90739 20.7175 9.76226C20.4356 9.65269 20.012 9.52236 19.232 9.48679C19.0914 9.48038 18.9672 9.4748 18.8479 9.46997L18.5831 9.4603C18.1988 9.44801 17.776 9.44273 16.9217 9.44092ZM15.9991 11.8907C18.2681 11.8907 20.1074 13.7301 20.1074 15.9991C20.1074 18.2681 18.2681 20.1074 15.9991 20.1074C13.7301 20.1074 11.8907 18.2681 11.8907 15.9991C11.8907 13.7301 13.7301 11.8907 15.9991 11.8907ZM15.9991 13.3323C14.5262 13.3323 13.3323 14.5262 13.3323 15.9991C13.3323 17.4719 14.5262 18.6659 15.9991 18.6659C17.4719 18.6659 18.6659 17.4719 18.6659 15.9991C18.6659 14.5262 17.4719 13.3323 15.9991 13.3323ZM20.2697 10.7684C20.8 10.7684 21.2298 11.1982 21.2298 11.7284C21.2298 12.2587 20.8 12.6885 20.2697 12.6885C19.7396 12.6885 19.3097 12.2587 19.3097 11.7284C19.3097 11.1982 19.7396 10.7684 20.2697 10.7684Z" fill="black"/>
+                </svg>
+
+                {{ block.settings.content }}</h4>
+            {% endif %}
+
+          {% unless block.settings.link != blank %}
+            </div>
+          {% else %}
+            </a>
+          {% endunless %}
+
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+</div>
+
+{% javascript %}
+;(function($) {
+  const $slickElement = $('.js-trade-projects-carousel');
+
+  $slickElement.slick({
+    slidesToScroll: 1,
+    rows: 0,
+    dots: true,
+    prevArrow: '<button class="btn-trade-projects btn-prev"><svg width="32" height="12" viewBox="0 0 32 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.62402 10.7471L2.00002 6.12307L6.62402 1.50007" stroke="black" stroke-width="1.2" stroke-linecap="round"/><path d="M2.00049 6.12353L30.0005 6.12354" stroke="black" stroke-width="1.2" stroke-linecap="round"/></svg></button>',
+    nextArrow: '<button class="btn-trade-projects btn-next"><svg width="30" height="12" viewBox="0 0 30 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24.3765 1.5L29.0005 6.124L24.3765 10.747" stroke="black" stroke-width="1.2" stroke-linecap="round"/><path d="M29 6.12354H1" stroke="black" stroke-width="1.2" stroke-linecap="round"/></svg></button>',
+    variableWidth: true,
+    centerMode: true,
+    centerPadding: '340px',
+    responsive: [
+      {
+        breakpoint: 750,
+        settings: {
+          variableWidth: true,
+          centerMode: true,
+          centerPadding: '12px',
+        }
+      }
+    ]
+  });
+}(jQuery));
+{% endjavascript %}
+
+
+{% schema %}
+{
+  "name": "Featured Projects",
+  "class": "viewport-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "content"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "content"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

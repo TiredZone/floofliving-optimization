@@ -1,0 +1,70 @@
+{%- assign product_handle = product.handle -%}
+{%- assign count = 0 -%}
+{%- for product in collections['sets'].products limit: section.settings.count -%}
+  {%- for variant in product.variants -%}
+    {%- assign variant_handle = variant.metafields.set.variant | split: ":" | first | remove: '["' | downcase -%}
+    {%- if variant_handle == product_handle -%}
+      {%- assign count = count |plus:1 -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endfor -%}
+
+
+{% if count > 0 %}
+  <div class="recommended-set">
+    <div class="{% if count > 3 %}without-pad{% else %}page-width{% endif %} ">
+      <div class="recommended-set__head text-center">
+        {% if section.settings.title != blank %}
+          <h2 data-product-title="{%- render 'product-title', product:product -%}" class="recommended-set__title">{{ section.settings.title }}</h2>
+        {% endif %}
+      </div>
+
+      <div class="set-carousel__slideshow {% if count > 3 %}js-set-carousel{% endif %}">
+
+      {%- for product in collections['sets'].products limit: section.settings.count -%}
+        {%- assign in_set = false -%}
+
+        {%- for variant in product.variants -%}
+          {%- assign variant_handle = variant.metafields.set.variant | split: ":" | first | remove: '["' | downcase -%}
+
+          {%- if variant_handle == product_handle -%}
+            {%- assign in_set = true -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if in_set -%}
+          {% render 'set-carousel-slide', product:product %}
+        {%- endif -%}
+
+      {%- endfor -%}
+      </div>
+
+    </div>
+  </div>
+{% endif %}
+
+
+{% schema %}
+{
+  "name": "Recommended set",
+  "class": "viewport-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading"
+    },
+    {
+      "type": "range",
+      "id": "count",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "unit": "pcs",
+      "label": "Item count",
+      "default": 4
+    }
+  ]
+}
+{% endschema %}
+

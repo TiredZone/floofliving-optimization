@@ -1,0 +1,123 @@
+<div class="login-page">
+  <div class="without-pad">
+    <div class="login-page__flex">
+      {% if section.settings.image != blank %}
+      <div class="login-page__flex-left">
+        {%- assign img_url = section.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+          <div class="login-page__img">
+            <img class="login-page__image lazyload"
+            src="{{ section.settings.image | img_url: '50x50' }}"
+            data-src="{{ img_url }}"
+            data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+            data-aspectratio="{{ section.settings.image.aspect_ratio }}"
+            data-sizes="auto"
+            alt="{{ section.settings.image.alt | escape }}">
+          </div>
+      </div>
+      {% endif %}
+      <div class="login-page__flex-right">
+    <div class="form-success hide" id="ResetSuccess">
+      {{ 'customer.recover_password.success' | t }}
+    </div>
+
+    <div id="CustomerLoginForm">
+      {% form 'customer_login', class: 'js-validation' %}
+        <h1>{{ 'customer.login.title' | t }}</h1>
+        <div class="login-page-info">{{ 'customer.login.haveaccount' | t }} <a href="{{ routes.account_register_url }}">{{ 'customer.login.sign_up' | t }}</a></div>
+
+        <div class="general-form__row">
+        <label for="CustomerEmail" class="label-hidden">
+          {{ 'customer.login.email' | t }}
+        </label>
+        <input type="email"
+              name="customer[email]"
+              id="CustomerEmail"
+              class="general-form__input {% if form.errors contains 'email' %}input-error{% endif %}"
+              placeholder="{{ 'customer.login.email' | t }}"
+              spellcheck="false"
+              data-required="true"
+              data-interactive="true"
+              autofocus>
+          <span class="error-message">{{ 'customer.login.email_error' | t }}</span>
+        </div>
+        {% if form.password_needed %}
+        <div class="general-form__row js-password">
+          <label for="CustomerPassword" class="label-hidden">
+            {{ 'customer.login.password' | t }}
+          </label>
+          <input type="password"
+                name="customer[password]"
+                id="CustomerPassword"
+                data-required="true"
+                data-interactive="true"
+                class="general-form__input js-placeholder-input {% if form.errors contains 'password' %}input-error{% endif %}"
+                placeholder="{{ 'customer.login.password' | t }}">
+          <span class="error-message">{{ 'customer.login.password_error' | t }}</span>
+        </div>  
+        {% endif %}
+        {{ form.errors | default_errors }}
+        <button type="submit" class="btn">{{ 'customer.login.submit' | t }}</button>
+
+        {% if form.password_needed %}
+          <a href="#recover" id="RecoverPassword">{{ 'customer.login.forgot_password' | t }}</a>
+        {% endif %}
+      {% endform %}
+
+    </div>
+
+    <div id="RecoverPasswordForm" class="hide">
+      <h3>{{ 'customer.recover_password.title' | t }}</h3>
+      <p class="login-page-info">{{ 'customer.login.already' | t }} <button type="button" id="HideRecoverPasswordLink">{{ 'customer.login.login' | t }}</button></p>
+
+      {% form 'recover_customer_password', class: 'js-validation recover-form' %}
+
+      
+        {% if form.posted_successfully? %}
+          <span class="hide reset-password-success"></span>
+        {% endif %}
+        <div class="general-form__row">
+        <label for="RecoverEmail" class="label-hidden">
+          {{ 'customer.recover_password.email' | t }}
+        </label>
+        <input type="email"
+              name="email"
+              id="RecoverEmail"
+              class="general-form__input"
+              placeholder="{{ 'customer.recover_password.email' | t }}"
+              spellcheck="false"
+              data-required="true"
+              data-interactive="true"
+              >
+        
+        <span class="error-message">{{ 'customer.recover_password.email_error' | t }}</span>
+        {{ form.errors | default_errors }}
+        <button type="submit" class="btn">{{ 'customer.recover_password.submit' | t }}</button>
+        </div>
+      {% endform %}
+
+    </div>
+
+    {% if shop.checkout.guest_login %}
+      <h2>{{ 'customer.login.guest_title' | t }}</h2>
+
+      {% form 'guest_login' %}
+        <button type="submit" class="btn">{{ 'customer.login.guest_continue' | t }}</button>
+      {% endform %}
+    {% endif %}
+  </div>
+  </div>
+</div>
+</div>
+{% schema %}
+{
+  "name": "Login Page",
+  "class": "login-page__section-wrap",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image Background"
+    }
+  ]
+}
+{% endschema %}

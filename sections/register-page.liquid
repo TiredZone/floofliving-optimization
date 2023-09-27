@@ -1,0 +1,105 @@
+<div class="login-page">
+  <div class="without-pad">
+    <div class="login-page__flex">
+      {% if section.settings.image != blank %}
+      <div class="login-page__flex-left">
+        {%- assign img_url = section.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+          <div class="login-page__img">
+            <img class="login-page__image lazyload"
+            src="{{ section.settings.image | img_url: '50x50' }}"
+            data-src="{{ img_url }}"
+            data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+            data-aspectratio="{{ section.settings.image.aspect_ratio }}"
+            data-sizes="auto"
+            alt="{{ section.settings.image.alt | escape }}">
+          </div>
+      </div>
+      {% endif %}
+      <div class="login-page__flex-right">
+        <h1>{{ 'customer.register.title' | t }}</h1>
+        <div class="login-page-info">{{ 'customer.login.already' | t }} <a href="{{ routes.account_login_url }}">{{ 'customer.login.login' | t }}</a></div>
+        {% form 'create_customer', class: 'js-validation' %}
+          {{ form.errors | default_errors }}
+          <div class="general-form__row">
+            <label for="FirstName" class="label-hidden">
+              {{ 'customer.register.first_name' | t }}
+            </label>
+            <input type="text"
+              name="customer[first_name]"
+              id="FirstName"
+              data-required="true"
+              data-interactive="true"
+              class="general-form__label"
+              placeholder="{{ 'customer.register.first_name' | t }}"
+              autofocus
+              {% if form.first_name %}value="{{ form.first_name }}"{% endif %}>
+            {% comment %}
+            <label for="LastName" class="label-hidden">
+              {{ 'customer.register.last_name' | t }}
+            </label>
+            <input type="text"
+              name="customer[last_name]"
+              id="LastName"
+              placeholder="{{ 'customer.register.last_name' | t }}"
+              {% if form.last_name %}value="{{ form.last_name }}"{% endif %}>
+            {% endcomment %}
+            <span class="error-message">{{ 'customer.register.errors.first_name' | t }}</span>
+          </div>
+          <div class="general-form__row">
+            <label for="Email" class="label-hidden">
+              {{ 'customer.register.email' | t }}
+            </label>
+            <input type="email"
+              name="customer[email]"
+              id="Email"
+              class="general-form__label {% if form.errors contains 'email' %}input-error{% endif %}"
+              placeholder="{{ 'customer.register.email' | t }}"
+              value="{% if form.email %}{{ form.email }}{% endif %}"
+              spellcheck="false"
+              data-required="true"
+              data-interactive="true"
+              autofocus>
+              <span class="error-message">{{ 'customer.register.errors.email' | t }}</span>
+          </div>
+          <div class="general-form__row">
+            <label for="CreatePassword" class="label-hidden">
+              {{ 'customer.register.password' | t }}
+            </label>
+            <input type="password"
+              name="customer[password]"
+              id="CreatePassword"
+              data-required="true"
+              data-interactive="true"
+              class="general-form__label {% if form.errors contains 'password' %}input-error{% endif %}"
+              placeholder="{{ 'customer.register.password' | t }}">
+              <span class="error-message">{{ 'customer.register.errors.password' | t }}</span>
+          </div>
+          <button type="submit" class="btn" value="Submit">{{ 'customer.login.submit' | t }}</button>
+          {% if section.settings.text != blank %}
+          <div class="linkInfo">
+            {{ section.settings.text }}
+          </div>
+          {% endif %}
+        {% endform %}
+      </div>
+    </div>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Register Page",
+  "class": "register-page__section-wrap",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image Background"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Content"
+    }
+  ]
+}
+{% endschema %}        

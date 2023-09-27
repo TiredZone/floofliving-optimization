@@ -1,0 +1,31 @@
+{% assign file_extension = 'png' %}
+{%- assign currentColor = current.title | split: settings.variant_separator | last | strip -%}
+
+{% for col in product.collections %}
+    {% assign collection_title = col.title | downcase %}
+    {% if collection_title contains '[variants]' %}
+      {% assign variant_group_handle = col.handle | remove:'variants-'%}
+    {% endif %}
+  {% endfor %}
+
+{% assign swatches_col_handle = 'swatches-' | append:variant_group_handle %}
+{% assign swatches_list = collections[swatches_col_handle] %}
+<div class="swatch swatch--product clearfix {% if swatches_list.products.size > 0 %}has-request-swatch{% endif %}" data-swatch="Color">
+    <div class="header">
+        <span>Color: <em>{{ currentColor }}</em></span>
+    </div>
+
+    {% if swatches_list.products.size > 0 and settings.enable_swatches_sample %}
+        <button type="button" class="swatch-opener js-swatch-opener" data-product="{{ product.id }}">{{ 'products.product.request_swatch' | t }}</button>
+      {% endif %}
+
+    {% for product in collection.products %}
+        {% if product.title contains settings.variant_separator %}
+            {% assign variantName = product.title | split: settings.variant_separator | last | strip -%}
+            {% assign variantImage = product.featured_image | img_url:'50x' -%}
+            <div class="custom-swatch-element {% if current.id == product.id %}active{% endif %}">
+                <button type="button" class="custom-swatch-image {% if quickview %}quickview-swatch{% endif %}" data-url="{{- shop.secure_url -}}{{- product.url -}}" style="background-color: {{ variantName | split: ' ' | last | handle }};background-image: url({{ variantImage }})"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

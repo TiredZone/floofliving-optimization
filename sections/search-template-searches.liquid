@@ -1,0 +1,65 @@
+{% if section.blocks.size > 0 %}
+<div class="searches viewport-section">
+  <div class="page-width-1440">
+    <div class="searches__box">
+      {% if section.settings.title != blank %}
+        <h3>{{ section.settings.title | escape }}</h3>
+      {% endif %}
+      <div class="searches__content">
+        {% for block in section.blocks limit: section.blocks.size %}
+         {% if block.settings.text != blank %}
+          <div class="searches__text">
+            <a  href="/search?q={{ block.settings.text }}">{{ block.settings.text }}</a>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Most popular Searches",
+    "max_blocks": 6,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Most popular Searches"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "title",
+        "name": "title",
+        "settings": [
+          {
+            "label": "Title",
+            "id": "text",
+            "type": "text"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Most popular Searches",
+        "category": "Search",
+        "blocks": [
+          {
+            "type": "title"
+          },
+          {
+            "type": "title"
+          },
+          {
+            "type": "title"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,61 @@
+{%- assign article_tag = false  -%}
+
+<div class="article-item viewport-section text-center">
+
+  {%- assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+
+  {% if loop == 0 or loop == 6 %}
+    {%- assign mask_class = 'clever-image-svg-mask' -%}
+  {% endif %}
+
+  {% if loop == 1 or loop == 7 %}
+    {%- assign mask_class = 'rounded-image-svg-mask' -%}
+  {% endif %}
+
+  {% if loop == 2 or loop == 8 %}
+    {%- assign mask_class = 'vase-blog-image-svg-mask' -%}
+  {% endif %}
+
+  {% if loop == 3 %}
+    {%- assign mask_class = 'square-blog-image-svg-mask' -%}
+  {% endif %}
+
+  {% if loop == 4 %}
+    {%- assign mask_class = 'flover-image-svg-mask' -%}
+  {% endif %}
+
+  {% if loop == 5 %}
+    {%- assign mask_class = 'rounded-image-svg-mask' -%}
+  {% endif %}
+
+  <a href="{{ article.url }}" class="article-item__image-wrap" title="{{ 'blogs.article.read_more' | t }}">
+    <img class="article-item__image lazyload {{ mask_class }}"
+      title="{{ 'blogs.article.read_more' | t }}"
+      src="{{ img_url }}"
+      data-src="{{ img_url }}"
+      data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+      data-aspectratio="{{ article.image.aspect_ratio }}"
+      data-sizes="auto"
+      alt="{{ article.image.alt | escape }}">
+  </a>
+  <div class="article-item__text">
+
+    {% if article.tags.size > 0 %}
+
+      <ul class="article-item__lists">
+          {% for tag in article.tags %}
+            {% if tag contains "category:" %}
+              {%- assign article_tag = tag | remove: "category:"  -%}
+              <li class="article-item__list">
+                <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ article_tag }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+      </ul>
+
+    {% endif %}
+
+    <h3 class="h6 article-item__heading">
+      <a href="{{ article.url }}">{{ article.title }}</a></h3>
+  </div>
+</div>

@@ -1,0 +1,456 @@
+<div
+  data-section-id="{{ section.id }}"
+  data-section-type="product"
+  data-enable-history-state="true"
+  itemscope
+  itemtype="http://schema.org/Product"
+>
+  {%- assign current_variant = product.selected_or_first_available_variant -%}
+  {%- assign featured_image = current_variant.featured_image | default: product.featured_image -%}
+  {%- assign add_class = product.metafields.accentuate.select_content_type | handleize | remove: '1-' | remove: '2-' -%}
+
+  <meta
+    itemprop="name"
+    content="{%- render 'product-title', product:product %}{% unless product.has_only_default_variant -%} - {{ current_variant.title }}{% endunless %}"
+  >
+  <meta itemprop="url" content="{{ shop.url }}{{ current_variant.url }}">
+  <meta itemprop="brand" content="{{ product.vendor }}">
+  <meta itemprop="image" content="{{ featured_image | img_url: '600x600' }}">
+  <meta itemprop="description" content="{{ product.description | strip_html | escape }}">
+
+  <span
+    class="js-current-variant-id hide"
+    data-current-variant-id="{{ current_variant.id }}"
+    data-current-variant-option1="{{ current_variant.option1 }}"
+    data-current-variant-option2="{{ current_variant.option2 }}"
+    data-current-variant-option3="{{ current_variant.option3 }}"
+  ></span>
+
+  {% comment %}
+    <div class="test-sliders">
+    {% for image in product.images %}
+
+    {%- assign variantsID = '' -%}
+    {%- assign numb = 0 -%}
+    {%- assign thumbnailAlt = image.alt | split: "|| " | last -%}
+
+    {%- for variant in product.variants -%}
+    {% if image.id == variant.image.id %}
+    {% if numb == 0 %}
+    {%- assign variantsID = variantsID | append: variant.id -%}
+    {%- assign numb = numb | plus:1 -%}
+    {% else %}
+    {%- assign variantsID = variantsID  | append: ',' | append: variant.id -%}
+    {% endif %}
+    {% endif %}
+    {%- endfor -%}
+
+    <div class="product__gallery-item" data-product-slide data-color="{{ thumbnailAlt }}" data-variant-id="{{ variantsID }}">
+    <img width="50" src="{{ image.src | img_url: '50x' }}" alt="{{ image.alt }}" data-product-image>
+    </div>
+
+    {% endfor %}
+    </div>
+  {% endcomment %}
+  <div class="product__holder viewport-section">
+    <div class="product__images--holder">
+      <div class="product__images">
+        {% include 'breadcrumbs' %}
+
+        {% if product.images.size == 0 %}
+          <div class="product-gallery__svg">
+            {{ 'product-1' | placeholder_svg_tag }}
+          </div>
+        {% endif %}
+
+        {% if product.images.size == 1 and featured_image != blank %}
+          <div
+            class="product-gallery__image"
+            style="background-image:url({{ featured_image | img_url: 'master' }})"
+            data-product-featured-image
+          >
+            {%- assign featured_media = product.selected_or_first_available_variant.featured_media
+              | default: product.featured_media
+            -%}
+            <img
+              src="{{ featured_media | img_url: product_image_size, scale: product_image_scale }}"
+              alt="{{ featured_media.alt }}"
+              id="FeaturedMedia-{{ section.id }}"
+              class="product-featured-media visually-hidden"
+            >
+          </div>
+        {% endif %}
+
+        {% if product.media.size > 1 %}
+          <ul class="product__gallery js-product__gallery" data-product-slider>
+            {% for media in product.media %}
+              {%- assign thumbnailAlt = media.preview_image.alt | split: '|| ' | last -%}
+
+              <div>{% render 'gallery-item', media: media, thumbnailAlt: thumbnailAlt %}</div>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <div class="product__add-images medium-hide {{ add_class }}">
+        {% render 'additional_images-pdp' %}
+      </div>
+    </div>
+
+    <div class="product__info--holder">
+      <div class="product__info-wrapper">
+        <div class="product__info">
+          <div class="product__head">
+            <h1 class="product__title">{%- render 'product-title', product: product -%}</h1>
+
+            <div class="product__price" data-price-wrapper>
+              {%- if product.compare_at_price_max > product.price -%}
+                <span class="visually-hidden" data-compare-text>{{ 'products.product.regular_price' | t }}</span>
+                <s
+                  data-compare-price
+                  {% if current_variant.compare_at_price == blank %}
+                    class="hide"
+                  {% endif %}
+                >
+                  {%- if current_variant.compare_at_price > current_variant.price -%}
+                    {{ current_variant.compare_at_price | money }}
+                  {%- endif -%}
+                </s>
+              {%- endif -%}
+              <span data-product-price>{{ current_variant.price | money }}</span>
+            </div>
+          </div>
+
+          {% if collection != blank %}
+            {% assign colTitle = col.title | downcase %}
+            {% unless colTitle contains '[variants]' %}
+              <span class="product__collection">
+                <a href="{{ collection.url }}">{{ collection.title }}</a>
+              </span>
+            {% endunless %}
+          {% endif %}
+
+          <h2 style="font-size: 18px; font-family: sans-serif;">PILLOWCASE + INSERT</h2>
+
+          {% render 'yotpo-reviews-product-rating-summary', product: product %}
+
+          <div
+            itemprop="offers"
+            itemscope
+            itemtype="http://schema.org/Offer"
+          >
+            <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+            <meta itemprop="price" content="{{ current_variant.price | divided_by: 100.00 }}">
+            <link
+              itemprop="availability"
+              href="http://schema.org/{% if current_variant.available %}InStock{% else %}OutOfStock{% endif %}"
+            >
+
+            <form
+              action="/cart/add"
+              method="post"
+              enctype="multipart/form-data"
+              data-cart-submit="data-cart-submit"
+            >
+              <div class="form-loading">
+                {% render 'loading-animation' %}
+              </div>
+              {% unless product.has_only_default_variant %}
+                <div class="swatch-wrap">
+                  {%- if product.title contains settings.variant_separator -%}
+                    {% for col in product.collections %}
+                      {% assign colTitle = col.title | downcase %}
+                      {% if colTitle contains '[variants]' %}
+                        {% assign variantsCollection = col %}
+                        {% break %}
+                      {% endif %}
+                    {% endfor %}
+                    {% if variantsCollection %}
+                      {% render 'swatch-from-collection', collection: variantsCollection, current: product %}
+                    {% endif %}
+                  {%- endif -%}
+                  {% render 'swatch' for product.options as swatch %}
+                </div>
+
+                {% for option in product.options_with_values %}
+                  <div class="selector-wrapper js">
+                    <label for="SingleOptionSelector-{{ forloop.index0 }}">
+                      {{ option.name }}
+                    </label>
+
+                    <select
+                      id="SingleOptionSelector-{{ forloop.index0 }}"
+                      data-single-option-selector
+                      data-index="option{{ option.position }}"
+                    >
+                      {% for value in option.values %}
+                        <option
+                          value="{{ value | escape }}"
+                          {% if option.selected_value == value %}
+                            selected="selected"
+                          {% endif %}
+                        >
+                          {{ value }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                {% endfor %}
+              {% endunless %}
+
+              <select
+                name="id"
+                class="no-js"
+                data-product-select
+              >
+                {% for variant in product.variants %}
+                  <option
+                    {% if variant == current_variant %}
+                      selected="selected"
+                    {% endif %}
+                    {% unless variant.available %}
+                      disabled="disabled"
+                    {% endunless %}
+                    data-variant-inventory-quantity="{{ variant.inventory_quantity }}"
+                    data-variant-value="{{ variant.id }}"
+                    value="{{ variant.id }}"
+                  >
+                    {{ variant.title }}
+                  </option>
+                {% endfor %}
+              </select>
+
+              <div class="quantity-holder">
+                {%- assign quantity_val = 1 -%}
+                {%- assign quantity_min = 1 -%}
+
+                {%- if current_variant.inventory_policy == 'deny'
+                  and current_variant.inventory_management == 'shopify'
+                  and current_variant.inventory_quantity == 0
+                -%}
+                  {%- assign quantity_val = 0 -%}
+                  {%- assign quantity_min = 0 -%}
+                {%- endif -%}
+
+                <div
+                  class="quantity-wrap {% if quantity_val == 0 and quantity_min == 0 %}quantity-wrap-disabled{% endif %}"
+                  data-product-btn-wrap
+                >
+                  {% comment %}
+                    There is js code related to the .quantity-error-message selector in theme.js
+                    Remove those code too if you remove this line
+                    <span class="quantity-error-message hide"></span>
+                  {% endcomment %}
+
+                  <label class="visually-hidden" for="Quantity">{{ 'products.product.quantity' | t }}</label>
+
+                  <input
+                    type="number"
+                    id="Quantity"
+                    name="quantity"
+                    value="{{ quantity_val }}"
+                    min="{{ quantity_min }}"
+                    {% unless current_variant.inventory_management == null
+                      or current_variant.inventory_policy == 'continue'
+                    %}
+                      max="{{ current_variant.inventory_quantity }}"
+                    {% endunless %}
+                    class="product-qty-input"
+                  >
+
+                  <button
+                    type="submit"
+                    name="add"
+                    class="product__btn add-to-cart"
+                    data-add-to-cart
+                    {% unless current_variant.available %}
+                      disabled="disabled"
+                    {% endunless %}
+                  >
+                    <em class="product__btn-price" data-price-wrapper>
+                      <span data-product-price>{{ current_variant.price | money }}</span>
+                      -
+                    </em>
+
+                    <span data-add-to-cart-text>
+                      {% if current_variant.available %}
+                        {{ 'products.product.add_to_cart' | t }}
+                      {% else %}
+                        {{ 'products.product.sold_out' | t }}
+                      {% endif %}
+                    </span>
+                  </button>
+                  <a
+                    class="btn klaviyo-bis-trigger hide"
+                    href="javascript:void(0)"
+                    style="text-align: center; margin: 0px; width: auto;"
+                    >Notify Me When Available</a
+                  >
+                </div>
+
+                <span class="product__shipping-info">{{ 'cart.minicart.shipping_at_checkout' | t }}</span>
+              </div>
+            </form>
+
+            <button class="collapsible">How It's Shipped</button>
+            <div class="content">
+              <p>
+                We only ship with world-class couriers, hand-selected for their experience shipping luxury goods. Every
+                part of our delivery, from hand-packing your pillow into its silk dust cover to our specially designed
+                shipping boxes, was carefully crafted to ensure your pillow arrives in perfect condition. Our flat rate
+                shipping covers more than just your delivery, it guarantees that your luxury Floof pillow arrives
+                pristine, fully fluffed, and ready to completely transform your space.<br/>
+                <br/>
+                But since one is never enough, you’ll get <b>FREE shipping</b> if you order 2 or more Floof Pillows!
+              </p>
+            </div>
+          </div>
+
+          {% if customer.tags contains 'Trade Program' %}
+            <a href="{{- product.url -}}?view=tearsheet" target="_blank" class="btn btn-secondary open-tearsheet">
+              <span>Download Tearsheet</span>
+              <svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M400.125 560.703L287 447.578L315.281 419.297L380.125 484.141V240H420.125V484.141L484.969 419.297L513.25 447.578L400.125 560.703Z" fill="black"/>
+              </svg>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="product__add-images hide medium-visible {{ add_class }}">
+        {% render 'additional_images-pdp' %}
+      </div>
+
+      {% if product.description != blank or product.metafields.product.additional_information.html != blank %}
+        <div class="product__description">
+          <div class="product__description-rte-wrapper">
+            {% if product.description != blank %}
+              <div class="rte viewport-section">
+                <h3>Description</h3>
+                {{ product.description }}
+              </div>
+            {% endif %}
+          </div>
+
+          {%- capture additional_information_shape -%}
+            {{ product.metafields.accentuate.additional_information_shape }}{%- endcapture -%}
+
+          {% case additional_information_shape %}
+            {% when 'square' %}
+              {%- assign text_mask_class = 'square-text-svg-mask' -%}
+            {% when 'vase' %}
+              {%- assign text_mask_class = 'vase-text-svg-mask' -%}
+            {% when 'arc' %}
+              {%- assign text_mask_class = 'arc-text-svg-mask' -%}
+            {% when 'circle' %}
+              {%- assign text_mask_class = 'circle-text-svg-mask' -%}
+            {% when 'cloud' %}
+              {%- assign text_mask_class = 'cloud-text-svg-mask' -%}
+            {% when 'clover' %}
+              {%- assign text_mask_class = 'clover-text-svg-mask' -%}
+            {% when 'flower' %}
+              {%- assign text_mask_class = 'flower-text-svg-mask' -%}
+            {% else %}
+              {%- assign text_mask_class = 'circle-text-svg-mask' -%}
+          {% endcase %}
+
+          {% if product.metafields.product.additional_information != blank %}
+            <div class="product__add-info-wrapper">
+              <div class="product__add-info viewport-section {{ text_mask_class }}">
+                <div class="product__add-info__holder">
+                  <h3 class="product__add-info__holder-heading">
+                    What makes the {% render 'product-title', product: product %} special?
+                  </h3>
+                  <p class="product__add-info__holder-description">
+                    {{ product.metafields.product.additional_information }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+      {% unless product == empty %}
+        <script type="application/json" data-product-json>
+          {{ product | json }}
+        </script>
+      {% endunless %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .product__add-info.arc-text-svg-mask {
+    background-image: url('{{ 'pdp_arc.svg' | asset_url }}');
+  }
+
+  .product__add-info.cloud-text-svg-mask {
+    background-image: url('{{ 'pdp_cloud.svg' | asset_url }}');
+
+  }
+
+   .collapsible {
+      color: #000;
+      cursor: pointer;
+      padding: 18px;
+      width: 100%;
+      border: 1px solid #000;
+      text-align: left;
+      outline: none;
+      font-size: 15px;
+      background: transparent;
+      margin-top: 10px;
+  }
+
+  .collapsible:after {
+      content: '\002B';
+      color: black;
+      font-weight: bold;
+      float: right;
+      margin-left: 5px;
+  }
+
+
+  .content {
+      margin-top: 10px;
+      padding: 0 18px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.2s ease-out;
+  }
+
+
+  .product__add-info.flower-text-svg-mask {
+    background-image: url('{{ 'pdp_flower.svg' | asset_url }}');
+  }
+
+  .product__add-info.vase-text-svg-mask {
+    background-image: url('{{ 'pdp_vase.svg' | asset_url }}');
+  }
+</style>
+
+<script>
+  var coll = document.getElementsByClassName("collapsible");
+  var i;
+
+  for (i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function(event) {
+      event.stopPropagation();  // Add this line
+
+      this.classList.toggle("active");
+      var content = this.nextElementSibling;
+      if (content.style.maxHeight){
+        content.style.maxHeight = null;
+      } else {
+        content.style.maxHeight = content.scrollHeight + "px";
+      }
+    });
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Product pages",
+  "settings": []
+}
+{% endschema %}
